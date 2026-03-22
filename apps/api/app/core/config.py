@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,7 +12,10 @@ class Settings(BaseSettings):
 
     port: int = 8000
     app_env: Literal["development", "test", "production"] = "development"
-    database_url: str = Field(alias="DATABASE_URL")
+    database_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL", "MYSQL_PRIVATE_URL"),
+    )
     telegram_bot_token: str = Field(default="", alias="TELEGRAM_BOT_TOKEN")
     frontend_url: str = Field(default="http://localhost:5173", alias="FRONTEND_URL")
     session_secret: str = Field(default="change-me", alias="SESSION_SECRET")
@@ -33,6 +36,13 @@ class Settings(BaseSettings):
     @property
     def allowed_origins(self) -> list[str]:
         return [item.strip() for item in self.cors_allowed_origins.split(",") if item.strip()]
+
+    @property
+    def normalized_database_url(self) -> str:
+        database_url = self.database_url.strip()
+        if database_url.startswith("mysql://"):
+            return f"mysql+pymysql://{database_url[len('mysql://'):]}"
+        return database_url
 
     @property
     def normalized_bunny_cdn_host(self) -> str:
