@@ -1,4 +1,14 @@
-export function PreviewPlayer({ embedUrl, thumbnailUrl, title }: { embedUrl?: string; thumbnailUrl?: string; title: string }) {
+export function PreviewPlayer({
+  embedUrl,
+  thumbnailUrl,
+  previewImageUrl,
+  title,
+}: {
+  embedUrl?: string;
+  thumbnailUrl?: string;
+  previewImageUrl?: string;
+  title: string;
+}) {
   if (embedUrl) {
     return (
       <div className="preview-player">
@@ -6,8 +16,9 @@ export function PreviewPlayer({ embedUrl, thumbnailUrl, title }: { embedUrl?: st
       </div>
     );
   }
+  const backgroundUrl = thumbnailUrl || previewImageUrl;
   return (
-    <div className="preview-player preview-player--fallback" style={{ backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : undefined }}>
+    <div className="preview-player preview-player--fallback" style={{ backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : undefined }}>
       <span>No public preview available yet.</span>
     </div>
   );

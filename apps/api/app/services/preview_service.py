@@ -20,13 +20,13 @@ def build_preview_assets(preview_id: str | None) -> dict[str, str | None]:
             "previewType": None,
         }
     client = get_preview_client()
+    preview_webp_url = client.build_preview_webp_url(preview_id)
     try:
         video = client.get_video(preview_id)
     except (BunnyConfigError, Exception):
         video = {}
     thumbnail_file_name = str(video.get("thumbnailFileName") or "").strip() or None
-    thumbnail_url = client.build_thumbnail_url(preview_id, thumbnail_file_name)
-    preview_webp_url = client.build_preview_webp_url(preview_id)
+    thumbnail_url = client.build_thumbnail_url(preview_id, thumbnail_file_name) or preview_webp_url
     try:
         preview_embed_url = client.build_embed_url(preview_id)
     except BunnyConfigError:

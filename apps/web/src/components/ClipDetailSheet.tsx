@@ -19,7 +19,12 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
         {loading && <div className="detail-sheet__loading">Loading clip...</div>}
         {!loading && clip && (
           <>
-            <PreviewPlayer embedUrl={clip.previewEmbedUrl} thumbnailUrl={clip.thumbnailUrl} title={clip.title} />
+            <PreviewPlayer
+              embedUrl={clip.previewEmbedUrl}
+              thumbnailUrl={clip.thumbnailUrl}
+              previewImageUrl={clip.previewWebpUrl}
+              title={clip.title}
+            />
             <div className="detail-sheet__body">
               <div className="detail-sheet__eyebrow">
                 <span>{clip.category || 'Library'}</span>

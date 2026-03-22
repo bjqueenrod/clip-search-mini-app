@@ -18,16 +18,22 @@ class BunnyPreviewClient:
         self.settings = get_settings()
         self._cache: dict[str, tuple[float, dict[str, Any]]] = {}
 
-    def _require_config(self) -> None:
+    def _require_library(self) -> None:
         if not self.settings.bunny_stream_library_id:
             raise BunnyConfigError("BUNNY_STREAM_LIBRARY_ID is not configured")
+
+    def _require_metadata_config(self) -> None:
+        self._require_library()
         if not self.settings.bunny_stream_api_key:
             raise BunnyConfigError("BUNNY_STREAM_API_KEY is not configured")
+
+    def _require_embed_config(self) -> None:
+        self._require_library()
         if not self.settings.bunny_stream_embed_token_key:
             raise BunnyConfigError("BUNNY_STREAM_EMBED_TOKEN_KEY is not configured")
 
     def get_video(self, video_id: str) -> dict[str, Any]:
-        self._require_config()
+        self._require_metadata_config()
         cache_key = video_id.strip()
         cached = self._cache.get(cache_key)
         now = time.time()
@@ -47,7 +53,7 @@ class BunnyPreviewClient:
         return data
 
     def build_embed_url(self, video_id: str, *, expires_in_seconds: int = 60 * 60 * 24) -> str:
-        self._require_config()
+        self._require_embed_config()
         expires = int(time.time()) + int(expires_in_seconds)
         raw = f"{self.settings.bunny_stream_embed_token_key}{video_id}{expires}".encode("utf-8")
         token = hashlib.sha256(raw).hexdigest()
