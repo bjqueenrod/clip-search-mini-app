@@ -1,0 +1,14 @@
+node_modules/
+pnpm-lock.yaml
+apps/web/dist/
+apps/api/.pytest_cache/
+apps/api/.mypy_cache/
+apps/api/__pycache__/
+apps/api/.coverage
+apps/api/htmlcov/
+apps/api/.venv/
+*.pyc
+.env
+.env.*
+!.env.example
+.DS_Store

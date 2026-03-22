@@ -1,0 +1,183 @@
+from __future__ import annotations
+
+from typing import Any
+
+from sqlalchemy import String, and_, func, literal, or_, select
+from sqlalchemy.orm import Session
+
+from app.db.clip_mapping import DEFAULT_SHORT_DESCRIPTION_LENGTH, get_clip_mapping
+from app.db.session import engine
+from app.schemas.clips import ClipQueryParams
+from app.services.preview_service import build_preview_assets
+from app.utils.duration import format_duration_label, parse_duration_seconds
+from app.utils.tags import parse_tags
+
+
+BOT_BASE = "https://t.me/mistressbjqueenbot?start="
+
+
+def _first_column(*values: Any) -> Any:
+    for value in values:
+        if value is not None:
+            return value
+    return None
+
+
+
+def _price_from_cents(value: Any) -> float | None:
+    cents = 0 if value in (None, "") else int(value)
+    if cents <= 0:
+        return None
+    return round(cents / 100.0, 2)
+
+
+
+def _short_description(description: str | None) -> str | None:
+    if not description:
+        return None
+    value = description.strip()
+    if len(value) <= DEFAULT_SHORT_DESCRIPTION_LENGTH:
+        return value
+    return value[: DEFAULT_SHORT_DESCRIPTION_LENGTH - 1].rstrip() + "..."
+
+
+
+def _coalesce_text(*columns: Any):
+    valid = [column for column in columns if column is not None]
+    if not valid:
+        return literal("")
+    return func.coalesce(*valid, literal(""))
+
+
+
+def _sort_expression(sort: str, mapping):
+    created_at = mapping.get("created_at")
+    title = mapping.get("title")
+    price = _first_column(mapping.get("price_cents"), mapping.get("download_price_cents"))
+    clip_id = mapping.get("clip_id")
+    options = {
+        "newest": created_at.desc() if created_at is not None else clip_id.desc(),
+        "oldest": created_at.asc() if created_at is not None else clip_id.asc(),
+        "price_asc": price.asc() if price is not None else clip_id.asc(),
+        "price_desc": price.desc() if price is not None else clip_id.desc(),
+        "title_asc": title.asc() if title is not None else clip_id.asc(),
+        "title_desc": title.desc() if title is not None else clip_id.desc(),
+    }
+    return options.get(sort, options["newest"])
+
+
+
+def _build_filters(params: ClipQueryParams, mapping):
+    filters = []
+    active_col = mapping.get("active")
+    if active_col is not None:
+        filters.append(active_col == 1)
+
+    if params.q:
+        needle = f"%{params.q.strip().lower()}%"
+        title = func.lower(_coalesce_text(mapping.get("title")).cast(String))
+        description = func.lower(_coalesce_text(mapping.get("description")).cast(String))
+        category = func.lower(_coalesce_text(mapping.get("category")).cast(String))
+        keywords = func.lower(_coalesce_text(mapping.get("keywords")).cast(String))
+        hashtags = func.lower(_coalesce_text(mapping.get("hashtags")).cast(String))
+        filters.append(or_(title.like(needle), description.like(needle), category.like(needle), keywords.like(needle), hashtags.like(needle)))
+
+    if params.category and mapping.get("category") is not None:
+        filters.append(func.lower(mapping.get("category")) == params.category.strip().lower())
+
+    parsed_tags = parse_tags(params.tags) if params.tags else []
+    for tag in parsed_tags:
+        tag_needle = f"%{tag.lower()}%"
+        filters.append(
+            or_(
+                func.lower(_coalesce_text(mapping.get("keywords")).cast(String)).like(tag_needle),
+                func.lower(_coalesce_text(mapping.get("hashtags")).cast(String)).like(tag_needle),
+            )
+        )
+
+    return filters
+
+
+
+def _row_to_item(row: Any) -> dict[str, Any]:
+    data = dict(row._mapping)
+    clip_id = str(data.get("clip_id") or data.get("id") or "")
+    tags = parse_tags(data.get("keywords"), data.get("hashtags"))
+    preview = build_preview_assets(data.get("bunny_stream_preview_id"))
+    description = str(data.get("description") or "").strip() or None
+    base_price = _price_from_cents(data.get("price_cents"))
+    stream_price = _price_from_cents(data.get("watch_price_cents")) or base_price
+    download_price = _price_from_cents(data.get("download_price_cents")) or base_price
+    return {
+        "id": clip_id,
+        "title": str(data.get("title") or clip_id),
+        "shortDescription": _short_description(description),
+        "description": description,
+        "price": base_price,
+        "streamPrice": stream_price,
+        "downloadPrice": download_price,
+        "durationSeconds": parse_duration_seconds(data.get("duration")),
+        "durationLabel": format_duration_label(data.get("duration")),
+        "thumbnailUrl": preview.get("thumbnailUrl"),
+        "previewWebpUrl": preview.get("previewWebpUrl"),
+        "previewEmbedUrl": preview.get("previewEmbedUrl"),
+        "previewType": preview.get("previewType"),
+        "category": str(data.get("category") or "").strip() or None,
+        "tags": tags,
+        "botStreamUrl": f"{BOT_BASE}stream_{clip_id}",
+        "botDownloadUrl": f"{BOT_BASE}download_{clip_id}",
+    }
+
+
+
+def search_clips(db: Session, params: ClipQueryParams) -> dict[str, Any]:
+    mapping = get_clip_mapping(engine)
+    table = mapping.table
+    filters = _build_filters(params, mapping)
+    page = max(1, params.page)
+    limit = max(1, min(params.limit, 50))
+    offset = (page - 1) * limit
+
+    query = select(table)
+    count_query = select(func.count()).select_from(table)
+    if filters:
+        query = query.where(and_(*filters))
+        count_query = count_query.where(and_(*filters))
+    query = query.order_by(_sort_expression(params.sort, mapping)).offset(offset).limit(limit)
+
+    total = int(db.execute(count_query).scalar_one())
+    rows = db.execute(query).all()
+    items = [_row_to_item(row) for row in rows]
+
+    categories: list[str] = []
+    category_col = mapping.get("category")
+    if category_col is not None and page == 1:
+        category_rows = db.execute(
+            select(category_col).where(and_(*filters)) if filters else select(category_col)
+        ).scalars().all()
+        categories = sorted({str(value).strip() for value in category_rows if str(value or "").strip()})
+
+    return {
+        "items": items,
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "hasMore": offset + len(items) < total,
+        "categories": categories,
+    }
+
+
+
+def get_clip_detail(db: Session, clip_id: str) -> dict[str, Any] | None:
+    mapping = get_clip_mapping(engine)
+    table = mapping.table
+    stmt = select(table).where(table.c.clip_id == clip_id)
+    active_col = mapping.get("active")
+    if active_col is not None:
+        stmt = stmt.where(active_col == 1)
+    stmt = stmt.limit(1)
+    row = db.execute(stmt).first()
+    if row is None:
+        return None
+    item = _row_to_item(row)
+    return item

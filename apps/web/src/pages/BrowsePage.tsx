@@ -1,0 +1,105 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { AppShell } from '../components/AppShell';
+import { SearchBar } from '../components/SearchBar';
+import { FilterBar } from '../components/FilterBar';
+import { SortSelect } from '../components/SortSelect';
+import { ClipGrid } from '../components/ClipGrid';
+import { ClipDetailSheet } from '../components/ClipDetailSheet';
+import { EmptyState } from '../components/EmptyState';
+import { ErrorState } from '../components/ErrorState';
+import { TelegramDevBanner } from '../components/TelegramDevBanner';
+import { SkeletonCard } from '../components/SkeletonCard';
+import { RecentSearches } from '../components/RecentSearches';
+import { applyTelegramTheme } from '../app/telegram';
+import { useTelegramSession } from '../features/auth/hooks';
+import { useClipDetail, useClipSearch } from '../features/clips/hooks';
+import { DEFAULT_SORT, readQueryState, toSearchParams } from '../features/clips/queryState';
+import { pushRecentSearch, readRecentSearches } from '../utils/storage';
+
+export function BrowsePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { clipId } = useParams();
+  const session = useTelegramSession();
+  const [searchValue, setSearchValue] = useState(readQueryState(searchParams).q);
+  const [recent, setRecent] = useState<string[]>(() => readRecentSearches());
+  const queryState = useMemo(() => readQueryState(searchParams), [searchParams]);
+  const clipsQuery = useClipSearch(queryState);
+  const clipDetailQuery = useClipDetail(clipId);
+  const tagOptions = useMemo(
+    () =>
+      Array.from(
+        new Set((clipsQuery.data?.items ?? []).flatMap((item) => item.tags).filter(Boolean)),
+      ).slice(0, 10),
+    [clipsQuery.data?.items],
+  );
+
+  useEffect(() => {
+    applyTelegramTheme();
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const next = { ...queryState, q: searchValue, page: 1 };
+      setSearchParams(toSearchParams(next));
+      if (searchValue.trim()) {
+        setRecent(pushRecentSearch(searchValue));
+      }
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [searchValue]);
+
+  const loadMore = () => setSearchParams(toSearchParams({ ...queryState, page: queryState.page + 1 }));
+  const updateState = (patch: Partial<typeof queryState>) => setSearchParams(toSearchParams({ ...queryState, ...patch, page: 1 }));
+
+  return (
+    <AppShell>
+      {!session.isTelegram && <TelegramDevBanner />}
+      <section className="hero">
+        <p className="hero__eyebrow">{import.meta.env.VITE_APP_NAME ?? 'Clip Search'}</p>
+        <h1>Browse premium clips without leaving Telegram.</h1>
+        <p>Search the catalog, filter by category, and preview public-safe Bunny Stream teasers before buying inside the bot.</p>
+      </section>
+
+      <section className="toolbar">
+        <SearchBar value={searchValue} onChange={setSearchValue} />
+        <SortSelect value={queryState.sort || DEFAULT_SORT} onChange={(value) => updateState({ sort: value })} />
+      </section>
+
+      <RecentSearches items={recent} onPick={setSearchValue} />
+      <FilterBar items={clipsQuery.data?.categories ?? []} value={queryState.category} onChange={(value) => updateState({ category: value })} />
+      {tagOptions.length > 0 && (
+        <FilterBar
+          items={tagOptions}
+          value={queryState.tags[0] ?? ''}
+          onChange={(value) => updateState({ tags: value ? [value] : [] })}
+        />
+      )}
+
+      {session.error && <ErrorState message={session.error} />}
+      {clipsQuery.isError && <ErrorState message={(clipsQuery.error as Error).message} />}
+      {clipsQuery.isLoading && (
+        <div className="clip-grid">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      )}
+      {clipsQuery.data && clipsQuery.data.items.length > 0 && <ClipGrid items={clipsQuery.data.items} />}
+      {clipsQuery.data && clipsQuery.data.items.length === 0 && <EmptyState />}
+
+      {clipsQuery.data?.hasMore && (
+        <button className="load-more" type="button" onClick={loadMore}>
+          Load more
+        </button>
+      )}
+
+      {clipId && (
+        <ClipDetailSheet
+          clip={clipDetailQuery.data}
+          loading={clipDetailQuery.isLoading}
+        />
+      )}
+    </AppShell>
+  );
+}

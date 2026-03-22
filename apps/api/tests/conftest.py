@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+
+TEST_DB = Path(__file__).parent / "test.db"
+os.environ.setdefault("APP_ENV", "test")
+os.environ.setdefault("DATABASE_URL", f"sqlite:///{TEST_DB}")
+os.environ.setdefault("SESSION_SECRET", "test-secret")
+os.environ.setdefault("TELEGRAM_BOT_TOKEN", "test-token")
+
+from app.db.session import engine  # noqa: E402
+from app.main import app  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def setup_database() -> None:
+    with engine.begin() as conn:
+        conn.exec_driver_sql("DROP TABLE IF EXISTS clips")
+        conn.exec_driver_sql(
+            """
+            CREATE TABLE clips (
+                clip_id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                description TEXT,
+                price_cents INTEGER NOT NULL DEFAULT 0,
+                download_price_cents INTEGER NOT NULL DEFAULT 0,
+                watch_price_cents INTEGER NOT NULL DEFAULT 0,
+                keywords TEXT,
+                hashtags TEXT,
+                duration TEXT,
+                filename TEXT,
+                category TEXT,
+                file_id TEXT,
+                bunny_stream_video_id TEXT,
+                bunny_download_storage_path TEXT,
+                bunny_stream_preview_id TEXT,
+                active INTEGER DEFAULT 1,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        conn.exec_driver_sql(
+            """
+            INSERT INTO clips (
+                clip_id, title, description, price_cents, download_price_cents, watch_price_cents,
+                keywords, hashtags, duration, filename, category, file_id,
+                bunny_stream_video_id, bunny_download_storage_path, bunny_stream_preview_id, active
+            ) VALUES
+            ('BJQ0001', 'Locked Cage Tease Control', 'Tease, denial and frustration.', 1299, 1299, 999,
+             'chastity,tease,denial', '#chastity #tease #denial', '13:32', 'clip1.mp4', 'chastity', 'tg-file-1',
+             'paid-stream-1', 'downloads/clip1.mp4', 'preview-1', 1),
+            ('BJQ0002', 'Strict JOI Countdown', 'Countdown game clip.', 999, 999, 799,
+             'joi,countdown', '#joi #countdown', '812', 'clip2.mp4', 'joi', 'tg-file-2',
+             'paid-stream-2', 'downloads/clip2.mp4', NULL, 1),
+            ('BJQ0003', 'Inactive Clip', 'Should not show.', 999, 999, 799,
+             'inactive', '#inactive', '5:00', 'clip3.mp4', 'misc', 'tg-file-3',
+             'paid-stream-3', 'downloads/clip3.mp4', NULL, 0)
+            """
+        )
+    yield
+
+
+@pytest.fixture()
+def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
+    monkeypatch.setattr(
+        "app.services.clip_service.build_preview_assets",
+        lambda preview_id: {
+            "thumbnailUrl": f"https://cdn.example/{preview_id}/thumb.jpg" if preview_id else None,
+            "previewWebpUrl": f"https://cdn.example/{preview_id}/preview.webp" if preview_id else None,
+            "previewEmbedUrl": f"https://iframe.mediadelivery.net/embed/lib/{preview_id}" if preview_id else None,
+            "previewType": "video" if preview_id else None,
+        },
+    )
+    return TestClient(app)
