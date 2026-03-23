@@ -27,8 +27,11 @@ def build_preview_assets(preview_id: str | None) -> dict[str, str | None]:
         video = {}
     thumbnail_file_name = str(video.get("thumbnailFileName") or "").strip() or None
     thumbnail_url = client.build_thumbnail_url(preview_id, thumbnail_file_name) or preview_webp_url
+    preview_embed_url = None
     try:
-        preview_embed_url = client.build_embed_url(preview_id)
+        candidate_embed_url = client.build_embed_url(preview_id)
+        if client.is_embed_url_accessible(candidate_embed_url):
+            preview_embed_url = candidate_embed_url
     except BunnyConfigError:
         preview_embed_url = None
     return {

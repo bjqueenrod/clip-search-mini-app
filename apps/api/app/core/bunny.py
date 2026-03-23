@@ -17,6 +17,7 @@ class BunnyPreviewClient:
     def __init__(self) -> None:
         self.settings = get_settings()
         self._cache: dict[str, tuple[float, dict[str, Any]]] = {}
+        self._embed_access_cache: dict[str, tuple[float, bool]] = {}
 
     def _require_library(self) -> None:
         if not self.settings.bunny_stream_library_id:
@@ -61,6 +62,32 @@ class BunnyPreviewClient:
             f"https://iframe.mediadelivery.net/embed/"
             f"{self.settings.bunny_stream_library_id}/{video_id}?token={token}&expires={expires}"
         )
+
+    def is_embed_url_accessible(self, embed_url: str) -> bool:
+        cache_key = embed_url.strip()
+        if not cache_key:
+            return False
+        cached = self._embed_access_cache.get(cache_key)
+        now = time.time()
+        if cached and cached[0] > now:
+            return cached[1]
+
+        headers = {"accept": "text/html,application/xhtml+xml"}
+        frontend_url = self.settings.frontend_url.strip().rstrip("/")
+        if frontend_url:
+            headers["Origin"] = frontend_url
+            headers["Referer"] = f"{frontend_url}/"
+
+        ok = False
+        try:
+            with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                response = client.get(cache_key, headers=headers)
+                ok = response.status_code < 400
+        except Exception:
+            ok = False
+
+        self._embed_access_cache[cache_key] = (now + 600, ok)
+        return ok
 
     def build_thumbnail_url(self, video_id: str, thumbnail_file_name: str | None) -> str | None:
         host = self.settings.normalized_bunny_cdn_host
