@@ -17,6 +17,19 @@ import { useClipDetail, useClipSearch } from '../features/clips/hooks';
 import { DEFAULT_SORT, readQueryState, toSearchParams } from '../features/clips/queryState';
 import { pushRecentSearch, readRecentSearches } from '../utils/storage';
 
+const FEATURED_TAGS = [
+  'chastity',
+  'ruinedorgasm',
+  'milking',
+  'bondage',
+  'cuckold',
+  'joi',
+  'strapon',
+  'blowjob',
+  'magicwand',
+  'compilation',
+];
+
 export function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { clipId } = useParams();
@@ -26,13 +39,18 @@ export function BrowsePage() {
   const queryState = useMemo(() => readQueryState(searchParams), [searchParams]);
   const clipsQuery = useClipSearch(queryState);
   const clipDetailQuery = useClipDetail(clipId);
-  const tagOptions = useMemo(
-    () =>
-      Array.from(
-        new Set((clipsQuery.data?.items ?? []).flatMap((item) => item.tags).filter(Boolean)),
-      ).slice(0, 10),
-    [clipsQuery.data?.items],
-  );
+  const remainingTagOptions = useMemo(() => {
+    const selectedTag = queryState.tags[0]?.trim().toLowerCase();
+    const featured = new Set(FEATURED_TAGS.map((tag) => tag.toLowerCase()));
+    const allTags = Array.from(
+      new Set((clipsQuery.data?.items ?? []).flatMap((item) => item.tags).filter(Boolean)),
+    );
+    const filtered = allTags.filter((tag) => !featured.has(tag.toLowerCase()));
+    if (selectedTag && !featured.has(selectedTag) && !filtered.some((tag) => tag.toLowerCase() === selectedTag)) {
+      filtered.unshift(queryState.tags[0]);
+    }
+    return filtered.slice(0, 24);
+  }, [clipsQuery.data?.items, queryState.tags]);
 
   useEffect(() => {
     applyTelegramTheme();
@@ -78,17 +96,18 @@ export function BrowsePage() {
 
       <RecentSearches items={recent} onPick={setSearchValue} />
       <FilterBar
-        items={clipsQuery.data?.categories ?? []}
-        value={queryState.category}
-        onChange={(value) => updateState({ category: value })}
-        variant="category"
+        items={FEATURED_TAGS}
+        value={queryState.tags[0] ?? ''}
+        onChange={(value) => updateState({ tags: value ? [value] : [], category: '' })}
+        variant="tag"
       />
-      {tagOptions.length > 0 && (
+      {remainingTagOptions.length > 0 && (
         <FilterBar
-          items={tagOptions}
+          items={remainingTagOptions}
           value={queryState.tags[0] ?? ''}
-          onChange={(value) => updateState({ tags: value ? [value] : [] })}
+          onChange={(value) => updateState({ tags: value ? [value] : [], category: '' })}
           variant="tag"
+          includeAll={false}
         />
       )}
       {resultsLabel && <p className="results-summary">{resultsLabel}</p>}
