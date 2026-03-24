@@ -30,7 +30,7 @@ export function BrowsePage() {
   const clipDetailQuery = useClipDetail(clipId);
   const remainingTagOptions = useMemo(() => {
     const featured = new Set(FEATURED_TAGS.map((tag) => tag.toLowerCase()));
-    const excluded = new Set(['and', 'in']);
+    const excluded = new Set(['and', 'in', 'made', 'bar']);
     const tagCounts = new Map<string, { tag: string; count: number }>();
 
     for (const item of clipsQuery.data?.items ?? []) {
