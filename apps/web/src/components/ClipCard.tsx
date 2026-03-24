@@ -42,7 +42,6 @@ export function ClipCard({ clip }: { clip: ClipItem }) {
       </div>
       <div className="clip-card__body">
         <div className="clip-card__eyebrow">
-          <span>{clip.category || 'Library'}</span>
           <span>{formatDuration(clip.durationLabel, clip.durationSeconds)}</span>
         </div>
         <h3>{clip.title}</h3>
