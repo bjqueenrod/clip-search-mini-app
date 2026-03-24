@@ -414,7 +414,7 @@ button {
 }
 
 .clip-card h3 {
-  text-wrap: balance;
+  text-wrap: wrap;
 }
 
 .clip-card p,
@@ -426,7 +426,7 @@ button {
 
 .clip-card p {
   margin-bottom: 14px;
-  text-wrap: pretty;
+  text-wrap: wrap;
 }
 
 .clip-card__footer {
