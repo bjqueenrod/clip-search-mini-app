@@ -121,7 +121,7 @@ export function BrowsePage() {
 
       {session.error && <ErrorState message={session.error} />}
       {clipsQuery.isError && <ErrorState message={(clipsQuery.error as Error).message} />}
-      {clipsQuery.isLoading && (
+      {!clipsQuery.data && clipsQuery.isLoading && (
         <div className="clip-grid">
           <SkeletonCard />
           <SkeletonCard />

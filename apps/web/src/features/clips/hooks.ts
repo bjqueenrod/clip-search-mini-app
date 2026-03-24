@@ -8,6 +8,7 @@ export function useClipSearch(queryState: ClipQueryState) {
   return useQuery({
     queryKey: ['clips', normalized],
     queryFn: () => fetchClips(normalized),
+    placeholderData: (previousData) => previousData,
   });
 }
 
