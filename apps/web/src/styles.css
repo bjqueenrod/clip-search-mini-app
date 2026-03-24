@@ -220,6 +220,14 @@ button {
   background: linear-gradient(180deg, rgba(33, 27, 39, 0.96), rgba(24, 19, 30, 0.98));
 }
 
+.top-sellers__eyebrow {
+  display: flex;
+  justify-content: flex-end;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
 .top-sellers__body h3 {
   margin: 0;
   font-size: 1rem;

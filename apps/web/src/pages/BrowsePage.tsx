@@ -180,7 +180,6 @@ export function BrowsePage() {
       </section>
       {resultsLabel && <p className="results-summary">{resultsLabel}</p>}
 
-      {session.error && <ErrorState message={session.error} />}
       {clipsQuery.isError && <ErrorState message={(clipsQuery.error as Error).message} />}
       {!clipsQuery.data && clipsQuery.isLoading && (
         <div className="clip-grid">

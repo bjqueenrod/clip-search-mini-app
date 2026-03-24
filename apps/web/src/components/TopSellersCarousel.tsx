@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ClipItem } from '../features/clips/types';
-import { formatPrice } from '../utils/format';
+import { formatDuration, formatPrice } from '../utils/format';
 
 export function TopSellersCarousel({ items }: { items: ClipItem[] }) {
   const location = useLocation();
@@ -25,6 +25,9 @@ export function TopSellersCarousel({ items }: { items: ClipItem[] }) {
               )}
             </div>
             <div className="top-sellers__body">
+              <div className="top-sellers__eyebrow">
+                <span>{formatDuration(clip.durationLabel, clip.durationSeconds)}</span>
+              </div>
               <h3>{clip.title}</h3>
               <p>{clip.shortDescription || clip.description || 'Preview this clip in Telegram.'}</p>
               <div className="top-sellers__prices">
