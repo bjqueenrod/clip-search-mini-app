@@ -125,7 +125,7 @@ button {
 .toolbar {
   display: grid;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 }
 
 .toolbar__search {
