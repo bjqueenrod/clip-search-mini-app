@@ -112,6 +112,14 @@ button {
   margin-bottom: 12px;
 }
 
+.toolbar__eyebrow {
+  margin: 0;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+}
+
 .top-sellers {
   margin: 4px 0 18px;
 }
