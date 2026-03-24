@@ -144,10 +144,16 @@ button {
 
 .top-sellers {
   margin: 4px 0 18px;
+  padding: 14px;
+  border: 1px solid rgba(176, 106, 214, 0.12);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(176, 106, 214, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(31, 25, 36, 0.54), rgba(24, 19, 30, 0.62));
 }
 
 .top-sellers__header {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .top-sellers__header .hero__eyebrow {
