@@ -374,7 +374,7 @@ button {
 
 .clip-card__media,
 .skeleton-card {
-  aspect-ratio: 16 / 9;
+  height: clamp(190px, 24vw, 250px);
   background-size: cover;
   background-position: center;
   position: relative;
