@@ -201,7 +201,7 @@ export function BrowsePage() {
       </section>
 
       {newClipsQuery.data?.items?.length ? (
-        <TopSellersCarousel items={newClipsQuery.data.items} title="New Clips" />
+        <TopSellersCarousel items={newClipsQuery.data.items} title="🆕 New Clips" />
       ) : null}
       {topSellersQuery.data?.items?.length ? <TopSellersCarousel items={topSellersQuery.data.items} /> : null}
 

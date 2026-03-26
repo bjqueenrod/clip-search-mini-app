@@ -4,7 +4,7 @@ import { formatDuration, formatPrice } from '../utils/format';
 
 export function TopSellersCarousel({
   items,
-  title = 'Top Sellers',
+  title = '⭐ Top Sellers',
 }: {
   items: ClipItem[];
   title?: string;
