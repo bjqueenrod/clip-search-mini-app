@@ -22,6 +22,7 @@ export function BrowsePage() {
   const { clipId } = useParams();
   const session = useTelegramSession();
   const [searchValue, setSearchValue] = useState(readQueryState(searchParams).q);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const queryState = useMemo(() => readQueryState(searchParams), [searchParams]);
   const clipsQuery = useClipSearch(queryState);
   const newClipsQuery = useNewClips();
@@ -122,7 +123,26 @@ export function BrowsePage() {
     return () => window.clearTimeout(timer);
   }, [searchValue]);
 
-  const loadMore = () => setSearchParams(toSearchParams({ ...queryState, page: queryState.page + 1 }));
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node || !clipsQuery.data?.hasMore || clipsQuery.isFetching) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting) {
+          setSearchParams(toSearchParams({ ...queryState, page: queryState.page + 1 }));
+        }
+      },
+      { rootMargin: '220px 0px' },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [clipsQuery.data?.hasMore, clipsQuery.isFetching, queryState, setSearchParams]);
+
   const updateState = (patch: Partial<typeof queryState>) => setSearchParams(toSearchParams({ ...queryState, ...patch, page: 1 }));
   const updateFeaturedTag = (value: string) => {
     const tags = [value, selectedSecondaryTag].filter(Boolean);
@@ -193,9 +213,9 @@ export function BrowsePage() {
       {clipsQuery.data && clipsQuery.data.items.length === 0 && <EmptyState />}
 
       {clipsQuery.data?.hasMore && (
-        <button className="load-more" type="button" onClick={loadMore}>
-          Load more
-        </button>
+        <div ref={loadMoreRef} className="load-more load-more--passive">
+          {clipsQuery.isFetching ? 'Loading more...' : ''}
+        </div>
       )}
 
       {clipId && (

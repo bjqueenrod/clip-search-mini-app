@@ -497,6 +497,18 @@ button {
   margin-top: 16px;
 }
 
+.load-more--passive {
+  display: flex;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  cursor: default;
+}
+
 .detail-sheet__backdrop {
   position: fixed;
   inset: 0;
