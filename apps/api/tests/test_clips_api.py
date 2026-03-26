@@ -34,6 +34,14 @@ def test_list_clips_filters_inactive_and_returns_preview(client) -> None:
 
 
 
+def test_custom_thumbnail_url_overrides_bunny_thumbnail(client) -> None:
+    response = client.get("/api/clips/BJQ0001")
+    assert response.status_code == 200
+    item = response.json()
+    assert item["thumbnailUrl"] == "https://images.example/custom-1.jpg"
+    assert item["previewWebpUrl"] == "https://cdn.example/preview-1/preview.webp"
+
+
 def test_search_and_category_filter(client) -> None:
     response = client.get("/api/clips", params={"q": "countdown", "category": "joi"})
     assert response.status_code == 200

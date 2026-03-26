@@ -116,6 +116,9 @@ def _row_to_item(row: Any) -> dict[str, Any]:
     clip_id = str(data.get("clip_id") or data.get("id") or "")
     tags = parse_tags(data.get("keywords"), data.get("hashtags"))
     preview = build_preview_assets(data.get("bunny_stream_preview_id"))
+    custom_thumbnail_url = (
+        str(data.get("thumbnail_url") or data.get("custom_thumbnail_url") or "").strip() or None
+    )
     description = str(data.get("description") or "").strip() or None
     base_price = _price_from_cents(data.get("price_cents"))
     stream_price = _price_from_cents(data.get("watch_price_cents")) or base_price
@@ -130,7 +133,7 @@ def _row_to_item(row: Any) -> dict[str, Any]:
         "downloadPrice": download_price,
         "durationSeconds": parse_duration_seconds(data.get("duration")),
         "durationLabel": format_duration_label(data.get("duration")),
-        "thumbnailUrl": preview.get("thumbnailUrl"),
+        "thumbnailUrl": custom_thumbnail_url or preview.get("thumbnailUrl"),
         "previewWebpUrl": preview.get("previewWebpUrl"),
         "previewEmbedUrl": preview.get("previewEmbedUrl"),
         "previewType": preview.get("previewType"),
