@@ -166,7 +166,7 @@ export function BrowsePage() {
       <section className="hero">
         <div className="hero__brand">
           <img className="hero__avatar" src="/mistress.jpg" alt="Mistress BJQueen" />
-          <h1>FEMDOM CLIP LIBRARY</h1>
+          <h1>CLIP STORE</h1>
         </div>
       </section>
 
