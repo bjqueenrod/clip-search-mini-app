@@ -196,9 +196,8 @@ export function BrowsePage() {
         <div className="hero__brand">
           <img className="hero__avatar" src="/mistress.jpg" alt="Mistress BJQueen" />
           <h1>
-            MISTRESS BJQUEEN
-            <br />
-            CLIP STORE
+            <span className="hero__title-line">MISTRESS BJQUEEN</span>
+            <span className="hero__title-line hero__title-line--secondary">CLIP STORE</span>
           </h1>
         </div>
       </section>

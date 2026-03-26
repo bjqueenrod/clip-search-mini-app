@@ -117,6 +117,15 @@ button {
   white-space: nowrap;
 }
 
+.hero__title-line {
+  display: block;
+}
+
+.hero__title-line--secondary {
+  font-size: 1.16em;
+  letter-spacing: 0.01em;
+}
+
 .hero p {
   margin: 0;
   color: var(--muted);
