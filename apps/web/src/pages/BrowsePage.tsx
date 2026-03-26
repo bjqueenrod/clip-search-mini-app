@@ -89,24 +89,17 @@ export function BrowsePage() {
 
   useEffect(() => {
     const normalize = (value: string) => value.trim().toLowerCase();
-    const mergeSelectedFirst = (items: string[]) => {
+    const dedupe = (items: string[]) => {
       const deduped: string[] = [];
       const seen = new Set<string>();
-      const push = (value: string) => {
+      for (const value of items) {
         const tag = value.trim();
         const normalized = normalize(tag);
         if (!tag || seen.has(normalized) || featuredTagSet.has(normalized)) {
-          return;
+          continue;
         }
         seen.add(normalized);
         deduped.push(tag);
-      };
-
-      if (selectedSecondaryTag) {
-        push(selectedSecondaryTag);
-      }
-      for (const item of items) {
-        push(item);
       }
       return deduped.slice(0, 30);
     };
@@ -115,13 +108,19 @@ export function BrowsePage() {
     lastSecondaryContextRef.current = secondaryTagContextKey;
 
     if (contextChanged || !selectedSecondaryTag) {
-      setSecondaryTagOptions(mergeSelectedFirst(computedSecondaryTagOptions));
+      setSecondaryTagOptions(dedupe(computedSecondaryTagOptions));
       return;
     }
 
-    setSecondaryTagOptions((current) =>
-      mergeSelectedFirst(current.length ? current : computedSecondaryTagOptions),
-    );
+    setSecondaryTagOptions((current) => {
+      const currentByTag = new Map(current.map((tag) => [normalize(tag), tag]));
+      const nextByTag = new Map(computedSecondaryTagOptions.map((tag) => [normalize(tag), tag]));
+      const stable = current
+        .filter((tag) => nextByTag.has(normalize(tag)))
+        .map((tag) => nextByTag.get(normalize(tag)) ?? currentByTag.get(normalize(tag)) ?? tag);
+      const additions = computedSecondaryTagOptions.filter((tag) => !currentByTag.has(normalize(tag)));
+      return dedupe([...stable, ...additions]);
+    });
   }, [computedSecondaryTagOptions, featuredTagSet, secondaryTagContextKey, selectedSecondaryTag]);
 
   useEffect(() => {
