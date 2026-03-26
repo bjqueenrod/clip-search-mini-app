@@ -9,13 +9,12 @@ import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { SkeletonCard } from '../components/SkeletonCard';
-import { RecentSearches } from '../components/RecentSearches';
 import { TopSellersCarousel } from '../components/TopSellersCarousel';
 import { applyTelegramTheme } from '../app/telegram';
 import { useTelegramSession } from '../features/auth/hooks';
 import { useClipDetail, useClipSearch, useTopSellers } from '../features/clips/hooks';
 import { readQueryState, toSearchParams } from '../features/clips/queryState';
-import { pushRecentSearch, readRecentSearches } from '../utils/storage';
+import { pushRecentSearch } from '../utils/storage';
 import { FEATURED_TAGS } from '../utils/tags';
 
 export function BrowsePage() {
@@ -23,7 +22,6 @@ export function BrowsePage() {
   const { clipId } = useParams();
   const session = useTelegramSession();
   const [searchValue, setSearchValue] = useState(readQueryState(searchParams).q);
-  const [recent, setRecent] = useState<string[]>(() => readRecentSearches());
   const queryState = useMemo(() => readQueryState(searchParams), [searchParams]);
   const clipsQuery = useClipSearch(queryState);
   const topSellersQuery = useTopSellers();
@@ -117,7 +115,7 @@ export function BrowsePage() {
       const next = { ...queryState, q: searchValue, page: 1 };
       setSearchParams(toSearchParams(next));
       if (searchValue.trim()) {
-        setRecent(pushRecentSearch(searchValue));
+        pushRecentSearch(searchValue);
       }
     }, 250);
     return () => window.clearTimeout(timer);
@@ -161,7 +159,6 @@ export function BrowsePage() {
           </div>
         </section>
 
-        <RecentSearches items={recent} onPick={setSearchValue} />
         <FilterBar
           items={FEATURED_TAGS}
           value={selectedFeaturedTag}
