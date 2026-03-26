@@ -526,9 +526,14 @@ button {
 }
 
 .detail-sheet__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(24, 19, 30, 0.98), rgba(24, 19, 30, 0.94));
+  backdrop-filter: blur(10px);
 }
 
 .detail-sheet__back {
