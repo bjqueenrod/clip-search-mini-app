@@ -284,9 +284,10 @@ export function BrowsePage() {
             )}
           </>
         )}
+
+        {!showResultsLoading && clipsQuery.data && <p className="results-summary results-summary--inside">{resultsCountLabel}</p>}
       </section>
 
-      {!showResultsLoading && clipsQuery.data && <p className="results-summary">{resultsCountLabel}</p>}
       {clipsQuery.isError && <ErrorState message={(clipsQuery.error as Error).message} />}
       {showResultsLoading && (
         <div className="results-loading" aria-live="polite" aria-busy="true">
