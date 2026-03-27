@@ -111,6 +111,10 @@ export function BrowsePage() {
     const contextChanged = lastSecondaryContextRef.current !== secondaryTagContextKey;
     lastSecondaryContextRef.current = secondaryTagContextKey;
 
+    if (selectedSecondaryTag && computedSecondaryTagOptions.length === 0) {
+      return;
+    }
+
     if (contextChanged || !selectedSecondaryTag) {
       setSecondaryTagOptions(dedupe(computedSecondaryTagOptions));
       return;
