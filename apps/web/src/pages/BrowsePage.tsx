@@ -15,13 +15,16 @@ import { useClipDetail, useClipSearch, useNewClips, useTopSellers } from '../fea
 import { readQueryState, toSearchParams } from '../features/clips/queryState';
 import { ClipItem } from '../features/clips/types';
 import { pushRecentSearch } from '../utils/storage';
-import { extractHashtagTokens, FEATURED_TAGS, setHashtagToken, stripHashtagTokens } from '../utils/tags';
+import { composeSearchText, extractHashtagTokens, FEATURED_TAGS, setHashtagToken, stripHashtagTokens } from '../utils/tags';
 
 export function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { clipId } = useParams();
   const session = useTelegramSession();
-  const [searchValue, setSearchValue] = useState(readQueryState(searchParams).q);
+  const [searchValue, setSearchValue] = useState(() => {
+    const initialQueryState = readQueryState(searchParams);
+    return composeSearchText(initialQueryState.q, initialQueryState.tags);
+  });
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [page, setPage] = useState(1);
   const [visibleClips, setVisibleClips] = useState<ClipItem[]>([]);
@@ -89,8 +92,8 @@ export function BrowsePage() {
   }, [queryIdentity]);
 
   useEffect(() => {
-    setSearchValue(queryState.q);
-  }, [queryState.q]);
+    setSearchValue(composeSearchText(queryState.q, queryState.tags));
+  }, [queryState.q, queryState.tags]);
 
   useEffect(() => {
     const normalize = (value: string) => value.trim().toLowerCase();
@@ -136,7 +139,7 @@ export function BrowsePage() {
     const timer = window.setTimeout(() => {
       const next = {
         ...queryState,
-        q: searchValue,
+        q: stripHashtagTokens(searchValue),
         tags: extractHashtagTokens(searchValue),
         page: 1,
       };

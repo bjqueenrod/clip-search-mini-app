@@ -39,6 +39,14 @@ export function stripHashtagTokens(text: string): string {
     .trim();
 }
 
+export function composeSearchText(text: string, tags: string[]): string {
+  const baseText = text.trim();
+  const tokenText = Array.from(new Set(tags.map((tag) => normalizeTag(tag)).filter(Boolean)))
+    .map((tag) => `#${tag}`)
+    .join(' ');
+  return [baseText, tokenText].filter(Boolean).join(baseText && tokenText ? ' ' : '').trim();
+}
+
 export function setHashtagToken(text: string, tag: string, enabled: boolean): string {
   const normalizedTag = normalizeTag(tag);
   const tokens = extractHashtagTokens(text).filter((token) => token !== normalizedTag);
