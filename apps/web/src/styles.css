@@ -375,7 +375,7 @@ button {
   min-height: 240px;
   display: grid;
   place-items: center;
-  gap: 1px;
+  gap: 0;
   color: var(--muted);
   text-align: center;
 }
@@ -391,6 +391,7 @@ button {
 
 .results-loading span:last-child {
   line-height: 1;
+  margin-top: -2px;
 }
 
 @keyframes results-spin {
