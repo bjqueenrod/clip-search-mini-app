@@ -310,6 +310,13 @@ button {
   overflow-x: auto;
   padding-bottom: 8px;
   margin-bottom: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.filter-bar::-webkit-scrollbar,
+.recent-searches::-webkit-scrollbar {
+  display: none;
 }
 
 .results-summary {
