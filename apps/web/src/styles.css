@@ -531,13 +531,13 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 8px 12px 0;
+  padding: 0 12px 0;
 }
 
 .detail-sheet {
   width: min(720px, 100%);
-  height: min(94dvh, calc(100dvh - 8px));
-  max-height: 94vh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow: auto;
   background: var(--surface-strong);
   border: 1px solid var(--line);
