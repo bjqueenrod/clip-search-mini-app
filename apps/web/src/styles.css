@@ -451,6 +451,10 @@ button {
   font-size: 0.8rem;
 }
 
+.clip-card__eyebrow {
+  justify-content: flex-end;
+}
+
 .clip-card h3,
 .detail-sheet h2 {
   margin: 10px 0 8px;
