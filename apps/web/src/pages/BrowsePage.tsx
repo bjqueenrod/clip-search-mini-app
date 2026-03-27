@@ -243,7 +243,9 @@ export function BrowsePage() {
       ) : null}
 
       <div ref={searchPanelSentinelRef} className="search-panel__sentinel" aria-hidden="true" />
-      <section className={`search-panel${isSearchPinned ? ' search-panel--pinned' : ''}`}>
+      <section
+        className={`search-panel${isSearchPinned ? ' search-panel--pinned' : ''}${isSearchPinned && !filtersExpanded ? ' search-panel--collapsed' : ''}`}
+      >
         <section className="toolbar">
           <div className="toolbar__search">
             <p className="toolbar__eyebrow">🔎 Search Clips</p>
@@ -255,7 +257,7 @@ export function BrowsePage() {
                 onClick={() => setFiltersExpanded((current) => !current)}
                 aria-expanded={filtersExpanded}
               >
-                {filtersExpanded ? 'Hide hashtags' : 'Show hashtags'}
+                {filtersExpanded ? '▴ Hide hashtags' : '▾ Show hashtags'}
               </button>
             )}
           </div>

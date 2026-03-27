@@ -133,6 +133,10 @@ button {
   margin-bottom: 14px;
 }
 
+.search-panel--collapsed .toolbar {
+  margin-bottom: 2px;
+}
+
 .search-panel .search-bar,
 .search-panel .search-bar input {
   width: 100%;
