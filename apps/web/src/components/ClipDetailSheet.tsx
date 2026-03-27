@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ClipItem } from '../features/clips/types';
 import { formatDuration, formatPrice } from '../utils/format';
@@ -11,6 +12,34 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
     params.set('q', `#${tag}`);
     return `/?${params.toString()}`;
   };
+
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    const { body } = document;
+    const root = document.documentElement;
+    const previousBody = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+    };
+    const previousRootOverflow = root.style.overflow;
+
+    root.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
+
+    return () => {
+      root.style.overflow = previousRootOverflow;
+      body.style.overflow = previousBody.overflow;
+      body.style.position = previousBody.position;
+      body.style.top = previousBody.top;
+      body.style.width = previousBody.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
 
   return (
     <div className="detail-sheet__backdrop">
