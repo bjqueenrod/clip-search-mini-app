@@ -248,18 +248,20 @@ export function BrowsePage() {
       >
         <section className="toolbar">
           <div className="toolbar__search">
-            <p className="toolbar__eyebrow">🔎 Search Clips</p>
+            <div className="toolbar__header">
+              <p className="toolbar__eyebrow">🔎 Search Clips</p>
+              {isSearchPinned && (
+                <button
+                  className="search-panel__toggle"
+                  type="button"
+                  onClick={() => setFiltersExpanded((current) => !current)}
+                  aria-expanded={filtersExpanded}
+                >
+                  {filtersExpanded ? '▴ Hide hashtags' : '▾ Show hashtags'}
+                </button>
+              )}
+            </div>
             <SearchBar value={searchValue} onChange={setSearchValue} />
-            {isSearchPinned && (
-              <button
-                className="search-panel__toggle"
-                type="button"
-                onClick={() => setFiltersExpanded((current) => !current)}
-                aria-expanded={filtersExpanded}
-              >
-                {filtersExpanded ? '▴ Hide hashtags' : '▾ Show hashtags'}
-              </button>
-            )}
           </div>
         </section>
 

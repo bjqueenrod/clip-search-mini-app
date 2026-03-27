@@ -152,8 +152,15 @@ button {
   align-content: start;
 }
 
+.toolbar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .search-panel__toggle {
-  justify-self: start;
+  flex: 0 0 auto;
   border: 1px solid var(--line);
   background: rgba(44, 36, 52, 0.78);
   color: var(--muted);
