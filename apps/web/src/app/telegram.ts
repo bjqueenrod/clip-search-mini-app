@@ -7,6 +7,8 @@ declare global {
         ready?: () => void;
         expand?: () => void;
         close?: () => void;
+        openLink?: (url: string) => void;
+        openTelegramLink?: (url: string) => void;
         themeParams?: Record<string, string>;
         initData?: string;
         initDataUnsafe?: { user?: { id: number; username?: string; first_name?: string } };
@@ -55,4 +57,22 @@ export function applyTelegramTheme(): void {
   Object.entries(theme).forEach(([key, value]) => {
     root.style.setProperty(`--tg-${key}`, value);
   });
+}
+
+export function openBotDeepLink(url: string): void {
+  const webApp = window.Telegram?.WebApp;
+
+  if (webApp?.openTelegramLink) {
+    webApp.openTelegramLink(url);
+    window.setTimeout(() => webApp.close?.(), 50);
+    return;
+  }
+
+  if (webApp?.openLink) {
+    webApp.openLink(url);
+    window.setTimeout(() => webApp.close?.(), 50);
+    return;
+  }
+
+  window.open(url, '_blank', 'noopener,noreferrer');
 }

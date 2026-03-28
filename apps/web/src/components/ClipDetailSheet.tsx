@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { MouseEvent, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { openBotDeepLink } from '../app/telegram';
 import { ClipItem } from '../features/clips/types';
 import { formatDuration, formatPrice } from '../utils/format';
 import { PreviewPlayer } from './PreviewPlayer';
@@ -11,6 +12,10 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
     const params = new URLSearchParams();
     params.set('q', `#${tag}`);
     return `/?${params.toString()}`;
+  };
+  const handleBotAction = (url: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    openBotDeepLink(url);
   };
 
   useEffect(() => {
@@ -78,11 +83,23 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
               </div>
             </div>
             <div className="detail-sheet__actions">
-              <a href={clip.botStreamUrl} target="_blank" rel="noreferrer" className="detail-sheet__action detail-sheet__action--stream">
+              <a
+                href={clip.botStreamUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="detail-sheet__action detail-sheet__action--stream"
+                onClick={handleBotAction(clip.botStreamUrl)}
+              >
                 <strong>🎬 Stream in Bot</strong>
                 <span>{formatPrice(clip.streamPrice ?? clip.price)}</span>
               </a>
-              <a href={clip.botDownloadUrl} target="_blank" rel="noreferrer" className="detail-sheet__action detail-sheet__action--download">
+              <a
+                href={clip.botDownloadUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="detail-sheet__action detail-sheet__action--download"
+                onClick={handleBotAction(clip.botDownloadUrl)}
+              >
                 <strong>📥 Download in Bot</strong>
                 <span>{formatPrice(clip.downloadPrice ?? clip.price)}</span>
               </a>
