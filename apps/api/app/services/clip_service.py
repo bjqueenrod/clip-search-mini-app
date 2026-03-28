@@ -87,12 +87,22 @@ def _build_filters(params: ClipQueryParams, mapping):
 
     if params.q:
         needle = f"%{params.q.strip().lower()}%"
+        clip_id = func.lower(_coalesce_text(mapping.get("clip_id")).cast(String))
         title = func.lower(_coalesce_text(mapping.get("title")).cast(String))
         description = func.lower(_coalesce_text(mapping.get("description")).cast(String))
         category = func.lower(_coalesce_text(mapping.get("category")).cast(String))
         keywords = func.lower(_coalesce_text(mapping.get("keywords")).cast(String))
         hashtags = func.lower(_coalesce_text(mapping.get("hashtags")).cast(String))
-        filters.append(or_(title.like(needle), description.like(needle), category.like(needle), keywords.like(needle), hashtags.like(needle)))
+        filters.append(
+            or_(
+                clip_id.like(needle),
+                title.like(needle),
+                description.like(needle),
+                category.like(needle),
+                keywords.like(needle),
+                hashtags.like(needle),
+            )
+        )
 
     if params.category and mapping.get("category") is not None:
         filters.append(func.lower(mapping.get("category")) == params.category.strip().lower())

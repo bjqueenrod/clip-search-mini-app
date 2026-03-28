@@ -58,6 +58,14 @@ def test_search_and_category_filter(client) -> None:
     assert payload["items"][0]["id"] == "BJQ0002"
 
 
+def test_search_matches_clip_id(client) -> None:
+    response = client.get("/api/clips", params={"q": "bjq0001"})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total"] == 1
+    assert payload["items"][0]["id"] == "BJQ0001"
+
+
 
 def test_clip_detail_returns_bot_links_and_hides_paid_urls(client) -> None:
     response = client.get("/api/clips/BJQ0001")
