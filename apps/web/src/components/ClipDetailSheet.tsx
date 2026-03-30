@@ -76,6 +76,7 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
                   <Link
                     key={tag}
                     to={tagHref(tag)}
+                    state={{ pinSearchPanel: true }}
                   >
                     #{tag}
                   </Link>

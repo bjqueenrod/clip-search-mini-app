@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { SearchBar } from '../components/SearchBar';
 import { FilterBar } from '../components/FilterBar';
@@ -18,6 +18,8 @@ import { pushRecentSearch } from '../utils/storage';
 import { composeSearchText, extractHashtagTokens, FEATURED_TAGS, setHashtagToken, stripHashtagTokens } from '../utils/tags';
 
 export function BrowsePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { clipId } = useParams();
   const session = useTelegramSession();
@@ -211,6 +213,24 @@ export function BrowsePage() {
   useEffect(() => {
     setFiltersExpanded(!isSearchPinned);
   }, [isSearchPinned]);
+
+  useEffect(() => {
+    const state = location.state as { pinSearchPanel?: boolean } | null;
+    if (clipId || !state?.pinSearchPanel) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const sentinel = searchPanelSentinelRef.current;
+      const targetTop = sentinel
+        ? Math.max(0, sentinel.getBoundingClientRect().top + window.scrollY + 1)
+        : 0;
+      window.scrollTo({ top: targetTop, behavior: 'auto' });
+      navigate(`${location.pathname}${location.search}`, { replace: true });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [clipId, location.pathname, location.search, location.state, navigate]);
 
   const replaceRowTag = (current: string, selectedTag: string, nextTag: string) => {
     const withoutSelected = selectedTag ? setHashtagToken(current, selectedTag, false) : current;
