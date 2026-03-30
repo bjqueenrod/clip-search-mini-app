@@ -1,4 +1,4 @@
-import { retrieveLaunchParams } from '@tma.js/sdk';
+import { openLink, openTelegramLink, retrieveLaunchParams } from '@tma.js/sdk';
 
 declare global {
   interface Window {
@@ -62,17 +62,24 @@ export function applyTelegramTheme(): void {
 export function openBotDeepLink(url: string): void {
   const webApp = window.Telegram?.WebApp;
 
-  if (webApp?.openTelegramLink) {
-    webApp.openTelegramLink(url);
-    window.setTimeout(() => webApp.close?.(), 50);
+  try {
+    openTelegramLink(url);
     return;
+  } catch {
+    if (webApp?.openTelegramLink) {
+      webApp.openTelegramLink(url);
+      return;
+    }
+
+    if (webApp?.openLink) {
+      webApp.openLink(url);
+      return;
+    }
   }
 
-  if (webApp?.openLink) {
-    webApp.openLink(url);
-    window.setTimeout(() => webApp.close?.(), 50);
-    return;
+  try {
+    openLink(url);
+  } catch {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
-
-  window.open(url, '_blank', 'noopener,noreferrer');
 }
