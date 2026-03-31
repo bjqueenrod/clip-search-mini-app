@@ -1,20 +1,9 @@
 import { MouseEvent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { openBotDeepLink } from '../app/telegram';
+import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
 import { formatPrice } from '../utils/format';
-
-function durationLabel(tier?: TierItem): string {
-  if (!tier?.durationDays) return 'Custom duration';
-  return tier.durationDays === 1 ? '1 day' : `${tier.durationDays} days`;
-}
-
-function tasksLabel(tier?: TierItem): string {
-  if (!tier) return 'Custom pace';
-  if (tier.isUnlimitedTasks) return 'Unlimited tasks per day';
-  if (!tier.tasksPerDay) return 'Custom pace';
-  return tier.tasksPerDay === 1 ? '1 task per day' : `${tier.tasksPerDay} tasks per day`;
-}
 
 export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: boolean }) {
   const handleBotAction = (url?: string) => (event: MouseEvent<HTMLAnchorElement>) => {
@@ -61,7 +50,7 @@ export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: 
           <Link to="/tasks" className="detail-sheet__back">
             Back
           </Link>
-          <span>Task Package</span>
+          <span>Custom Obedience Package</span>
         </div>
         {loading && <div className="detail-sheet__loading">Loading package...</div>}
         {!loading && tier && (
@@ -69,18 +58,21 @@ export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: 
             <div className="detail-sheet__body detail-sheet__body--tier">
               <div className="detail-sheet__eyebrow">
                 <span>{tier.badge || 'Custom Obedience'}</span>
-                <span>{durationLabel(tier)}</span>
+                <span>{getTierDurationLabel(tier)}</span>
               </div>
               <h2>{tier.name}</h2>
-              <p>{tier.description || tier.shortDescription}</p>
+              <p>{getTierSummary(tier)}</p>
+              <p className="detail-sheet__supporting-copy">
+                Choose your package here, then continue in the bot for payment and personalised task delivery.
+              </p>
               <div className="tier-detail__facts">
                 <div className="tier-detail__fact">
                   <span className="tier-detail__label">Duration</span>
-                  <strong>{durationLabel(tier)}</strong>
+                  <strong>{getTierDurationLabel(tier)}</strong>
                 </div>
                 <div className="tier-detail__fact">
                   <span className="tier-detail__label">Pace</span>
-                  <strong>{tasksLabel(tier)}</strong>
+                  <strong>{getTierTasksLabel(tier)}</strong>
                 </div>
                 <div className="tier-detail__fact">
                   <span className="tier-detail__label">Product</span>
@@ -96,7 +88,7 @@ export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: 
                 className="detail-sheet__action detail-sheet__action--stream"
                 onClick={handleBotAction(tier.botBuyUrl)}
               >
-                <strong>🛒 Buy in Bot</strong>
+                <strong>Choose in Bot</strong>
                 <span>{tier.priceLabel || formatPrice(tier.price)}</span>
               </a>
             </div>

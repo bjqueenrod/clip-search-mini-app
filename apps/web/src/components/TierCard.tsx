@@ -1,32 +1,46 @@
+import { MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { openBotDeepLink } from '../app/telegram';
 import { TierItem } from '../features/tiers/types';
+import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
 import { formatPrice } from '../utils/format';
 import { toTierPath } from '../utils/links';
 
-function durationLabel(tier: TierItem): string {
-  if (!tier.durationDays) return 'Custom duration';
-  return tier.durationDays === 1 ? '1 day' : `${tier.durationDays} days`;
-}
+export function TierCard({ tier, guideLabel }: { tier: TierItem; guideLabel?: string }) {
+  const handleBotAction = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!tier.botBuyUrl) {
+      event.preventDefault();
+      return;
+    }
+    event.preventDefault();
+    openBotDeepLink(tier.botBuyUrl);
+  };
 
-function tasksLabel(tier: TierItem): string {
-  if (tier.isUnlimitedTasks) return 'Unlimited tasks';
-  if (!tier.tasksPerDay) return 'Custom pace';
-  return tier.tasksPerDay === 1 ? '1 task per day' : `${tier.tasksPerDay} tasks per day`;
-}
-
-export function TierCard({ tier }: { tier: TierItem }) {
   return (
-    <Link to={toTierPath(tier.id)} className="tier-card">
+    <article className="tier-card">
       <div className="tier-card__eyebrow">
-        <span className="tier-card__badge">{tier.badge || 'Package'}</span>
-        <span>{durationLabel(tier)}</span>
+        <div className="tier-card__tags">
+          {guideLabel ? <span className="tier-card__badge tier-card__badge--guide">{guideLabel}</span> : null}
+          {tier.badge ? <span className="tier-card__badge">{tier.badge}</span> : null}
+        </div>
+        <span>{getTierDurationLabel(tier)}</span>
       </div>
-      <h3>{tier.name}</h3>
-      <p>{tier.shortDescription || tier.description || 'A premium obedience package.'}</p>
+      <Link to={toTierPath(tier.id)} className="tier-card__content">
+        <h3>{tier.name}</h3>
+        <p>{getTierSummary(tier)}</p>
+      </Link>
       <div className="tier-card__facts">
-        <span>{tasksLabel(tier)}</span>
+        <span>{getTierTasksLabel(tier)}</span>
         <strong>{tier.priceLabel || formatPrice(tier.price)}</strong>
       </div>
-    </Link>
+      <div className="tier-card__actions">
+        <Link to={toTierPath(tier.id)} className="tier-card__link">
+          View package
+        </Link>
+        <a href={tier.botBuyUrl || '#'} className="tier-card__cta" onClick={handleBotAction}>
+          Choose in Bot
+        </a>
+      </div>
+    </article>
   );
 }
