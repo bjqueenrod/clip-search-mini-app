@@ -42,7 +42,7 @@ Telegram Mini App suite served from a single Railway service. The frontend is on
 - `GET /api/tiers/featured`
 - `GET /api/tiers/{id}`
 
-The task endpoints read from `premium_tiers`, with field mapping centralized in [`apps/api/app/services/tier_service.py`](/Users/guywatson/Projects/clip-search-mini-app/apps/api/app/services/tier_service.py) and [`apps/api/app/db/tier_mapping.py`](/Users/guywatson/Projects/clip-search-mini-app/apps/api/app/db/tier_mapping.py).
+The task endpoints read from `premium_tiers`, with field mapping centralized in [`apps/api/app/services/tier_service.py`](/Users/guywatson/Projects/clip-search-mini-app/apps/api/app/services/tier_service.py) and [`apps/api/app/db/tier_mapping.py`](/Users/guywatson/Projects/clip-search-mini-app/apps/api/app/db/tier_mapping.py). If a tier row does not store its own price, the API resolves the linked payment product by `product_id` or `payment_product_id` using `PAYMENT_SYSTEM_API_URL` and `PAYMENT_SYSTEM_API_TOKEN`.
 
 ## Environment
 
@@ -61,6 +61,9 @@ Copy [.env.example](/Users/guywatson/Projects/clip-search-mini-app/.env.example)
 | `CORS_ALLOWED_ORIGINS` | Yes | `http://localhost:5173,https://mini.example.com` | Comma-separated allowed origins. |
 | `BOT_USERNAME` | Yes | `mistressbjqueenbot` | Bot username used to build all bot handoff deep links. |
 | `FEATURED_TIER_PRODUCT_IDS` | No | `26,23,21` | Manual ordered list of featured `product_id` values for `/tasks`. Leave empty to hide the featured task carousel. |
+| `PAYMENT_SYSTEM_API_URL` | Tasks prices only | `https://payments.example.com` | Base URL for the payment-system API used to resolve package prices from `product_id`. |
+| `PAYMENT_SYSTEM_API_TOKEN` | Tasks prices only | `change-me` | Bearer token for the payment-system API. |
+| `PAYMENT_SYSTEM_TIMEOUT_SECONDS` | No | `4` | Timeout when resolving payment product prices. |
 | `BUNNY_STREAM_LIBRARY_ID` | Yes for `/clips` previews | `123456` | Bunny Stream library ID for clip previews. |
 | `BUNNY_STREAM_API_KEY` | Yes for `/clips` previews | `bunny-stream-api-key` | Backend-only Bunny metadata key. |
 | `BUNNY_STREAM_CDN_HOST` | Yes for `/clips` previews | `https://vz-yourpullzone.b-cdn.net` | Bunny CDN host used to build safe preview asset URLs. |

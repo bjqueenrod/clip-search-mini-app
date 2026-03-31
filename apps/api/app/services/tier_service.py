@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.db.session import engine
 from app.db.tier_mapping import TierFieldMapping, get_tier_mapping
+from app.services.payment_product_service import get_payment_product, list_payment_products
 from app.utils.bot_links import build_tier_buy_url
 
 settings = get_settings()
@@ -115,7 +116,31 @@ def _badge(data: dict[str, Any]) -> str | None:
     return _text(_first_value(data, 'badge', 'badge_label', 'badgeLabel', 'featured_badge'))
 
 
-def _row_to_item(row: Any) -> dict[str, Any]:
+def _payment_product_key(data: dict[str, Any]) -> str | None:
+    return _text(_first_value(data, 'payment_product_id', 'product_id', 'productId'))
+
+
+def _payment_product_map(rows: list[Any]) -> dict[str, dict[str, Any]]:
+    product_keys = {
+        key
+        for row in rows
+        for key in [_payment_product_key(dict(row._mapping))]
+        if key
+    }
+    if not product_keys:
+        return {}
+
+    products = list_payment_products(active_only=False)
+    mapped = {str(item.get('id')): item for item in products if item.get('id') is not None}
+    missing = [key for key in product_keys if key not in mapped]
+    for key in missing:
+        item = get_payment_product(key)
+        if item is not None and item.get('id') is not None:
+            mapped[str(item.get('id'))] = item
+    return mapped
+
+
+def _row_to_item(row: Any, products_by_id: dict[str, dict[str, Any]] | None = None) -> dict[str, Any]:
     data = dict(row._mapping)
     item_id = _text(_first_value(data, 'id', 'tier_id', 'product_id', 'payment_product_id', 'name')) or 'tier'
     name = _text(_first_value(data, 'name', 'title')) or item_id
@@ -125,6 +150,12 @@ def _row_to_item(row: Any) -> dict[str, Any]:
     duration_days = _duration_days(data)
     tasks_per_day = _tasks_per_day(data)
     price, price_label = _price_parts(data)
+    payment_product = (products_by_id or {}).get(_payment_product_key(data) or '')
+    payment_price, payment_price_label = _price_parts(payment_product or {})
+    if price is None:
+        price = payment_price
+    if not price_label:
+        price_label = payment_price_label
     return {
         'id': item_id,
         'name': name,
@@ -178,9 +209,10 @@ def list_tiers(db: Session) -> dict[str, Any]:
         order_col = mapping.get('sort_order')
     if order_col is None:
         order_col = mapping.get('display_order')
+    products_by_id = _payment_product_map(rows)
     items_with_order: list[tuple[dict[str, Any], int | None]] = []
     for row in rows:
-        item = _row_to_item(row)
+        item = _row_to_item(row, products_by_id)
         items_with_order.append((item, _int(row._mapping.get(order_col.name)) if order_col is not None else None))
 
     items = [item for item, order_value in sorted(items_with_order, key=lambda pair: _sort_key(pair[0], pair[1]))]

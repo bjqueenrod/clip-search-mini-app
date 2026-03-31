@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from app.db.session import engine
+
 
 def test_list_tiers_returns_active_tiers_in_expected_order(client) -> None:
     response = client.get('/api/tiers')
@@ -38,3 +40,48 @@ def test_tier_detail_uses_week_fallback_for_duration(client) -> None:
     assert item['durationDays'] == 28
     assert item['badge'] == 'Best Value'
     assert item['price'] == 89.99
+
+
+
+def test_list_tiers_enriches_price_from_payment_product(client, monkeypatch) -> None:
+    monkeypatch.setattr(
+        'app.services.tier_service.list_payment_products',
+        lambda active_only=False: [
+            {'id': 19, 'price_cents': 1999, 'active': True},
+            {'id': 21, 'price_cents': 2999, 'active': True},
+            {'id': 23, 'price_cents': 8999, 'active': True},
+            {'id': 26, 'price_cents': 4999, 'active': True},
+        ],
+    )
+    monkeypatch.setattr('app.services.tier_service.get_payment_product', lambda product_id: None)
+
+    response = client.get('/api/tiers')
+    assert response.status_code == 200
+    payload = response.json()
+    by_name = {item['name']: item for item in payload['items']}
+    assert by_name['Initiation']['price'] == 19.99
+    assert by_name['Training Week']['priceLabel'] == '$29.99'
+    assert by_name['Control Month']['priceLabel'] == '$89.99'
+
+
+def test_tier_detail_falls_back_to_single_product_lookup(client, monkeypatch) -> None:
+    with engine.begin() as conn:
+        conn.exec_driver_sql(
+            """
+            INSERT INTO premium_tiers (
+                id, name, short_description, product_id, duration_days, tasks_per_day, is_active
+            ) VALUES (6, 'Discipline Month', 'Thirty days of structure', 55, 30, 1, 1)
+            """
+        )
+
+    monkeypatch.setattr('app.services.tier_service.list_payment_products', lambda active_only=False: [])
+    monkeypatch.setattr(
+        'app.services.tier_service.get_payment_product',
+        lambda product_id: {'id': 55, 'price_cents': 3299, 'active': True} if str(product_id) == '55' else None,
+    )
+
+    response = client.get('/api/tiers/6')
+    assert response.status_code == 200
+    item = response.json()
+    assert item['price'] == 32.99
+    assert item['priceLabel'] == '$32.99'

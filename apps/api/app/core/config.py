@@ -28,6 +28,9 @@ class Settings(BaseSettings):
         default='281a5ee9-db7e-41a2-bce0-97e16a7fd7b9',
         alias='BUNNY_PREVIEW_COLLECTION_ID',
     )
+    payment_system_api_url: str = Field(default='', alias='PAYMENT_SYSTEM_API_URL')
+    payment_system_api_token: str = Field(default='', alias='PAYMENT_SYSTEM_API_TOKEN')
+    payment_system_timeout_seconds: float = Field(default=4.0, alias='PAYMENT_SYSTEM_TIMEOUT_SECONDS')
     bot_username: str = Field(default='mistressbjqueenbot', alias='BOT_USERNAME')
     featured_tier_product_ids_raw: str = Field(default='', alias='FEATURED_TIER_PRODUCT_IDS')
 
