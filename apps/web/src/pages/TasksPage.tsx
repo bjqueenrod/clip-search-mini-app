@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
+import { TierCarousel } from '../components/TierCarousel';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { TierDetailSheet } from '../components/TierDetailSheet';
-import { TierGrid } from '../components/TierGrid';
 import { applyTelegramTheme, openBotDeepLink } from '../app/telegram';
 import { useTelegramSession } from '../features/auth/hooks';
 import { useTierDetail, useTiers } from '../features/tiers/hooks';
@@ -83,6 +83,30 @@ const VISUAL_SPOTLIGHT_CARDS = [
     title: 'Soft to intense',
     body: 'Beginner-friendly options and heavier intensity can both live in the same system, depending on your level.',
     icon: 'signal',
+  },
+] as const;
+
+const SAMPLE_TASK_CARDS = [
+  {
+    eyebrow: 'Soft Start',
+    title: 'Wear, report, and check in',
+    body: 'Wear a chosen item for a set time, take a simple proof photo, and report how it affected your mindset.',
+    note: 'Good for beginners or lighter control play.',
+    icon: 'heart',
+  },
+  {
+    eyebrow: 'Toy-Based',
+    title: 'Use what you already own',
+    body: 'Complete a timed assignment using a toy from your own list, then send proof and wait for the next instruction.',
+    note: 'Built around your actual toy list, not assumptions.',
+    icon: 'toy',
+  },
+  {
+    eyebrow: 'Obedience',
+    title: 'Structured instructions with proof',
+    body: 'Follow a sequence of controlled steps, capture the required proof, and continue the flow inside the bot.',
+    note: 'Can be softer or more intense depending on your level.',
+    icon: 'scroll',
   },
 ] as const;
 
@@ -322,17 +346,27 @@ export function TasksPage() {
         ))}
       </section>
 
-      <section className="tasks-spotlight" aria-label="Highlights of the custom experience">
-        {VISUAL_SPOTLIGHT_CARDS.map((card) => (
-          <article key={card.title} className="tasks-spotlight-card">
-            <span className="tasks-spotlight-card__icon">
-              <TaskIcon name={card.icon} />
-            </span>
-            <p className="tasks-spotlight-card__eyebrow">{card.eyebrow}</p>
-            <strong>{card.title}</strong>
-            <p>{card.body}</p>
-          </article>
-        ))}
+      <section className="tasks-panel">
+        <div className="tasks-panel__header">
+          <p className="hero__eyebrow">Sample Tasks</p>
+          <h2>Examples of the kind of tasks you might receive.</h2>
+        </div>
+        <p className="tasks-panel__body-copy">
+          These are examples of tone and structure only. Your actual tasks are customised around your preferences, limits, toys, and intensity level.
+        </p>
+        <div className="tasks-spotlight" aria-label="Examples of custom task types">
+          {SAMPLE_TASK_CARDS.map((card) => (
+            <article key={card.title} className="tasks-spotlight-card">
+              <span className="tasks-spotlight-card__icon">
+                <TaskIcon name={card.icon} />
+              </span>
+              <p className="tasks-spotlight-card__eyebrow">{card.eyebrow}</p>
+              <strong>{card.title}</strong>
+              <p>{card.body}</p>
+              <span className="tasks-spotlight-card__note">{card.note}</span>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="tasks-panel">
@@ -364,23 +398,10 @@ export function TasksPage() {
           {tiersQuery.data && <span className="tasks-section__count">{tiersQuery.data.total} available</span>}
         </div>
 
-        {tiersQuery.isLoading && (
-          <div className="tier-grid" aria-hidden="true">
-            {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="tier-card tier-card--skeleton">
-                <span className="top-sellers__line top-sellers__line--small" />
-                <span className="top-sellers__line top-sellers__line--title" />
-                <span className="top-sellers__line top-sellers__line--title top-sellers__line--short" />
-                <span className="top-sellers__line top-sellers__line--body" />
-                <span className="top-sellers__line top-sellers__line--body top-sellers__line--short" />
-                <span className="top-sellers__line top-sellers__line--price" />
-              </div>
-            ))}
-          </div>
-        )}
-
         {tiersQuery.isError && <ErrorState message={(tiersQuery.error as Error).message} />}
-        {!tiersQuery.isLoading && tiersQuery.data && tiersQuery.data.items.length > 0 && <TierGrid items={tiersQuery.data.items} />}
+        {(tiersQuery.isLoading || (tiersQuery.data && tiersQuery.data.items.length > 0)) && (
+          <TierCarousel items={tiersQuery.data?.items ?? []} loading={tiersQuery.isLoading} />
+        )}
         {!tiersQuery.isLoading && tiersQuery.data && tiersQuery.data.items.length === 0 && (
           <EmptyState title="No packages available" message="Active custom obedience packages will appear here when they are ready." />
         )}

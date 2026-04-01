@@ -338,6 +338,19 @@ button {
   margin: -2px 0 26px;
 }
 
+.tasks-spotlight-card__note {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 106, 214, 0.16);
+  background: rgba(176, 106, 214, 0.08);
+  color: var(--text);
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
 .tasks-button {
   display: inline-flex;
   align-items: center;
@@ -640,6 +653,15 @@ button {
   background:
     radial-gradient(circle at top left, rgba(176, 106, 214, 0.10), transparent 36%),
     linear-gradient(180deg, rgba(28, 23, 33, 0.74), rgba(20, 16, 25, 0.78));
+}
+
+.tasks-section .top-sellers {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .top-sellers__header {

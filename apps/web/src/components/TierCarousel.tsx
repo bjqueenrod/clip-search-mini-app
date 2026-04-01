@@ -24,7 +24,7 @@ export function TierCarousel({
   loading = false,
 }: {
   items: TierItem[];
-  title: string;
+  title?: string;
   loading?: boolean;
 }) {
   if (!items.length && !loading) {
@@ -33,9 +33,11 @@ export function TierCarousel({
 
   return (
     <section className="top-sellers top-sellers--tiers">
-      <div className="top-sellers__header">
-        <p className="hero__eyebrow">{title}</p>
-      </div>
+      {title ? (
+        <div className="top-sellers__header">
+          <p className="hero__eyebrow">{title}</p>
+        </div>
+      ) : null}
       <div className="top-sellers__track">
         {loading
           ? Array.from({ length: 3 }, (_, index) => (
