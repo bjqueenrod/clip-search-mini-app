@@ -11,50 +11,178 @@ import { useTelegramSession } from '../features/auth/hooks';
 import { useTierDetail, useTiers } from '../features/tiers/hooks';
 import { getBotRootUrl } from '../features/tiers/presentation';
 
+type TaskIconName =
+  | 'wand'
+  | 'heart'
+  | 'clock'
+  | 'sparkles'
+  | 'package'
+  | 'sliders'
+  | 'scroll'
+  | 'chat'
+  | 'shield'
+  | 'toy'
+  | 'signal'
+  | 'help';
+
 const VALUE_POINTS = [
-  'Personalised to your kinks and toys',
-  'Reviewed personally by me',
-  'One task at a time',
-  'Beginner-friendly to intense',
-];
+  { label: 'Personalised to your kinks and toys', icon: 'wand' },
+  { label: 'Reviewed personally by me', icon: 'heart' },
+  { label: 'One task at a time', icon: 'clock' },
+  { label: 'Beginner-friendly to intense', icon: 'sparkles' },
+] as const;
 
 const HOW_IT_WORKS_STEPS = [
-  'Choose a package',
-  'Submit your preferences',
-  'Receive your personalised task',
-  'Send proof and continue in the bot',
-];
+  { label: 'Choose a package', icon: 'package' },
+  { label: 'Submit your preferences', icon: 'sliders' },
+  { label: 'Receive your personalised task', icon: 'scroll' },
+  { label: 'Send proof and continue in the bot', icon: 'chat' },
+] as const;
 
 const BUILT_AROUND_YOU_POINTS = [
-  'Your kinks',
-  'Your limits',
-  'Your toy list',
-  'Your experience level',
-  'Your preferred intensity',
-];
+  { label: 'Your kinks', icon: 'sparkles' },
+  { label: 'Your limits', icon: 'shield' },
+  { label: 'Your toy list', icon: 'toy' },
+  { label: 'Your experience level', icon: 'signal' },
+  { label: 'Your preferred intensity', icon: 'heart' },
+] as const;
 
 const FAQS = [
   {
     question: 'Do I need lots of toys?',
     answer: 'No. Tasks can be tailored to what you actually own.',
+    icon: 'toy',
   },
   {
     question: 'Can beginners buy?',
     answer: 'Yes. You can choose something softer, simpler, or more intense depending on your experience.',
+    icon: 'signal',
   },
   {
     question: 'Are the tasks always custom?',
     answer: 'Yes. They are built around your submitted preferences.',
+    icon: 'wand',
   },
   {
     question: 'What kind of proof is required?',
     answer: 'Proof depends on the task. You will be guided where needed.',
+    icon: 'shield',
   },
   {
     question: 'How do I pay?',
     answer: 'Choose your package here, then continue in the bot to complete payment.',
+    icon: 'help',
   },
-];
+] as const;
+
+function TaskIcon({ name }: { name: TaskIconName }) {
+  const commonProps = {
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+
+  switch (name) {
+    case 'wand':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M4 20L14.5 9.5" />
+          <path {...commonProps} d="M13 4l.7 1.8L15.5 6.5l-1.8.7L13 9l-.7-1.8L10.5 6.5l1.8-.7L13 4z" />
+          <path {...commonProps} d="M18 11l.5 1.2L19.7 13l-1.2.5L18 14.7l-.5-1.2L16.3 13l1.2-.8L18 11z" />
+        </svg>
+      );
+    case 'heart':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M12 20s-6.5-4.1-8.3-8.1C2.5 9.1 3.5 6 7 6c2 0 3.2 1 5 3 1.8-2 3-3 5-3 3.5 0 4.5 3.1 3.3 5.9C18.5 15.9 12 20 12 20z" />
+        </svg>
+      );
+    case 'clock':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle {...commonProps} cx="12" cy="12" r="8" />
+          <path {...commonProps} d="M12 8v4l2.5 2" />
+        </svg>
+      );
+    case 'sparkles':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M12 3l1.1 3.1L16 7.2l-2.9 1.1L12 11.4l-1.1-3.1L8 7.2l2.9-1.1L12 3z" />
+          <path {...commonProps} d="M18 12l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z" />
+          <path {...commonProps} d="M7 13l.9 2.6L10.5 17l-2.6.9L7 20.5l-.9-2.6L3.5 17l2.6-.9L7 13z" />
+        </svg>
+      );
+    case 'package':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M4 8.5L12 4l8 4.5v7L12 20l-8-4.5v-7z" />
+          <path {...commonProps} d="M4 8.5L12 13l8-4.5" />
+          <path {...commonProps} d="M12 13v7" />
+        </svg>
+      );
+    case 'sliders':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M6 5v14M18 5v14M12 5v14" />
+          <circle {...commonProps} cx="6" cy="9" r="2" />
+          <circle {...commonProps} cx="12" cy="15" r="2" />
+          <circle {...commonProps} cx="18" cy="10" r="2" />
+        </svg>
+      );
+    case 'scroll':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M8 5h8a3 3 0 010 6H9a3 3 0 100 6h7" />
+          <path {...commonProps} d="M8 5a3 3 0 100 6" />
+          <path {...commonProps} d="M9 11h7" />
+          <path {...commonProps} d="M9 15h5" />
+        </svg>
+      );
+    case 'chat':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M6 7h12a2 2 0 012 2v6a2 2 0 01-2 2h-6l-4 3v-3H6a2 2 0 01-2-2V9a2 2 0 012-2z" />
+          <path {...commonProps} d="M8.5 11.5h7" />
+          <path {...commonProps} d="M8.5 14.5h4.5" />
+        </svg>
+      );
+    case 'shield':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M12 4l6 2.5V11c0 4.2-2.3 6.9-6 9-3.7-2.1-6-4.8-6-9V6.5L12 4z" />
+          <path {...commonProps} d="M9.5 12l1.7 1.7 3.3-3.4" />
+        </svg>
+      );
+    case 'toy':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle {...commonProps} cx="8" cy="8" r="2.5" />
+          <circle {...commonProps} cx="16" cy="8" r="2.5" />
+          <path {...commonProps} d="M10.5 8h3" />
+          <path {...commonProps} d="M8 10.5V13a4 4 0 004 4 4 4 0 004-4v-2.5" />
+        </svg>
+      );
+    case 'signal':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path {...commonProps} d="M6 18V14" />
+          <path {...commonProps} d="M10 18V11" />
+          <path {...commonProps} d="M14 18V8" />
+          <path {...commonProps} d="M18 18V5" />
+        </svg>
+      );
+    case 'help':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle {...commonProps} cx="12" cy="12" r="8" />
+          <path {...commonProps} d="M9.5 9.5a2.5 2.5 0 114.2 1.8c-.7.7-1.7 1.2-1.7 2.7" />
+          <path {...commonProps} d="M12 16.5h0" />
+        </svg>
+      );
+  }
+}
 
 export function TasksPage() {
   const session = useTelegramSession();
@@ -111,8 +239,11 @@ export function TasksPage() {
 
       <section className="tasks-strip" aria-label="Why buyers choose custom obedience">
         {VALUE_POINTS.map((point) => (
-          <div key={point} className="tasks-chip">
-            {point}
+          <div key={point.label} className="tasks-chip">
+            <span className="tasks-chip__icon">
+              <TaskIcon name={point.icon} />
+            </span>
+            <span>{point.label}</span>
           </div>
         ))}
       </section>
@@ -124,9 +255,14 @@ export function TasksPage() {
         </div>
         <div className="tasks-steps">
           {HOW_IT_WORKS_STEPS.map((step, index) => (
-            <div key={step} className="tasks-step">
+            <div key={step.label} className="tasks-step">
               <span className="tasks-step__number">0{index + 1}</span>
-              <strong>{step}</strong>
+              <div className="tasks-step__content">
+                <span className="tasks-step__icon">
+                  <TaskIcon name={step.icon} />
+                </span>
+                <strong>{step.label}</strong>
+              </div>
             </div>
           ))}
         </div>
@@ -173,8 +309,11 @@ export function TasksPage() {
         </p>
         <div className="tasks-strip tasks-strip--personal">
           {BUILT_AROUND_YOU_POINTS.map((point) => (
-            <div key={point} className="tasks-chip tasks-chip--soft">
-              {point}
+            <div key={point.label} className="tasks-chip tasks-chip--soft">
+              <span className="tasks-chip__icon">
+                <TaskIcon name={point.icon} />
+              </span>
+              <span>{point.label}</span>
             </div>
           ))}
         </div>
@@ -188,7 +327,14 @@ export function TasksPage() {
         <div className="faq-list">
           {FAQS.map((item) => (
             <details key={item.question} className="faq-card">
-              <summary>{item.question}</summary>
+              <summary>
+                <span className="faq-card__summary">
+                  <span className="faq-card__icon">
+                    <TaskIcon name={item.icon} />
+                  </span>
+                  <span>{item.question}</span>
+                </span>
+              </summary>
               <p>{item.answer}</p>
             </details>
           ))}

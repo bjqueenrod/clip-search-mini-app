@@ -293,6 +293,9 @@ button {
 }
 
 .tasks-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   border: 1px solid rgba(176, 106, 214, 0.16);
   border-radius: 999px;
   padding: 10px 14px;
@@ -300,6 +303,31 @@ button {
   color: var(--text);
   font-size: 0.88rem;
   line-height: 1.2;
+}
+
+.tasks-chip__icon,
+.tasks-step__icon,
+.faq-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 106, 214, 0.2);
+  background: rgba(176, 106, 214, 0.1);
+  color: #ead8f7;
+  flex: 0 0 auto;
+}
+
+.tasks-chip__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.tasks-chip__icon svg,
+.tasks-step__icon svg,
+.faq-card__icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .tasks-chip--soft {
@@ -341,11 +369,24 @@ button {
 .tasks-step {
   display: grid;
   grid-template-columns: auto 1fr;
-  align-items: center;
+  align-items: start;
   gap: 12px;
   padding: 0;
   border: 0;
   background: transparent;
+}
+
+.tasks-step__content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.tasks-step__icon,
+.faq-card__icon {
+  width: 34px;
+  height: 34px;
 }
 
 .tasks-step strong {
@@ -1177,6 +1218,12 @@ button {
   cursor: pointer;
   padding: 14px 0;
   font-weight: 700;
+}
+
+.faq-card__summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .faq-card summary::-webkit-details-marker {
