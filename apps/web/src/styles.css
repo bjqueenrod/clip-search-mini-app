@@ -1446,11 +1446,15 @@ button {
   }
 
   .tasks-hero__visuals {
-    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
     align-items: stretch;
   }
 
-  .tasks-hero__mini-grid,
+  .tasks-hero__mini-grid {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
   .tasks-spotlight {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
