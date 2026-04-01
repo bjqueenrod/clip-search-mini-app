@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { getTierArtwork } from '../features/tiers/artwork';
+import { getTierGuideLabels } from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
 import { formatPrice } from '../utils/format';
 import { toTierPath } from '../utils/links';
@@ -31,6 +33,8 @@ export function TierCarousel({
     return null;
   }
 
+  const guideLabels = getTierGuideLabels(items);
+
   return (
     <section className="top-sellers top-sellers--tiers">
       {title ? (
@@ -61,15 +65,13 @@ export function TierCarousel({
           : items.map((tier) => (
               <Link key={tier.id} className="top-sellers__card" to={toTierPath(tier.id)}>
                 <div className="top-sellers__media top-sellers__media--tier">
-                  <div className="top-sellers__media-fallback top-sellers__media-fallback--tier">
-                    <span className="top-sellers__tier-badge">{tier.badge || 'Custom Obedience'}</span>
-                    <strong>{tasksLabel(tier)}</strong>
-                    <span>{durationLabel(tier)}</span>
-                  </div>
+                  <img src={getTierArtwork(tier)} alt={`${tier.name} package artwork`} loading="lazy" />
                 </div>
                 <div className="top-sellers__body">
                   <div className="top-sellers__eyebrow">
-                    <span className="top-sellers__id">{tier.productId ? `PID ${tier.productId}` : `Tier ${tier.id}`}</span>
+                    <span className="top-sellers__tier-badge top-sellers__tier-badge--inline">
+                      {guideLabels[tier.id] || tier.badge || 'Custom Obedience'}
+                    </span>
                     <span>{durationLabel(tier)}</span>
                   </div>
                   <h3>{tier.name}</h3>

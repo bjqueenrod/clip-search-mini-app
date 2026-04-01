@@ -732,6 +732,7 @@ button {
   height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center;
 }
 
 .top-sellers__media-fallback {
@@ -759,6 +760,13 @@ button {
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 0.75rem;
+}
+
+.top-sellers__tier-badge--inline {
+  max-width: 66%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .top-sellers__body {
