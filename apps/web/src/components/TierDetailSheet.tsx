@@ -1,6 +1,7 @@
 import { MouseEvent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { openBotDeepLink } from '../app/telegram';
+import { getTierArtwork } from '../features/tiers/artwork';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
 import { formatPrice } from '../utils/format';
@@ -56,15 +57,22 @@ export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: 
         {!loading && tier && (
           <>
             <div className="detail-sheet__body detail-sheet__body--tier">
-              <div className="detail-sheet__eyebrow">
-                <span>{tier.badge || 'Custom Obedience'}</span>
-                <span>{getTierDurationLabel(tier)}</span>
+              <div className="detail-sheet__tier-hero">
+                <div className="detail-sheet__tier-media">
+                  <img src={getTierArtwork(tier, tier.badge)} alt={`${tier.name} package artwork`} />
+                </div>
+                <div className="detail-sheet__tier-summary">
+                  <div className="detail-sheet__eyebrow">
+                    {tier.badge ? <span className="top-sellers__tier-badge top-sellers__tier-badge--inline">{tier.badge}</span> : <span />}
+                    <span>{getTierDurationLabel(tier)}</span>
+                  </div>
+                  <h2>{tier.name}</h2>
+                  <p>{getTierSummary(tier)}</p>
+                  <p className="detail-sheet__supporting-copy">
+                    Choose your package here, then continue in the bot for payment and personalised task delivery.
+                  </p>
+                </div>
               </div>
-              <h2>{tier.name}</h2>
-              <p>{getTierSummary(tier)}</p>
-              <p className="detail-sheet__supporting-copy">
-                Choose your package here, then continue in the bot for payment and personalised task delivery.
-              </p>
               <div className="tier-detail__facts">
                 <div className="tier-detail__fact">
                   <span className="tier-detail__label">Duration</span>
@@ -74,10 +82,12 @@ export function TierDetailSheet({ tier, loading }: { tier?: TierItem; loading?: 
                   <span className="tier-detail__label">Pace</span>
                   <strong>{getTierTasksLabel(tier)}</strong>
                 </div>
-                <div className="tier-detail__fact">
-                  <span className="tier-detail__label">Product</span>
-                  <strong>{tier.productId ? `Product ${tier.productId}` : `Tier ${tier.id}`}</strong>
-                </div>
+                {tier.priceLabel || tier.price ? (
+                  <div className="tier-detail__fact">
+                    <span className="tier-detail__label">Price</span>
+                    <strong>{tier.priceLabel || formatPrice(tier.price)}</strong>
+                  </div>
+                ) : null}
               </div>
             </div>
             <div className="detail-sheet__actions detail-sheet__actions--single">
