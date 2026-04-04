@@ -27,28 +27,13 @@ type TaskIconName =
   | 'help';
 
 const VALUE_POINTS = [
-  { label: 'Personalised to your kinks and toys', icon: 'wand' },
-  { label: 'Reviewed personally by me', icon: 'heart' },
+  { label: 'Tailored to you', icon: 'wand' },
+  { label: 'Reviewed personally', icon: 'heart' },
   { label: 'One task at a time', icon: 'clock' },
-  { label: 'Beginner-friendly to intense', icon: 'sparkles' },
+  { label: 'Beginner to intense', icon: 'sparkles' },
 ] as const;
 
-const HOW_IT_WORKS_STEPS = [
-  { label: 'Choose a package', icon: 'package' },
-  { label: 'Submit your preferences', icon: 'sliders' },
-  { label: 'Receive your personalised task', icon: 'scroll' },
-  { label: 'Send proof and continue in the bot', icon: 'chat' },
-] as const;
-
-const BUILT_AROUND_YOU_POINTS = [
-  { label: 'Your kinks', icon: 'sparkles' },
-  { label: 'Your limits', icon: 'shield' },
-  { label: 'Your toy list', icon: 'toy' },
-  { label: 'Your experience level', icon: 'signal' },
-  { label: 'Your preferred intensity', icon: 'heart' },
-] as const;
-
-const HERO_VISUAL_POINTS = [
+const WHAT_YOU_GET_POINTS = [
   {
     title: 'Tailored brief',
     detail: 'Your kinks, limits, toys, and preferred intensity shape the assignment.',
@@ -56,34 +41,41 @@ const HERO_VISUAL_POINTS = [
   },
   {
     title: 'Personal review',
-    detail: 'Every task is written and checked personally before it reaches you.',
+    detail: 'Every task is checked personally before it reaches you.',
     icon: 'heart',
   },
   {
-    title: 'Bot delivery',
+    title: 'Step-by-step delivery',
     detail: 'You receive the next step, send proof, and continue in one guided flow.',
     icon: 'chat',
   },
+  {
+    title: 'Flexible intensity',
+    detail: 'Beginner-friendly options and heavier intensity can exist in the same system.',
+    icon: 'signal',
+  },
 ] as const;
 
-const VISUAL_SPOTLIGHT_CARDS = [
+const HOW_IT_WORKS_STEPS = [
   {
-    eyebrow: 'Tailored',
-    title: 'Built from your preferences',
-    body: 'No generic bundles. Your package is shaped around what you enjoy, what you avoid, and what you own.',
-    icon: 'wand',
+    title: 'Choose a package',
+    detail: 'Pick the pace and structure that matches what you want right now.',
+    icon: 'package',
   },
   {
-    eyebrow: 'Paced',
-    title: 'One task at a time',
-    body: 'The experience stays focused and interactive instead of dropping a wall of instructions all at once.',
-    icon: 'clock',
+    title: 'Submit your preferences',
+    detail: 'Share your kinks, limits, toys, and how soft or intense you want it to feel.',
+    icon: 'sliders',
   },
   {
-    eyebrow: 'Flexible',
-    title: 'Soft to intense',
-    body: 'Beginner-friendly options and heavier intensity can both live in the same system, depending on your level.',
-    icon: 'signal',
+    title: 'Receive your personalised task',
+    detail: 'Your first assignment arrives with clear guidance instead of a generic list.',
+    icon: 'scroll',
+  },
+  {
+    title: 'Send proof and continue in the bot',
+    detail: 'Reply in the bot, send the required proof, and continue one step at a time.',
+    icon: 'chat',
   },
 ] as const;
 
@@ -91,22 +83,19 @@ const SAMPLE_TASK_CARDS = [
   {
     eyebrow: 'Soft Start',
     title: 'Wear, report, and check in',
-    body: 'Wear a chosen item for a set time, take a simple proof photo, and report how it affected your mindset.',
-    note: 'Good for beginners or lighter control play.',
+    body: 'A simple item, a time window, and a clear proof request to ease you into the dynamic.',
     icon: 'heart',
   },
   {
-    eyebrow: 'Toy-Based',
+    eyebrow: 'Toy Based',
     title: 'Use what you already own',
-    body: 'Complete a timed assignment using a toy from your own list, then send proof and wait for the next instruction.',
-    note: 'Built around your actual toy list, not assumptions.',
+    body: 'A timed assignment built around something from your toy list, with the next step delivered after proof.',
     icon: 'toy',
   },
   {
-    eyebrow: 'Obedience',
-    title: 'Structured instructions with proof',
-    body: 'Follow a sequence of controlled steps, capture the required proof, and continue the flow inside the bot.',
-    note: 'Can be softer or more intense depending on your level.',
+    eyebrow: 'Structured Obedience',
+    title: 'Controlled instructions with proof',
+    body: 'A cleaner sequence of instructions, reporting, and follow-up for a more deliberate obedience flow.',
     icon: 'scroll',
   },
 ] as const;
@@ -119,22 +108,22 @@ const FAQS = [
   },
   {
     question: 'Can beginners buy?',
-    answer: 'Yes. You can choose something softer, simpler, or more intense depending on your experience.',
+    answer: 'Yes. Packages can start softer, simpler, and more guided if that suits your experience level.',
     icon: 'signal',
   },
   {
     question: 'Are the tasks always custom?',
-    answer: 'Yes. They are built around your submitted preferences.',
+    answer: 'Yes. Each assignment is built around the preferences, limits, toys, and intensity you submit.',
     icon: 'wand',
   },
   {
     question: 'What kind of proof is required?',
-    answer: 'Proof depends on the task. You will be guided where needed.',
+    answer: 'It depends on the task. You will be told what proof is needed before you continue.',
     icon: 'shield',
   },
   {
     question: 'How do I pay?',
-    answer: 'Choose your package here, then continue in the bot to complete payment.',
+    answer: 'Choose your package here, then continue in the bot for payment and delivery.',
     icon: 'help',
   },
 ] as const;
@@ -277,7 +266,11 @@ export function TasksPage() {
       {!session.isTelegram && <TelegramDevBanner />}
       <section className="hero hero--tasks">
         <div className="hero__banner-frame">
-          <img className="hero__banner hero__banner--framed" src="/header.png?v=20260401a" alt="Mistress BJQueen Custom Obedience Tasks" />
+          <img
+            className="hero__banner hero__banner--framed"
+            src="/header.png?v=20260401a"
+            alt="Mistress BJQueen Custom Obedience Tasks"
+          />
           <div className="hero__banner-mask" aria-hidden="true" />
           <div className="hero__banner-copy">
             <span className="hero__banner-kicker">Mistress BJQueen&apos;s</span>
@@ -289,9 +282,10 @@ export function TasksPage() {
 
       <section className="tasks-hero">
         <p className="hero__eyebrow">Custom Obedience Tasks</p>
-        <h1>Choose your Custom Obedience package.</h1>
-        <p>Personalised tasks written around your kinks, limits, and toy list.</p>
-        <p>Choose your package here, then continue in the bot for payment and fulfilment.</p>
+        <h1>Custom obedience tasks built around your kinks, limits, and toys</h1>
+        <p className="tasks-hero__lead">
+          Personal, guided assignments reviewed by Mistress BJQueen. Beginner-friendly to intense.
+        </p>
         <div className="tasks-hero__actions">
           <a className="tasks-button tasks-button--primary" href="#packages">
             Choose Your Package
@@ -304,72 +298,54 @@ export function TasksPage() {
             Back to Bot
           </a>
         </div>
-        <div className="tasks-hero__visuals">
-          <div className="tasks-hero__feature">
-            <p className="tasks-hero__feature-eyebrow">Inside Your Package</p>
-            <strong>A guided experience, not a generic list.</strong>
-            <p className="tasks-hero__feature-copy">
-              The flow is designed to feel personal from the first preference you submit to the final proof you send.
-            </p>
-            <div className="tasks-hero__feature-list">
-              {HERO_VISUAL_POINTS.map((point) => (
-                <div key={point.title} className="tasks-hero__feature-item">
-                  <span className="tasks-hero__feature-icon">
-                    <TaskIcon name={point.icon} />
-                  </span>
-                  <div>
-                    <strong>{point.title}</strong>
-                    <p>{point.detail}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="tasks-hero__mini-grid">
-            {VISUAL_SPOTLIGHT_CARDS.map((card) => (
-              <article key={card.title} className="tasks-hero__mini-card">
-                <span className="tasks-hero__mini-icon">
-                  <TaskIcon name={card.icon} />
-                </span>
-                <p className="tasks-hero__mini-eyebrow">{card.eyebrow}</p>
-                <strong>{card.title}</strong>
-                <p>{card.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="tasks-strip" aria-label="Why buyers choose custom obedience">
-        {VALUE_POINTS.map((point) => (
-          <div key={point.label} className="tasks-chip">
-            <span className="tasks-chip__icon">
-              <TaskIcon name={point.icon} />
-            </span>
-            <span>{point.label}</span>
-          </div>
-        ))}
-      </section>
-
-      <section className="tasks-panel">
-        <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Sample Tasks</p>
-          <h2>Examples of the kind of tasks you might receive.</h2>
-        </div>
-        <p className="tasks-panel__body-copy">
-          These are examples of tone and structure only. Your actual tasks are customised around your preferences, limits, toys, and intensity level.
-        </p>
-        <div className="tasks-spotlight" aria-label="Examples of custom task types">
-          {SAMPLE_TASK_CARDS.map((card) => (
-            <article key={card.title} className="tasks-spotlight-card">
-              <span className="tasks-spotlight-card__icon">
-                <TaskIcon name={card.icon} />
+        <div className="tasks-strip tasks-strip--hero" aria-label="Why buyers choose custom obedience">
+          {VALUE_POINTS.map((point) => (
+            <div key={point.label} className="tasks-chip">
+              <span className="tasks-chip__icon">
+                <TaskIcon name={point.icon} />
               </span>
-              <p className="tasks-spotlight-card__eyebrow">{card.eyebrow}</p>
-              <strong>{card.title}</strong>
-              <p>{card.body}</p>
-              <span className="tasks-spotlight-card__note">{card.note}</span>
+              <span>{point.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="tasks-panel tasks-panel--light">
+        <div className="tasks-panel__header">
+          <p className="hero__eyebrow">What You Get</p>
+          <h2>Clear benefits without the fluff.</h2>
+        </div>
+        <div className="tasks-benefits" aria-label="What you get">
+          {WHAT_YOU_GET_POINTS.map((point) => (
+            <article key={point.title} className="tasks-benefit">
+              <span className="tasks-benefit__icon">
+                <TaskIcon name={point.icon} />
+              </span>
+              <div>
+                <strong>{point.title}</strong>
+                <p>{point.detail}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="tasks-panel tasks-panel--steps">
+        <div className="tasks-panel__header">
+          <p className="hero__eyebrow">How It Works</p>
+          <h2>A simple four-step flow.</h2>
+        </div>
+        <div className="tasks-stepper">
+          {HOW_IT_WORKS_STEPS.map((step, index) => (
+            <article key={step.title} className="tasks-stepper__item">
+              <div className="tasks-stepper__topline">
+                <span className="tasks-stepper__number">0{index + 1}</span>
+                <span className="tasks-stepper__icon">
+                  <TaskIcon name={step.icon} />
+                </span>
+              </div>
+              <strong>{step.title}</strong>
+              <p>{step.detail}</p>
             </article>
           ))}
         </div>
@@ -377,30 +353,38 @@ export function TasksPage() {
 
       <section className="tasks-panel">
         <div className="tasks-panel__header">
-          <p className="hero__eyebrow">How It Works</p>
-          <h2>Simple, personal, and guided.</h2>
+          <p className="hero__eyebrow">Example Task Styles</p>
+          <h2>Examples only, so you can see the tone.</h2>
         </div>
-        <div className="tasks-steps">
-          {HOW_IT_WORKS_STEPS.map((step, index) => (
-            <div key={step.label} className="tasks-step">
-              <span className="tasks-step__number">0{index + 1}</span>
-              <div className="tasks-step__content">
-                <span className="tasks-step__icon">
-                  <TaskIcon name={step.icon} />
+        <p className="tasks-panel__body-copy">
+          Your actual tasks are shaped around your submitted preferences, limits, toys, and intensity level.
+        </p>
+        <div className="tasks-style-grid" aria-label="Examples of custom task styles">
+          {SAMPLE_TASK_CARDS.map((card) => (
+            <article key={card.title} className="tasks-style-card">
+              <div className="tasks-style-card__header">
+                <span className="tasks-style-card__icon">
+                  <TaskIcon name={card.icon} />
                 </span>
-                <strong>{step.label}</strong>
+                <p className="tasks-style-card__eyebrow">{card.eyebrow}</p>
               </div>
-            </div>
+              <strong>{card.title}</strong>
+              <p>{card.body}</p>
+            </article>
           ))}
         </div>
-        <p className="tasks-panel__supporting-copy">
-          Tasks are delivered one at a time to keep the experience personal, focused, and interactive.
-        </p>
       </section>
 
       <section className="tasks-section" id="packages">
-        <div className="tasks-section__header">
-          <p className="hero__eyebrow">Choose Your Package</p>
+        <div className="tasks-section__header tasks-section__header--stacked">
+          <div className="tasks-section__copy">
+            <p className="hero__eyebrow">Packages</p>
+            <h2>Choose the package that fits the pace you want.</h2>
+            <p className="tasks-panel__body-copy">
+              Open a package to compare duration, pace, and price before you continue in the bot for payment and
+              delivery.
+            </p>
+          </div>
           {tiersQuery.data && <span className="tasks-section__count">{tiersQuery.data.total} available</span>}
         </div>
 
@@ -409,28 +393,11 @@ export function TasksPage() {
           <TierCarousel items={tiersQuery.data?.items ?? []} loading={tiersQuery.isLoading} />
         )}
         {!tiersQuery.isLoading && tiersQuery.data && tiersQuery.data.items.length === 0 && (
-          <EmptyState title="No packages available" message="Active custom obedience packages will appear here when they are ready." />
+          <EmptyState
+            title="No packages available"
+            message="Active custom obedience packages will appear here when they are ready."
+          />
         )}
-      </section>
-
-      <section className="tasks-panel">
-        <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Built Around You</p>
-          <h2>Built Around You</h2>
-        </div>
-        <p className="tasks-panel__body-copy">
-          These are not generic tasks. Every assignment is shaped around your kinks, limits, experience level, and the toys you actually own.
-        </p>
-        <div className="tasks-strip tasks-strip--personal">
-          {BUILT_AROUND_YOU_POINTS.map((point) => (
-            <div key={point.label} className="tasks-chip tasks-chip--soft">
-              <span className="tasks-chip__icon">
-                <TaskIcon name={point.icon} />
-              </span>
-              <span>{point.label}</span>
-            </div>
-          ))}
-        </div>
       </section>
 
       <section className="tasks-panel">
@@ -446,7 +413,8 @@ export function TasksPage() {
                   <span className="faq-card__icon">
                     <TaskIcon name={item.icon} />
                   </span>
-                  <span>{item.question}</span>
+                  <span className="faq-card__text">{item.question}</span>
+                  <span className="faq-card__chevron" aria-hidden="true" />
                 </span>
               </summary>
               <p>{item.answer}</p>
@@ -457,7 +425,7 @@ export function TasksPage() {
 
       <section className="tasks-panel tasks-panel--cta">
         <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Ready When You Are</p>
+          <p className="hero__eyebrow">Final Step</p>
           <h2>Ready for your first assignment?</h2>
         </div>
         <p className="tasks-panel__body-copy">

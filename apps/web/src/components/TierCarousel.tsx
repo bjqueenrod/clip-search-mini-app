@@ -1,23 +1,40 @@
 import { Link } from 'react-router-dom';
 import { getTierArtwork, getTierArtworkVariant } from '../features/tiers/artwork';
-import { getTierGuideLabels } from '../features/tiers/presentation';
+import {
+  getTierDurationLabel,
+  getTierGuideLabels,
+  getTierSummary,
+  getTierTasksLabel,
+} from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
 import { formatPrice } from '../utils/format';
 import { toTierPath } from '../utils/links';
 
-function durationLabel(tier: TierItem): string {
-  if (!tier.durationDays) return 'Custom duration';
-  return tier.durationDays === 1 ? '1 day' : `${tier.durationDays} days`;
-}
-
-function tasksLabel(tier: TierItem): string {
-  if (tier.isUnlimitedTasks) return 'Unlimited tasks';
-  if (!tier.tasksPerDay) return 'Custom pace';
-  return tier.tasksPerDay === 1 ? '1 task / day' : `${tier.tasksPerDay} tasks / day`;
-}
-
 function priceLabel(tier: TierItem): string {
   return tier.priceLabel || formatPrice(tier.price);
+}
+
+function descriptorLabel(tier: TierItem, badgeLabel?: string): string {
+  if (tier.shortDescription?.trim()) {
+    return tier.shortDescription.trim();
+  }
+
+  switch (badgeLabel) {
+    case 'Best for first timers':
+      return 'A softer place to start with clear structure and guided delivery.';
+    case 'Most Popular':
+      return 'A balanced package when you want a fuller experience without overwhelm.';
+    case 'High Intensity':
+      return 'A deeper, more immersive option for buyers who want a heavier pace.';
+    default:
+      if (tier.isUnlimitedTasks) {
+        return 'An open-ended guided flow built for a more immersive obedience session.';
+      }
+      if ((tier.durationDays ?? 0) >= 5) {
+        return 'Extended guidance with more room to build momentum and structure.';
+      }
+      return 'A premium custom obedience package shaped around your submitted preferences.';
+  }
 }
 
 export function TierCarousel({
@@ -47,50 +64,71 @@ export function TierCarousel({
           ? Array.from({ length: 3 }, (_, index) => (
               <div key={index} className="top-sellers__card top-sellers__card--skeleton" aria-hidden="true">
                 <div className="top-sellers__media top-sellers__media--skeleton" />
-                <div className="top-sellers__body">
+                <div className="top-sellers__body top-sellers__body--tier">
                   <div className="top-sellers__eyebrow">
                     <span className="top-sellers__line top-sellers__line--small" />
                     <span className="top-sellers__line top-sellers__line--small" />
                   </div>
                   <span className="top-sellers__line top-sellers__line--title" />
-                  <span className="top-sellers__line top-sellers__line--title top-sellers__line--short" />
+                  <span className="top-sellers__line top-sellers__line--body top-sellers__line--short" />
+                  <div className="top-sellers__meta-grid">
+                    <span className="top-sellers__line top-sellers__line--body" />
+                    <span className="top-sellers__line top-sellers__line--body" />
+                  </div>
+                  <span className="top-sellers__line top-sellers__line--price" />
                   <span className="top-sellers__line top-sellers__line--body" />
                   <span className="top-sellers__line top-sellers__line--body top-sellers__line--short" />
-                  <div className="top-sellers__prices">
-                    <span className="top-sellers__line top-sellers__line--price" />
-                  </div>
                 </div>
               </div>
             ))
           : items.map((tier, index) => {
               const badgeLabel = guideLabels[tier.id] || tier.badge;
               const artworkVariant = getTierArtworkVariant(index);
+              const descriptor = descriptorLabel(tier, badgeLabel);
+              const valueSummary = getTierSummary(tier);
 
               return (
                 <Link
                   key={tier.id}
-                  className={`top-sellers__card ${artworkVariant === 'light' ? 'top-sellers__card--light' : 'top-sellers__card--base'}`}
+                  className={[
+                    'top-sellers__card',
+                    'top-sellers__card--tier',
+                    artworkVariant === 'light' ? 'top-sellers__card--light' : 'top-sellers__card--base',
+                    badgeLabel === 'Most Popular' ? 'top-sellers__card--featured' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                   to={toTierPath(tier.id)}
                 >
                   <div className="top-sellers__media top-sellers__media--tier">
                     <img src={getTierArtwork(tier, badgeLabel, artworkVariant)} alt={`${tier.name} package artwork`} loading="lazy" />
                   </div>
-                  <div className="top-sellers__body">
+                  <div className="top-sellers__body top-sellers__body--tier">
                     <div className="top-sellers__eyebrow">
                       {badgeLabel ? (
                         <span className="top-sellers__tier-badge top-sellers__tier-badge--inline">{badgeLabel}</span>
                       ) : (
                         <span />
                       )}
-                      <span>{durationLabel(tier)}</span>
                     </div>
                     <h3>{tier.name}</h3>
-                    <p>{tier.shortDescription || tier.description || 'A premium obedience package.'}</p>
-                    <div className="top-sellers__prices">
-                      <span>{tasksLabel(tier)}</span>
-                      <span className="top-sellers__price-separator">•</span>
-                      <span>{priceLabel(tier)}</span>
+                    <p className="top-sellers__descriptor">{descriptor}</p>
+                    <div className="top-sellers__meta-grid">
+                      <div className="top-sellers__meta-item">
+                        <span className="top-sellers__meta-label">Duration</span>
+                        <strong>{getTierDurationLabel(tier)}</strong>
+                      </div>
+                      <div className="top-sellers__meta-item">
+                        <span className="top-sellers__meta-label">Pace</span>
+                        <strong>{getTierTasksLabel(tier)}</strong>
+                      </div>
                     </div>
+                    <div className="top-sellers__price-block">
+                      <span className="top-sellers__meta-label">Price</span>
+                      <strong>{priceLabel(tier)}</strong>
+                    </div>
+                    <p className="top-sellers__value-copy">{valueSummary}</p>
+                    <span className="top-sellers__cta">Open Package</span>
                   </div>
                 </Link>
               );
