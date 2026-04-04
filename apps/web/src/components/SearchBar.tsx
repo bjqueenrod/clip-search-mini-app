@@ -125,6 +125,15 @@ export function SearchBar({
     }
   };
 
+  const clearValue = () => {
+    onChange('');
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(0, 0);
+      setCaret(0);
+    });
+  };
+
   return (
     <label className="search-bar">
       <input
@@ -146,6 +155,17 @@ export function SearchBar({
         }}
         placeholder="Search title, tags, or category"
       />
+      {value && (
+        <button
+          aria-label="Clear search"
+          className="search-bar__clear"
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={clearValue}
+        >
+          &times;
+        </button>
+      )}
       {showSuggestions && (
         <div className="search-bar__suggestions" role="listbox" aria-label="Hashtag suggestions">
           {suggestions.map((option, index) => (
