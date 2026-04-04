@@ -81,9 +81,9 @@ const HOW_IT_WORKS_STEPS = [
 
 const SAMPLE_TASK_CARDS = [
   {
-    eyebrow: 'Soft Start',
-    title: 'Wear, report, and check in',
-    body: 'A simple item, a time window, and a clear proof request to ease you into the dynamic.',
+    eyebrow: 'Real Example',
+    title: 'Denial and control training',
+    body: 'A structured assignment focused on restraint, frustration, post-task stillness, and discreet proof afterward.',
     icon: 'heart',
   },
   {
