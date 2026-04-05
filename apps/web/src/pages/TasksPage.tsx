@@ -46,14 +46,14 @@ const WHY_CUSTOM_POINTS = [
   },
   {
     title: 'Tracked with proof and review',
-    detail: 'Selected tasks can require proof, adding accountability, momentum, and a stronger premium feel.',
+    detail: 'Selected tasks can require proof, adding accountability, momentum, and a stronger guided feel.',
     icon: 'shield',
   },
 ] as const;
 
 const HOW_IT_WORKS_STEPS = [
   {
-    title: 'Choose a premium package',
+    title: 'Choose your package',
     detail: 'Pick the package that matches the pace, length, and intensity you want.',
     icon: 'package',
   },
@@ -63,7 +63,7 @@ const HOW_IT_WORKS_STEPS = [
     icon: 'sliders',
   },
   {
-    title: 'Receive your first premium task',
+    title: 'Receive your first custom task',
     detail: 'Your first assignment arrives in the bot shaped around your setup and preferences.',
     icon: 'scroll',
   },
@@ -77,20 +77,20 @@ const HOW_IT_WORKS_STEPS = [
 const SAMPLE_TASK_CARDS = [
   {
     eyebrow: 'Soft control',
-    title: 'A gentler premium start',
+    title: 'A gentler custom start',
     body: 'Begin with a softer pace, clearer structure, and a more guided rhythm that still feels deliberate and personal.',
     icon: 'heart',
   },
   {
     eyebrow: 'Toy-led control',
     title: 'Built around the toys you already own',
-    body: 'Use the toys you already have in a premium task designed around your setup, limits, and the feeling you want.',
+    body: 'Use the toys you already have in a custom task designed around your setup, limits, and the feeling you want.',
     icon: 'toy',
   },
   {
     eyebrow: 'Structured obedience',
     title: 'Clear progression with more control',
-    body: 'Receive a more controlled premium flow with proof, progression, and a stronger sense of momentum over time.',
+    body: 'Receive a more controlled custom flow with proof, progression, and a stronger sense of momentum over time.',
     icon: 'scroll',
   },
 ] as const;
@@ -98,7 +98,7 @@ const SAMPLE_TASK_CARDS = [
 const PREMIUM_EXPERIENCE_POINTS = [
   {
     title: 'A guided experience, not a one-off message',
-    detail: 'Premium packages are built to feel like a managed experience inside the bot, with clear pacing from one step to the next.',
+    detail: 'Custom packages are built to feel like a managed experience inside the bot, with clear pacing from one step to the next.',
     icon: 'scroll',
   },
   {
@@ -108,7 +108,7 @@ const PREMIUM_EXPERIENCE_POINTS = [
   },
   {
     title: 'Packages give buyers a clear choice',
-    detail: 'Different tiers let buyers choose a lighter start, a steadier build, or a more intense premium flow.',
+    detail: 'Different tiers let buyers choose a lighter start, a steadier build, or a more intense custom flow.',
     icon: 'sparkles',
   },
 ] as const;
@@ -121,7 +121,7 @@ const REASSURANCE_POINTS = [
 
 const FAQS = [
   {
-    question: 'What makes these tasks premium?',
+    question: 'What makes these tasks custom?',
     answer: 'They are shaped around your preferences, delivered with a clear pace, and can include proof and review for a more guided experience.',
     icon: 'sparkles',
   },
@@ -142,12 +142,12 @@ const FAQS = [
   },
   {
     question: 'Can beginners buy?',
-    answer: 'Yes. You can start with a softer, simpler, more guided package and still get a tailored premium experience.',
+    answer: 'Yes. You can start with a softer, simpler, more guided package and still get a tailored custom experience.',
     icon: 'signal',
   },
   {
     question: 'How do I start?',
-    answer: 'Choose your package here, continue in the bot, complete payment, then begin your premium setup and delivery flow.',
+    answer: 'Choose your package here, continue in the bot, complete payment, then begin your custom setup and delivery flow.',
     icon: 'help',
   },
 ] as const;
@@ -298,26 +298,26 @@ export function TasksPage() {
           <div className="hero__banner-mask" aria-hidden="true" />
           <div className="hero__banner-copy">
             <span className="hero__banner-kicker">Mistress BJQueen&apos;s</span>
-            <strong>Premium Tasks</strong>
+            <strong>Custom Obedience</strong>
             <span>Tailored private obedience packages</span>
           </div>
         </div>
       </section>
 
       <section className="tasks-hero">
-        <p className="hero__eyebrow">Premium Tasks</p>
-        <h1>Unlock premium tasks tailored to your preferences, pace, and limits</h1>
+        <p className="hero__eyebrow">Custom Obedience Tasks</p>
+        <h1>Get custom obedience tasks tailored to your preferences, pace, and limits</h1>
         <p className="tasks-hero__lead">
           Not a generic list. Each package is shaped around what you enjoy, what you avoid, the toys you own, and how
           intense you want it to feel.
         </p>
         <p className="tasks-hero__supporting-copy">
-          Private, guided premium experiences delivered step by step in the bot with proof, review, and real
+          Private, guided custom experiences delivered step by step in the bot with proof, review, and real
           progression.
         </p>
         <div className="tasks-hero__actions">
           <a className="tasks-button tasks-button--primary" href="#packages">
-            View Premium Packages
+            View Packages
           </a>
           <a
             className="tasks-button tasks-button--secondary"
@@ -341,11 +341,11 @@ export function TasksPage() {
 
       <section className="tasks-panel tasks-panel--light">
         <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Why It Feels Premium</p>
-          <h2>More than custom. Built to feel exclusive, guided, and worth paying for.</h2>
+          <p className="hero__eyebrow">Why It Feels Better</p>
+          <h2>More than generic. Built to feel personal, guided, and worth buying.</h2>
         </div>
         <p className="tasks-panel__body-copy">
-          This is not just more tasks. It is a private premium experience shaped around your preferences, limits,
+          This is not just more tasks. It is a private custom experience shaped around your preferences, limits,
           available toys, and desired intensity from the first step.
         </p>
         <div className="tasks-benefits" aria-label="Why custom feels different">
@@ -411,8 +411,8 @@ export function TasksPage() {
       <section className="tasks-section" id="packages">
         <div className="tasks-section__header tasks-section__header--stacked">
           <div className="tasks-section__copy">
-            <p className="hero__eyebrow">Premium Packages</p>
-            <h2>Choose the premium package that fits how you want this to feel</h2>
+            <p className="hero__eyebrow">Packages</p>
+            <h2>Choose the custom package that fits how you want this to feel</h2>
             <p className="tasks-panel__body-copy">
               Start lighter or go further. Pick the pace, package size, and intensity that suits you before continuing
               in the bot for payment and setup.
@@ -436,13 +436,13 @@ export function TasksPage() {
       <section className="tasks-panel tasks-panel--light">
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">What You&apos;re Buying</p>
-          <h2>A premium experience with structure, accountability, and momentum</h2>
+          <h2>A custom experience with structure, accountability, and momentum</h2>
         </div>
         <p className="tasks-panel__body-copy">
-          Premium packages do more than send you a task. They create a guided flow with clear pacing, proof where
+          These packages do more than send you a task. They create a guided flow with clear pacing, proof where
           required, and a stronger sense of progression from one step to the next.
         </p>
-        <div className="tasks-benefits" aria-label="Why premium packages feel different">
+        <div className="tasks-benefits" aria-label="Why custom packages feel different">
           {PREMIUM_EXPERIENCE_POINTS.map((point) => (
             <article key={point.title} className="tasks-benefit">
               <span className="tasks-benefit__icon">
@@ -506,15 +506,15 @@ export function TasksPage() {
       <section className="tasks-panel tasks-panel--cta">
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">Ready When You Are</p>
-          <h2>Ready to unlock your first premium task?</h2>
+          <h2>Ready to get your first custom task?</h2>
         </div>
         <p className="tasks-panel__body-copy">
-          Choose your package here, then step into the bot to start a tailored premium experience built around your
+          Choose your package here, then step into the bot to start a tailored custom experience built around your
           preferences, limits, and toy list.
         </p>
         <div className="tasks-hero__actions">
           <a className="tasks-button tasks-button--primary" href="#packages">
-            View Premium Packages
+            View Packages
           </a>
           <a
             className="tasks-button tasks-button--secondary"
@@ -528,7 +528,7 @@ export function TasksPage() {
 
       <div className="sticky-mobile-cta">
         <div className="sticky-mobile-cta__content">
-          <span>{tiersQuery.data ? `${tiersQuery.data.total} premium packages ready` : 'Premium Tasks'}</span>
+          <span>{tiersQuery.data ? `${tiersQuery.data.total} custom packages ready` : 'Custom Obedience Tasks'}</span>
           <a className="tasks-button tasks-button--primary sticky-mobile-cta__button" href="#packages">
             View Packages
           </a>

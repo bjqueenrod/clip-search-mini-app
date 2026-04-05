@@ -8,7 +8,7 @@ import { formatPrice } from '../utils/format';
 
 const PACKAGE_HIGHLIGHTS = [
   'Tailored to your preferences, limits, and toy list',
-  'Delivered inside the bot as a guided premium experience',
+  'Delivered inside the bot as a guided custom experience',
   'Clear pacing based on the package you choose',
   'Proof and review where the task requires it',
 ] as const;
@@ -66,7 +66,7 @@ export function TierDetailSheet({
           <Link to="/tasks" className="detail-sheet__back">
             Back
           </Link>
-          <span>Premium Task Package</span>
+          <span>Custom Obedience Package</span>
         </div>
         {loading && <div className="detail-sheet__loading">Loading package...</div>}
         {!loading && tier && (
@@ -84,7 +84,7 @@ export function TierDetailSheet({
                   <h2>{tier.name}</h2>
                   <p>{getTierSummary(tier)}</p>
                   <p className="detail-sheet__supporting-copy">
-                    Choose your package here, then continue in the bot for payment, setup, and tailored premium task
+                    Choose your package here, then continue in the bot for payment, setup, and tailored custom task
                     delivery.
                   </p>
                 </div>
