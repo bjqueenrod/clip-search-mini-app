@@ -6,6 +6,13 @@ import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../feat
 import { TierItem } from '../features/tiers/types';
 import { formatPrice } from '../utils/format';
 
+const PACKAGE_HIGHLIGHTS = [
+  'Tailored to your preferences, limits, and toy list',
+  'Delivered inside the bot as a guided premium experience',
+  'Clear pacing based on the package you choose',
+  'Proof and review where the task requires it',
+] as const;
+
 export function TierDetailSheet({
   tier,
   loading,
@@ -59,7 +66,7 @@ export function TierDetailSheet({
           <Link to="/tasks" className="detail-sheet__back">
             Back
           </Link>
-          <span>Custom Obedience Package</span>
+          <span>Premium Task Package</span>
         </div>
         {loading && <div className="detail-sheet__loading">Loading package...</div>}
         {!loading && tier && (
@@ -77,7 +84,8 @@ export function TierDetailSheet({
                   <h2>{tier.name}</h2>
                   <p>{getTierSummary(tier)}</p>
                   <p className="detail-sheet__supporting-copy">
-                    Choose your package here, then continue in the bot for payment and personalised task delivery.
+                    Choose your package here, then continue in the bot for payment, setup, and tailored premium task
+                    delivery.
                   </p>
                 </div>
               </div>
@@ -97,6 +105,16 @@ export function TierDetailSheet({
                   </div>
                 ) : null}
               </div>
+              <div>
+                <p className="detail-sheet__supporting-copy">
+                  What you get with this package:
+                </p>
+                <ul>
+                  {PACKAGE_HIGHLIGHTS.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <div className="detail-sheet__actions detail-sheet__actions--single">
               <a
@@ -106,7 +124,7 @@ export function TierDetailSheet({
                 className="detail-sheet__action detail-sheet__action--stream"
                 onClick={handleBotAction(tier.botBuyUrl)}
               >
-                <strong>Continue in Bot</strong>
+                <strong>Unlock in Bot</strong>
                 <span>{tier.priceLabel || formatPrice(tier.price)}</span>
               </a>
             </div>
