@@ -20,7 +20,7 @@ def _build_tracked_redirect_url(slug: str | None, payload: str | None = None) ->
     normalized_slug = (slug or '').strip().strip('/')
     if not base_url or not normalized_slug:
         return None
-    url = f"{base_url}/r/{quote(normalized_slug, safe='')}"
+    url = f"{base_url}/{quote(normalized_slug, safe='')}"
     normalized_payload = (payload or '').strip()
     if not normalized_payload:
         return url

@@ -91,7 +91,7 @@ def test_clip_detail_returns_bot_links_and_hides_paid_urls(client) -> None:
 
 
 def test_clip_detail_uses_tracking_redirect_urls_when_configured(client, monkeypatch) -> None:
-    monkeypatch.setattr('app.utils.bot_links._build_tracked_redirect_url', lambda slug, payload=None: f'https://links.mistressbjqueen.com/r/{slug}?payload={payload}')
+    monkeypatch.setattr('app.utils.bot_links._build_tracked_redirect_url', lambda slug, payload=None: f'https://links.mistressbjqueen.com/{slug}?payload={payload}')
     monkeypatch.setattr('app.utils.bot_links.get_settings', lambda: type('S', (), {
         'tracking_clip_stream_slug': 'clip-stream',
         'tracking_clip_download_slug': 'clip-download',
@@ -103,5 +103,5 @@ def test_clip_detail_uses_tracking_redirect_urls_when_configured(client, monkeyp
     response = client.get("/api/clips/BJQ0001")
     assert response.status_code == 200
     item = response.json()
-    assert item["botStreamUrl"] == "https://links.mistressbjqueen.com/r/clip-stream?payload=stream_BJQ0001"
-    assert item["botDownloadUrl"] == "https://links.mistressbjqueen.com/r/clip-download?payload=download_BJQ0001"
+    assert item["botStreamUrl"] == "https://links.mistressbjqueen.com/clip-stream?payload=stream_BJQ0001"
+    assert item["botDownloadUrl"] == "https://links.mistressbjqueen.com/clip-download?payload=download_BJQ0001"

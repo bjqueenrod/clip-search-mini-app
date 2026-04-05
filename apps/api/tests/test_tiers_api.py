@@ -34,7 +34,7 @@ def test_tier_detail_shapes_alias_fields_and_buy_link(client) -> None:
 
 
 def test_tier_detail_uses_tracking_redirect_buy_link_when_configured(client, monkeypatch) -> None:
-    monkeypatch.setattr('app.utils.bot_links._build_tracked_redirect_url', lambda slug, payload=None: f'https://links.mistressbjqueen.com/r/{slug}?payload={payload}')
+    monkeypatch.setattr('app.utils.bot_links._build_tracked_redirect_url', lambda slug, payload=None: f'https://links.mistressbjqueen.com/{slug}?payload={payload}')
     monkeypatch.setattr('app.utils.bot_links.get_settings', lambda: type('S', (), {
         'tracking_clip_stream_slug': '',
         'tracking_clip_download_slug': '',
@@ -46,7 +46,7 @@ def test_tier_detail_uses_tracking_redirect_buy_link_when_configured(client, mon
     response = client.get('/api/tiers/3')
     assert response.status_code == 200
     item = response.json()
-    assert item['botBuyUrl'] == 'https://links.mistressbjqueen.com/r/tier-buy?payload=buy_26'
+    assert item['botBuyUrl'] == 'https://links.mistressbjqueen.com/tier-buy?payload=buy_26'
 
 
 def test_tier_detail_uses_week_fallback_for_duration(client) -> None:
