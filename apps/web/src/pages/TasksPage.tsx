@@ -269,7 +269,7 @@ export function TasksPage() {
         <div className="hero__banner-frame">
           <img
             className="hero__banner hero__banner--framed"
-            src="/header.png?v=20260401a"
+            src="/header.png?v=20260405b"
             alt="Mistress BJQueen Custom Obedience Tasks"
           />
           <div className="hero__banner-mask" aria-hidden="true" />
