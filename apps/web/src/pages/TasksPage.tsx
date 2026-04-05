@@ -372,13 +372,6 @@ export function TasksPage() {
               <a className="tasks-button tasks-button--primary" href="#packages">
                 Choose Your Package
               </a>
-              <a
-                className="tasks-button tasks-button--secondary"
-                href={botRootUrl || '#packages'}
-                onClick={handleBotAction(botRootUrl)}
-              >
-                Open in Telegram
-              </a>
             </div>
             <div className="tasks-strip tasks-strip--hero" aria-label="Why buyers choose custom obedience">
               {VALUE_POINTS.map((point) => (
@@ -589,13 +582,6 @@ export function TasksPage() {
         <div className="tasks-hero__actions">
           <a className="tasks-button tasks-button--primary" href="#packages">
             Choose Your Package
-          </a>
-          <a
-            className="tasks-button tasks-button--secondary"
-            href={botRootUrl || '#packages'}
-            onClick={handleBotAction(botRootUrl)}
-          >
-            Open in Telegram
           </a>
         </div>
       </section>

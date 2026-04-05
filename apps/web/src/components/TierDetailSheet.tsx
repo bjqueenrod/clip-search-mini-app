@@ -125,7 +125,7 @@ export function TierDetailSheet({
                 className="detail-sheet__action detail-sheet__action--stream"
                 onClick={handleBotAction(tier.botBuyUrl)}
               >
-                <strong>Open in Telegram</strong>
+                <strong>Continue to Payment</strong>
                 <span>{tier.priceLabel || formatPrice(tier.price)}</span>
               </a>
             </div>
