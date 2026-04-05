@@ -34,19 +34,19 @@ function descriptorLabel(tier: TierItem, badgeLabel?: string): string {
 
   switch (badgeLabel) {
     case 'Best for first timers':
-      return 'A softer custom entry point with a lighter pace and more guidance.';
+      return 'Good for a first order when you want guidance without overwhelm.';
     case 'Most Popular':
-      return 'The best balance of pace, progression, and structure.';
+      return 'More control, more pacing, and a fuller sense of progression.';
     case 'High Intensity':
-      return 'For buyers who want a heavier pace and a more demanding custom flow.';
+      return 'For buyers who want stricter pacing and a heavier custom flow.';
     default:
       if (tier.isUnlimitedTasks) {
-        return 'For buyers who want a more immersive, open-ended custom experience.';
+        return 'For buyers who want a more immersive, open-ended level of control.';
       }
       if ((tier.durationDays ?? 0) >= 5) {
-        return 'For buyers who want more time for structure, proof, and stronger momentum.';
+        return 'For buyers who want more room for structure, proof, and stronger momentum.';
       }
-      return 'A private custom package with clear pacing, personal tailoring, and easy entry.';
+      return 'A private custom package with clear pacing, personal tailoring, and an easier first step.';
   }
 }
 
@@ -59,14 +59,14 @@ function valueCopyLabel(tier: TierItem): string {
   }
 
   if (tier.isUnlimitedTasks) {
-    return 'Expect a guided custom flow with tailored tasks, proof-led accountability, and room for a deeper rhythm to build.';
+    return 'A deeper, more immersive package with ongoing steps, proof, and room for a stronger rhythm to build.';
   }
 
   if ((tier.durationDays ?? 0) >= 5) {
-    return 'A longer custom package with more room for progression, pacing, and a stronger sense of build.';
+    return 'A longer package with more room for escalation, control, and a stronger sense of build.';
   }
 
-  return 'Custom tasks shaped around your preferences, toy list, limits, and desired intensity from the first step.';
+  return 'Custom tasks shaped around your preferences, toys, limits, and desired intensity from the first instruction.';
 }
 
 export function TierCarousel({
@@ -167,7 +167,7 @@ export function TierCarousel({
                       <strong>{priceLabel(tier)}</strong>
                     </div>
                     <p className="top-sellers__value-copy">{valueSummary}</p>
-                    <span className="top-sellers__cta">Unlock Package</span>
+                    <span className="top-sellers__cta">Choose This Package</span>
                   </div>
                 </Link>
               );
