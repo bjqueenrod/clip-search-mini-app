@@ -9,7 +9,7 @@ import { formatPrice } from '../utils/format';
 const PACKAGE_HIGHLIGHTS = [
   'Time-limited access inside Telegram; no auto-renewal',
   'Duration and maximum tasks per day are set by this tier',
-  'Tasks are generated from your saved categories, toys, limits, and schedule',
+  'Tasks are generated from your saved categories, sex toys/props, limits, and schedule',
   'Delivery and proof submission happen in the Telegram bot, with proof reviewed by Mistress BJQueen',
   'Only one task is active at a time, with proof manually reviewed by Mistress BJQueen',
 ] as const;

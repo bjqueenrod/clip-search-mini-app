@@ -31,7 +31,7 @@ const VALUE_POINTS = [
 
 const HERO_PRIVATE_POINTS = [
   'Packages define duration and max tasks per day',
-  'Setup captures categories, toys, timezone, send times, and auto-send',
+  'Setup captures categories, sex toys/props, timezone, send times, and auto-send',
   'Delivery stays inside Telegram with proof reviewed by Mistress BJQueen',
 ] as const;
 
@@ -39,7 +39,7 @@ const WHY_CUSTOM_POINTS = [
   {
     title: 'Preferences drive selection',
     detail:
-      'Tasks are selected from a curated collection to match what you submit: categories, toys, limits, send times, chastity status, and delivery preferences.',
+      'Tasks are selected from a curated collection to match what you submit: categories, sex toys/props, limits, send times, chastity status, and delivery preferences.',
     icon: 'sliders',
   },
   {
@@ -65,7 +65,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     title: 'Complete your setup',
     detail:
-      'Fill in categories, toys, limits, timezone, send times, chastity status, and whether to auto-send or request.',
+      'Fill in categories, sex toys/props, limits, timezone, send times, chastity status, and whether to auto-send or request.',
     icon: 'sliders',
   },
   {
@@ -90,8 +90,8 @@ const BENEFIT_POINTS = [
   },
   {
     eyebrow: 'Built for your setup',
-    title: 'Respects the toys and gear you own',
-    body: 'Selections for toys and chastity status keep tasks realistic and immediate.',
+    title: 'Respects the sex toys/props you own',
+    body: 'Selections for sex toys/props like a dildo, gag, vibrator, or buttplug keep tasks realistic and immediate.',
     icon: 'toy',
   },
   {
@@ -134,7 +134,8 @@ const WHAT_YOURE_BUYING = [
   },
   {
     title: 'Tasks selected from your saved setup',
-    detail: 'Fetish categories, toys, limits, timezone, send times, and auto-send guide which tasks are chosen for you.',
+    detail:
+      'Fetish categories, sex toys/props, limits, timezone, send times, and auto-send guide which tasks are chosen for you.',
     icon: 'sliders',
   },
   {
@@ -152,7 +153,7 @@ const WHAT_YOURE_BUYING = [
 
 const REASSURANCE_POINTS = [
   'Packages can start softer with fewer daily tasks.',
-  'You do not need a big toy collection—tasks use what you have.',
+  'You do not need a big sex toy/prop collection—tasks use what you have.',
   'Everything stays in Telegram with clear pacing and proof reviewed by Mistress BJQueen.',
 ] as const;
 
@@ -177,7 +178,7 @@ const FAQS = [
   {
     question: 'Are tasks based on my preferences?',
     answer:
-      'Yes. Tasks are selected from a large collection to fit the preferences you save—categories, toys, limits, send times, chastity status, and delivery style.',
+      'Yes. Tasks are selected from a large collection to fit the preferences you save, including categories, sex toys/props, limits, send times, chastity status, and delivery style.',
     icon: 'sliders',
   },
   {
@@ -372,9 +373,9 @@ export function TasksPage() {
             <p className="hero__eyebrow">Custom Obedience Tasks</p>
             <h1>Custom Obedience Tasks, delivered in Telegram</h1>
             <p className="tasks-hero__lead">
-              Buy a time-limited package, set your categories, toys, schedule, limits, and auto-send preferences, then
-              receive obedience tasks—hand-picked from a large collection to match your setup—one at a time with proof
-              submission built in and reviewed by Mistress BJQueen.
+              Buy a time-limited package, set your categories, sex toys/props, schedule, limits, and auto-send
+              preferences, then receive obedience tasks hand-picked from a large collection to match you, one at a
+              time, with proof submission built in and reviewed by Mistress BJQueen.
             </p>
             <p className="tasks-hero__supporting-copy">
               Packages define how long you have and how many tasks you can receive per day. Everything runs inside the
@@ -402,9 +403,9 @@ export function TasksPage() {
               <p className="tasks-hero__private-kicker">Private Offering</p>
               <strong>Structured, premium, and personal—inside Telegram.</strong>
               <p>
-                Buy access, finish setup, and receive tasks that match your categories, toys, limits, and chosen pace.
-                One task stays active until you complete, abandon, or have proof reviewed by Mistress BJQueen. No live
-                chat, no auto-renew.
+                Buy access, finish setup, and receive tasks that match your categories, sex toys/props, limits, and
+                chosen pace. One task stays active until you complete, abandon, or have proof reviewed by Mistress
+                BJQueen. No live chat, no auto-renew.
               </p>
               <div className="tasks-hero__private-list" aria-label="Private offering benefits">
                 {HERO_PRIVATE_POINTS.map((point) => (
@@ -566,8 +567,8 @@ export function TasksPage() {
         </div>
         <div className="tasks-reassurance">
           <p className="tasks-panel__body-copy">
-            You do not need a huge toy collection or advanced experience. Packages can be shaped around a simpler setup
-            and a lighter pace if that suits you better.
+            You do not need a huge sex toy/prop collection or advanced experience. Packages can be shaped around a
+            simpler setup and a lighter pace if that suits you better.
           </p>
           <div className="tasks-strip tasks-strip--soft" aria-label="Beginner reassurance">
             {REASSURANCE_POINTS.map((point) => (
