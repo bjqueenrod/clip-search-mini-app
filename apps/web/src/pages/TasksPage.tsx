@@ -115,7 +115,8 @@ const BENEFIT_POINTS = [
   {
     eyebrow: 'One at a time',
     title: 'Stay focused on the current task',
-    body: 'A new task appears only after you finish, abandon, or receive a review on the active one.',
+    body:
+      'A new task may be requested only after you abandon the active task or receive proof approval from Mistress BJQueen, and only if you still have unused tasks remaining for the current day.',
     icon: 'signal',
   },
 ] as const;
@@ -143,7 +144,8 @@ const WHAT_YOURE_BUYING = [
   },
   {
     title: 'One active task at a time',
-    detail: 'You progress task by task—finish, abandon, or get proof reviewed by Mistress BJQueen before the next one.',
+    detail:
+      'A new task may be requested only after you abandon the active task or receive proof approval from Mistress BJQueen, and only if you still have unused tasks remaining for the current day.',
     icon: 'shield',
   },
 ] as const;
