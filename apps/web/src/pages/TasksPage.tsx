@@ -137,7 +137,7 @@ const WHAT_YOURE_BUYING = [
   },
   {
     title: 'Tasks selected from your saved setup',
-    detail: 'Categories, toys, limits, timezone, send times, and auto-send guide which tasks are chosen for you.',
+    detail: 'Fetish categories, toys, limits, timezone, send times, and auto-send guide which tasks are chosen for you.',
     icon: 'sliders',
   },
   {
