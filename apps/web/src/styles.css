@@ -873,6 +873,53 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.tasks-categories {
+  border-top: 1px solid rgba(176, 106, 214, 0.16);
+  border-radius: 26px;
+  padding: 24px 18px 26px;
+  margin-bottom: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(176, 106, 214, 0.12), transparent 46%),
+    linear-gradient(180deg, rgba(34, 28, 41, 0.9), rgba(21, 17, 27, 0.94));
+  box-shadow: var(--shadow-card);
+}
+
+.tasks-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 4px 0 6px;
+}
+
+.tasks-category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(176, 106, 214, 0.2);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(176, 106, 214, 0.12), transparent 70%),
+    rgba(28, 23, 33, 0.78);
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.3;
+  box-shadow: 0 6px 14px rgba(7, 4, 10, 0.26);
+}
+
+.tasks-category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(176, 106, 214, 0.18);
+}
+
+.tasks-category-note {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
 .tasks-benefit,
 .tasks-style-card,
 .tasks-stepper__item {

@@ -202,6 +202,36 @@ const FAQS = [
   },
 ] as const;
 
+const CATEGORY_LIST = [
+  'Anal Training',
+  'Bondage and Restraint',
+  'CBT (Light, Consensual)',
+  'Chastity Control',
+  'Cuckold Inferiority',
+  'Dildo Training',
+  'Discipline and Conditioning',
+  'Dress Code and Underwear Control',
+  'Edging',
+  'Feminization (Non-verbal)',
+  'Humiliation',
+  'Inspection and Compliance',
+  'Light Impact Play',
+  'Light Wax Play',
+  'Magnet Play',
+  'Marking and Ownership',
+  'Mild CBT',
+  'Objectification',
+  'Orgasm Denial',
+  'Ruined Orgasm Training',
+  'Sensory Deprivation',
+  'Service Tasks',
+  'Sissification (Non-verbal)',
+  'SPH (Small Penis Humiliation)',
+  'Tease and Denial',
+  'Temperature Play',
+  'Texture Play',
+];
+
 function TaskIcon({ name }: { name: TaskIconName }) {
   const commonProps = {
     fill: 'none',
@@ -476,6 +506,29 @@ export function TasksPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="tasks-panel tasks-panel--light tasks-categories">
+        <div className="tasks-panel__header">
+          <p className="hero__eyebrow">Available Fetish Categories</p>
+          <h2>Task categories you can choose from</h2>
+        </div>
+        <p className="tasks-panel__body-copy">
+          Choose the categories that fit your kinks, limits, and interests. Your tasks are selected from your saved
+          preferences, so what you pick here shapes what you receive.
+        </p>
+        <div className="tasks-category-grid" aria-label="Selectable task categories">
+          {CATEGORY_LIST.map((category) => (
+            <div key={category} className="tasks-category-chip">
+              <span className="tasks-category-dot" aria-hidden="true" />
+              <span>{category}</span>
+            </div>
+          ))}
+        </div>
+        <p className="tasks-panel__supporting-copy tasks-category-note">
+          You stay in control of your selected categories, and your saved preferences shape every task that is chosen
+          for you.
+        </p>
       </section>
 
       <section className="tasks-section" id="packages">
