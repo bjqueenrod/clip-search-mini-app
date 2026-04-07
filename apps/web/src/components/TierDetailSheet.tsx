@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { openBotDeepLink } from '../app/telegram';
+import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { getTierArtwork, TierArtworkVariant } from '../features/tiers/artwork';
 import { trackTierBotCtaClick, trackTierDetailView } from '../features/tiers/analytics';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
@@ -34,6 +34,10 @@ export function TierDetailSheet({
     event.preventDefault();
     if (tier) {
       trackTierBotCtaClick({ tier, source: 'detail_sheet' });
+    }
+    const payloadId = tier?.productId || tier?.id;
+    if (payloadId && sendBotWebAppData(`buy_${payloadId}`)) {
+      return;
     }
     openBotDeepLink(url);
   };

@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { openBotDeepLink } from '../app/telegram';
+import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackClipBotCtaClick, trackClipDetailView, trackClipTagSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
 import { formatDuration, formatPrice } from '../utils/format';
@@ -19,6 +19,10 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
     event.preventDefault();
     if (clip) {
       trackClipBotCtaClick({ clip, ctaType });
+    }
+    const payload = ctaType === 'stream' ? `stream_${clip?.id}` : `download_${clip?.id}`;
+    if (clip && sendBotWebAppData(payload)) {
+      return;
     }
     openBotDeepLink(url);
   };

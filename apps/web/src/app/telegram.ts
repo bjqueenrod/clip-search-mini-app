@@ -9,6 +9,7 @@ declare global {
         close?: () => void;
         openLink?: (url: string) => void;
         openTelegramLink?: (url: string) => void;
+        sendData?: (data: string) => void;
         themeParams?: Record<string, string>;
         initData?: string;
         initDataUnsafe?: { user?: { id: number; username?: string; first_name?: string } };
@@ -71,7 +72,7 @@ export function applyTelegramTheme(): void {
   });
 }
 
-export function openBotDeepLink(url: string): void {
+function scheduleMiniAppClose(): void {
   const webApp = window.Telegram?.WebApp;
   const closeMiniApp = () => {
     try {
@@ -80,25 +81,41 @@ export function openBotDeepLink(url: string): void {
       webApp?.close?.();
     }
   };
-  const scheduleClose = () => {
-    window.setTimeout(closeMiniApp, 180);
-    window.setTimeout(closeMiniApp, 520);
-  };
+  window.setTimeout(closeMiniApp, 180);
+  window.setTimeout(closeMiniApp, 520);
+}
+
+export function sendBotWebAppData(data: string): boolean {
+  const webApp = window.Telegram?.WebApp;
+  if (!webApp?.sendData) {
+    return false;
+  }
+  try {
+    webApp.sendData(data);
+    scheduleMiniAppClose();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function openBotDeepLink(url: string): void {
+  const webApp = window.Telegram?.WebApp;
 
   try {
     openTelegramLink(url);
-    scheduleClose();
+    scheduleMiniAppClose();
     return;
   } catch {
     if (webApp?.openTelegramLink) {
       webApp.openTelegramLink(url);
-      scheduleClose();
+      scheduleMiniAppClose();
       return;
     }
 
     if (webApp?.openLink) {
       webApp.openLink(url);
-      scheduleClose();
+      scheduleMiniAppClose();
       return;
     }
   }

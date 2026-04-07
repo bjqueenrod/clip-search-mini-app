@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react';
-import { openBotDeepLink } from '../app/telegram';
+import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackTierBotCtaClick } from '../features/tiers/analytics';
 import { getTierArtwork, getTierArtworkVariant } from '../features/tiers/artwork';
 import {
@@ -90,6 +90,10 @@ export function TierCarousel({
     }
     event.preventDefault();
     trackTierBotCtaClick({ tier, source: 'tier_carousel' });
+    const payloadId = tier.productId || tier.id;
+    if (payloadId && sendBotWebAppData(`buy_${payloadId}`)) {
+      return;
+    }
     openBotDeepLink(url);
   };
 
