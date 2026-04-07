@@ -710,12 +710,13 @@ button {
 
 .tasks-hero h1 {
   margin: 2px 0 0;
-  max-width: 22ch;
+  max-width: none;
+  text-wrap: balance;
 }
 
 .tasks-hero__lead {
   margin: 0;
-  max-width: 38rem;
+  max-width: none;
   color: var(--text);
   font-size: 1rem;
   line-height: 1.58;
@@ -723,7 +724,7 @@ button {
 
 .tasks-hero__supporting-copy {
   margin: -4px 0 0;
-  max-width: 38rem;
+  max-width: none;
   color: var(--muted);
   line-height: 1.54;
 }
@@ -2244,6 +2245,17 @@ button {
 
   .sticky-mobile-cta {
     display: none;
+  }
+}
+
+@media (min-width: 560px) and (max-width: 719px) {
+  .tasks-hero__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 228px);
+    align-items: start;
+  }
+
+  .tasks-hero h1 {
+    font-size: clamp(1.85rem, 5.2vw, 2.25rem);
   }
 }
 
