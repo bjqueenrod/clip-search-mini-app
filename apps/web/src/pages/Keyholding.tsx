@@ -129,7 +129,7 @@ export function Keyholding() {
       <section className="tasks-panel tasks-panel--steps">
         <div className="tasks-panel__header">
           <SectionEyebrow>How It Works</SectionEyebrow>
-          <h2>Simple path to being held</h2>
+          <h2>The path to locking your cock in a cage for me</h2>
         </div>
         <div className="tasks-stepper">
           {["Apply", "Get reviewed", "Get accepted", "Begin your lock period"].map((title, index) => (
