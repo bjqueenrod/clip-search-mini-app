@@ -132,7 +132,7 @@ export function Keyholding() {
           <h2>The path to locking your cock in a cage for me</h2>
         </div>
         <div className="tasks-stepper">
-          {["Apply", "Get reviewed", "Get accepted", "Begin your lock period"].map((title, index) => {
+          {["Apply", "Get reviewed", "Get accepted", "Begin your lock period", "Stay accountable"].map((title, index) => {
             const Icon = () => {
               switch (index) {
                 case 0:
@@ -157,10 +157,16 @@ export function Keyholding() {
                       <path d="m5 13 4 4 10-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   );
-                default:
+                case 3:
                   return (
                     <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
                       <path d="M12 3l3 6.5 7 .9-5.2 4.7 1.4 7.4L12 18l-6.2 4.5 1.4-7.4L2 10.4l7-.9Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                    </svg>
+                  );
+                default:
+                  return (
+                    <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+                      <path d="M4 5h16M4 12h16M4 19h16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                     </svg>
                   );
               }
@@ -179,6 +185,7 @@ export function Keyholding() {
                 {index === 1 && 'I screen seriousness, readiness, and fit. Only disciplined applicants move forward.'}
                 {index === 2 && 'Accepted applicants receive onboarding steps, control rules, and first proof check.'}
                 {index === 3 && 'Lock, follow cadence, submit proof on schedule, and stay compliant throughout.'}
+                {index === 4 && 'Maintain proofed check-ins and messaging discipline; consequences apply for slips.'}
               </p>
             </article>
             );
