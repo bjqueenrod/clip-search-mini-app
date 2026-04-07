@@ -6,9 +6,9 @@ export type KeyholdingTier = {
   duration?: string;
   idealFor?: string;
   includes: string[];
-  price?: string;
-  priceLabel?: string;
-  pricePerWeek?: string;
+  price?: string | number;
+  priceLabel?: string | number;
+  pricePerWeek?: string | number;
   priceValue?: number;
   paymentProductId?: number;
   badge?: string;

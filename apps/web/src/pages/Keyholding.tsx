@@ -1,14 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { AppShell } from '../components/AppShell';
-import { TierCarousel } from '../components/TierCarousel';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { applyTelegramTheme, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { setAnalyticsContext } from '../app/analytics';
 import { useTelegramSession } from '../features/auth/hooks';
-import { TierItem } from '../features/tiers/types';
 import { useKeyholdingOptions, useKeyholdingTiers } from '../features/keyholding/hooks';
+import { KeyholdingTierCarousel } from '../components/KeyholdingTierCarousel';
 
 const FAQ_ITEMS = [
   {
@@ -50,20 +49,6 @@ export function Keyholding() {
   const tiersQuery = useKeyholdingTiers();
   const optionsQuery = useKeyholdingOptions();
   const didInitRef = useRef(false);
-  const tierItems: TierItem[] = (tiersQuery.data?.items ?? []).map((tier) => ({
-    id: tier.id,
-    name: tier.name,
-    shortDescription: tier.desc,
-    description: tier.desc,
-    productId: tier.paymentProductId?.toString(),
-    durationDays: tier.durationWeeksOptions?.[0] ? tier.durationWeeksOptions[0] * 7 : undefined,
-    tasksPerDay: undefined,
-    price: typeof tier.priceValue === 'number' ? tier.priceValue : undefined,
-    priceLabel: tier.priceLabel || tier.price,
-    isUnlimitedTasks: false,
-    badge: tier.badge,
-    botBuyUrl: undefined,
-  }));
 
   useEffect(() => {
     applyTelegramTheme();
@@ -177,10 +162,14 @@ export function Keyholding() {
         </div>
 
         {tiersQuery.isError && <ErrorState message={(tiersQuery.error as Error).message} />}
-        {(tiersQuery.isLoading || tierItems.length > 0) && (
-          <TierCarousel items={tierItems} loading={tiersQuery.isLoading} />
+        {(tiersQuery.isLoading || (tiersQuery.data?.items?.length ?? 0) > 0) && (
+          <KeyholdingTierCarousel
+            items={tiersQuery.data?.items ?? []}
+            loading={tiersQuery.isLoading}
+            onApply={handleApplyClick}
+          />
         )}
-        {!tiersQuery.isLoading && tiersQuery.data && tierItems.length === 0 && (
+        {!tiersQuery.isLoading && tiersQuery.data && (tiersQuery.data.items?.length ?? 0) === 0 && (
           <EmptyState title="No tiers available" message="Tiers will appear here when configured." />
         )}
       </section>
