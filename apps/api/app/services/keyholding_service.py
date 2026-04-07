@@ -6,6 +6,10 @@ import httpx
 from fastapi import HTTPException
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
+
+
+logger = get_logger(__name__)
 
 
 def _client_headers(token: str | None) -> dict[str, str]:
@@ -36,8 +40,10 @@ def _get(endpoint: str) -> dict[str, Any]:
     except httpx.HTTPStatusError as exc:
         text = exc.response.text
         status = exc.response.status_code
+        logger.error("Keyholding tiers/options upstream error", extra={"url": url, "status": status, "body": text})
         raise HTTPException(status_code=status, detail=f"Upstream keyholding API error ({status}): {text}") from exc
     except Exception as exc:  # noqa: BLE001
+        logger.error("Keyholding tiers/options upstream failure", extra={"url": url, "error": str(exc)})
         raise HTTPException(status_code=502, detail=f"Unable to reach keyholding API: {exc}") from exc
 
     if not isinstance(data, dict):
