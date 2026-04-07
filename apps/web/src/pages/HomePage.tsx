@@ -6,10 +6,14 @@ import { applyTelegramTheme } from '../app/telegram';
 import { useTelegramSession } from '../features/auth/hooks';
 import { useEffect } from 'react';
 
-function resolveStartParamTarget(startParam?: string): '/clips' | '/tasks' {
+function resolveStartParamTarget(startParam?: string): '/clips' | '/tasks' | '/keyholding' {
   const normalized = startParam?.trim().toLowerCase();
   if (!normalized) {
     return '/clips';
+  }
+
+  if (normalized === 'keyholding' || normalized.startsWith('keyholding')) {
+    return '/keyholding';
   }
 
   if (normalized === 'clips' || normalized.startsWith('stream_') || normalized.startsWith('download_')) {
