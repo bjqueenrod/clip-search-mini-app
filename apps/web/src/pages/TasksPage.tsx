@@ -524,7 +524,6 @@ export function TasksPage() {
               (reviewed by Mistress BJQueen) all happen inside the Telegram bot.
             </p>
           </div>
-          {tiersQuery.data && <span className="tasks-section__count">{tiersQuery.data.total} available</span>}
         </div>
 
         {tiersQuery.isError && <ErrorState message={(tiersQuery.error as Error).message} />}
@@ -624,7 +623,7 @@ export function TasksPage() {
 
       <div className="sticky-mobile-cta">
         <div className="sticky-mobile-cta__content">
-          <span>{tiersQuery.data ? `${tiersQuery.data.total} custom packages ready` : 'Custom Obedience Tasks'}</span>
+          <span>Custom Obedience Tasks</span>
           <a className="tasks-button tasks-button--primary sticky-mobile-cta__button" href="#packages">
             Choose Package
           </a>
