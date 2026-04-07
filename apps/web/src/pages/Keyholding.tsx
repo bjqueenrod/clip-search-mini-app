@@ -155,9 +155,6 @@ export function Keyholding() {
           <div className="tasks-section__copy">
             <SectionEyebrow>Tiers / Pricing</SectionEyebrow>
             <h2>Choose the level of control you can handle</h2>
-            <p className="tasks-panel__body-copy">
-              Tiers load from the control database. Scroll horizontally to compare commitments and proof cadence.
-            </p>
           </div>
         </div>
 
