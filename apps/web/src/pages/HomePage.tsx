@@ -82,6 +82,12 @@ export function HomePage() {
             <p>See featured packages, compare duration and daily intensity, and continue checkout in Telegram.</p>
             <span className="chooser-card__cta">Open Task Packages</span>
           </Link>
+          <Link to="/keyholding" className="chooser-card chooser-card--tasks">
+            <span className="chooser-card__eyebrow">🔒 Keyholding</span>
+            <strong>Apply for premium chastity keyholding.</strong>
+            <p>Learn the control process, view tiers, and apply for disciplined, proofed keyholding inside Telegram.</p>
+            <span className="chooser-card__cta">Open Keyholding</span>
+          </Link>
         </div>
       </section>
     </AppShell>
