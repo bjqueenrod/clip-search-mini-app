@@ -710,7 +710,7 @@ button {
 
 .tasks-hero h1 {
   margin: 2px 0 0;
-  max-width: 16ch;
+  max-width: 22ch;
 }
 
 .tasks-hero__lead {
@@ -2194,10 +2194,6 @@ button {
     align-items: start;
   }
 
-  .tasks-hero h1 {
-    max-width: 15ch;
-  }
-
   .top-sellers__track {
     grid-auto-columns: minmax(320px, 60%);
   }
@@ -2260,10 +2256,6 @@ button {
 @media (max-width: 719px) {
   .hero__banner-copy {
     max-width: 52%;
-  }
-
-  .tasks-hero h1 {
-    max-width: 12ch;
   }
 
   .tasks-hero__actions .tasks-button {
