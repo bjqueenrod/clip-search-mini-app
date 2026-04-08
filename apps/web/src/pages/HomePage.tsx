@@ -36,7 +36,6 @@ function resolveStartParamTarget(startParam?: string): '/clips' | '/tasks' | '/k
 export function HomePage() {
   const navigate = useNavigate();
   const session = useTelegramSession();
-  const redirectTarget = resolveStartParamTarget(session.startParam);
 
   useEffect(() => {
     applyTelegramTheme();
@@ -49,10 +48,6 @@ export function HomePage() {
       startParam: session.startParam,
     });
   }, [session.error, session.isTelegram, session.ready, session.startParam]);
-
-  useEffect(() => {
-    navigate(redirectTarget, { replace: true });
-  }, [navigate, redirectTarget]);
 
   return (
     <AppShell>
