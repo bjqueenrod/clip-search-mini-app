@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { setAnalyticsContext } from '../app/analytics';
+import { trackInteraction } from '../app/analytics';
 import { applyTelegramTheme } from '../app/telegram';
 import { useTelegramSession } from '../features/auth/hooks';
 import { useEffect } from 'react';
@@ -65,19 +66,31 @@ export function HomePage() {
           </p>
         </div>
         <div className="chooser-grid">
-          <Link to="/clips" className="chooser-card chooser-card--clips">
+          <Link
+            to="/clips"
+            className="chooser-card chooser-card--clips"
+            onClick={() => trackInteraction({ actionKey: 'chooser_clips', screen: 'home' })}
+          >
             <span className="chooser-card__eyebrow">🎬 Clip Store</span>
             <strong>Browse clips, previews, and bot purchase links.</strong>
             <p>Search the library, open previews, and hand off to the bot for stream or download purchase.</p>
             <span className="chooser-card__cta">Open Clip Store</span>
           </Link>
-          <Link to="/tasks" className="chooser-card chooser-card--tasks">
+          <Link
+            to="/tasks"
+            className="chooser-card chooser-card--tasks"
+            onClick={() => trackInteraction({ actionKey: 'chooser_tasks', screen: 'home' })}
+          >
             <span className="chooser-card__eyebrow">📝 Custom Tasks</span>
             <strong>Compare obedience packages and buy in bot.</strong>
             <p>See featured packages, compare duration and daily intensity, and continue checkout in Telegram.</p>
             <span className="chooser-card__cta">Open Task Packages</span>
           </Link>
-          <Link to="/keyholding" className="chooser-card chooser-card--tasks">
+          <Link
+            to="/keyholding"
+            className="chooser-card chooser-card--tasks"
+            onClick={() => trackInteraction({ actionKey: 'chooser_keyholding', screen: 'home' })}
+          >
             <span className="chooser-card__eyebrow">🔒 Keyholding</span>
             <strong>Apply for premium chastity keyholding.</strong>
             <p>Learn the control process, view tiers, and apply for disciplined, proofed keyholding inside Telegram.</p>
