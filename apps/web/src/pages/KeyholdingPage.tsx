@@ -10,9 +10,7 @@ import { useKeyholdingOptions, useKeyholdingTiers } from '../features/keyholding
 import { KeyholdingTierCarousel } from '../components/KeyholdingTierCarousel';
 
 function handleApplyClick() {
-  const startParam = 'keyholding_apply';
-  if (sendBotWebAppData(startParam)) return;
-  openBotDeepLink(`https://t.me/mistressbjqueenbot?start=${startParam}`);
+  window.location.href = 'https://apply.mistressbjqueen.com';
 }
 
 function SectionEyebrow({ children }: { children: string }) {
