@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
 import { formatPrice } from '../utils/format';
@@ -153,7 +153,7 @@ export function PaymentSheet({
     };
   }, [state, invoiceId, onSuccess]);
 
-  const handleCheckout = async () => {
+  const handleCheckout = useCallback(async () => {
     if (!selectedMethod) return;
     setState('submitting');
     setError('');
@@ -167,7 +167,7 @@ export function PaymentSheet({
       setError('Unable to start checkout. Try again or pay in bot.');
       setState('error');
     }
-  };
+  }, [itemContext, mode, productId, quantity, selectedMethod]);
 
   const showRetry = state === 'error' && !!botFallbackUrl;
 
