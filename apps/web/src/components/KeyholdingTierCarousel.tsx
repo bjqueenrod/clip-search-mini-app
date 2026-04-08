@@ -66,9 +66,10 @@ export function KeyholdingTierCarousel({
                   className="top-sellers__card top-sellers__card--tier top-sellers__card--light"
                 >
                   <div className="top-sellers__body top-sellers__body--tier">
-                    {controlLabel ? <span className="top-sellers__tier-badge top-sellers__tier-badge--inline">{controlLabel}</span> : null}
+                    <div className="top-sellers__eyebrow" aria-hidden="true" />
                     <h3>{tier.name}</h3>
                     {tier.desc ? <p className="top-sellers__descriptor">{tier.desc}</p> : null}
+                    {controlLabel ? <p className="top-sellers__badge-inline">{controlLabel}</p> : null}
                     {tier.duration ? (
                       <p>
                         <strong>Duration:</strong> {tier.duration}
