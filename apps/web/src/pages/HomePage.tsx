@@ -43,34 +43,43 @@ export function HomePage() {
       <section className="chooser-panel">
         <div className="chooser-grid">
           <Link
-            to="/clips"
-            className="chooser-card chooser-card--clips"
-            onClick={() => trackInteraction({ actionKey: 'chooser_clips', screen: 'home' })}
+            to="/keyholding"
+            className="chooser-card chooser-card--tasks"
+            onClick={() => trackInteraction({ actionKey: 'chooser_keyholding', screen: 'home' })}
           >
-            <span className="chooser-card__eyebrow">🎬 Clip Store</span>
-            <strong>Browse clips, previews, and bot purchase links.</strong>
-            <p>Search the library, open previews, and hand off to the bot for stream or download purchase.</p>
-            <span className="chooser-card__cta">Open Clip Store</span>
+            <span className="chooser-card__eyebrow">🔒 KEYHOLDING</span>
+            <strong>Give up control of your lock.</strong>
+            <p>
+              Structured chastity with real oversight. Proofed check-ins, enforced rules, and defined consequences.
+              Apply, get reviewed, and enter controlled keyholding.
+            </p>
+            <span className="chooser-card__cta">Apply for Keyholding</span>
           </Link>
           <Link
             to="/tasks"
             className="chooser-card chooser-card--tasks"
             onClick={() => trackInteraction({ actionKey: 'chooser_tasks', screen: 'home' })}
           >
-            <span className="chooser-card__eyebrow">📝 Custom Tasks</span>
-            <strong>Compare obedience packages and buy in bot.</strong>
-            <p>See featured packages, compare duration and daily intensity, and continue checkout in Telegram.</p>
-            <span className="chooser-card__cta">Open Task Packages</span>
+            <span className="chooser-card__eyebrow">📝 CUSTOM TASKS</span>
+            <strong>Get tasks built for you.</strong>
+            <p>
+              Choose your level, set the intensity, and receive obedience tasks designed around your limits,
+              weaknesses, and control level. Delivered privately. Enforced properly.
+            </p>
+            <span className="chooser-card__cta">View Task Packages</span>
           </Link>
           <Link
-            to="/keyholding"
-            className="chooser-card chooser-card--tasks"
-            onClick={() => trackInteraction({ actionKey: 'chooser_keyholding', screen: 'home' })}
+            to="/clips"
+            className="chooser-card chooser-card--clips"
+            onClick={() => trackInteraction({ actionKey: 'chooser_clips', screen: 'home' })}
           >
-            <span className="chooser-card__eyebrow">🔒 Keyholding</span>
-            <strong>Apply for premium chastity keyholding.</strong>
-            <p>Learn the control process, view tiers, and apply for disciplined, proofed keyholding inside Telegram.</p>
-            <span className="chooser-card__cta">Open Keyholding</span>
+            <span className="chooser-card__eyebrow">🎬 CLIP STORE</span>
+            <strong>Browse. Preview. Unlock.</strong>
+            <p>
+              Search the archive, watch previews, and unlock full clips instantly. Stream or download in seconds, no
+              waiting, no friction.
+            </p>
+            <span className="chooser-card__cta">Enter Clip Store</span>
           </Link>
         </div>
       </section>
