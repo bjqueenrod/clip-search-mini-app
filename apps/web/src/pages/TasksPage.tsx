@@ -375,14 +375,11 @@ export function TasksPage() {
     <AppShell>
       {!session.isTelegram && <TelegramDevBanner />}
       <section className="hero hero--tasks">
-        <div className="hero__banner-frame">
-          <img
-            className="hero__banner hero__banner--framed"
-            src="/header-obedience.jpeg?v=20260409a"
-            alt="Mistress BJQueen Custom Obedience Tasks banner"
-          />
-          <div className="hero__banner-mask" aria-hidden="true" />
-        </div>
+        <img
+          className="hero__banner"
+          src="/header-obedience.jpeg?v=20260409a"
+          alt="Mistress BJQueen Custom Obedience Tasks banner"
+        />
       </section>
 
       <section className="tasks-hero">
