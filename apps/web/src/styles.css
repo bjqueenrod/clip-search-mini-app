@@ -1439,17 +1439,17 @@ button {
 .top-sellers__pill-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
 }
 
 .top-sellers__pill {
   border-radius: 999px;
-  padding: 6px 10px;
+  padding: 10px 14px;
   background: rgba(176, 106, 214, 0.12);
   border: 1px solid rgba(176, 106, 214, 0.2);
   color: var(--text);
-  font-size: 0.82rem;
-  line-height: 1.32;
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
 .top-sellers__body {
