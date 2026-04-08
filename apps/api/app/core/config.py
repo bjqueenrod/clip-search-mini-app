@@ -40,11 +40,8 @@ class Settings(BaseSettings):
     payment_system_api_token: str = Field(default='', alias='PAYMENT_SYSTEM_API_TOKEN')
     payment_system_timeout_seconds: float = Field(default=4.0, alias='PAYMENT_SYSTEM_TIMEOUT_SECONDS')
     bot_username: str = Field(default='mistressbjqueenbot', alias='BOT_USERNAME')
-    cms_api_url: str = Field(default='', validation_alias=AliasChoices('CMS_API_URL', 'TELEGRAM_CMS_URL'))
-    cms_internal_task_token: str = Field(
-        default='',
-        validation_alias=AliasChoices('CMS_INTERNAL_TASK_TOKEN', 'INTERNAL_TASK_TOKEN'),
-    )
+    cms_api_url: str = Field(default='', alias='CMS_API_URL')
+    cms_api_token: str = Field(default='', alias='CMS_API_TOKEN')
     cms_tracking_timeout_seconds: float = Field(default=4.0, alias='CMS_TRACKING_TIMEOUT_SECONDS')
     featured_tier_product_ids_raw: str = Field(default='', alias='FEATURED_TIER_PRODUCT_IDS')
     tracking_links_base_url: str = Field(default='', alias='TRACKING_LINKS_BASE_URL')

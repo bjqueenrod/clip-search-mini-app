@@ -21,11 +21,11 @@ def is_tracked_start_param(start_param: str | None) -> bool:
 def notify_miniapp_open(start_param: str | None, user: TelegramUser) -> bool:
     normalized_start_param = (start_param or "").strip()
     cms_api_url = settings.normalized_cms_api_url
-    cms_internal_task_token = settings.cms_internal_task_token.strip()
+    cms_api_token = settings.cms_api_token.strip()
 
     if not is_tracked_start_param(normalized_start_param):
         return False
-    if not cms_api_url or not cms_internal_task_token:
+    if not cms_api_url or not cms_api_token:
         return False
 
     try:
@@ -39,7 +39,7 @@ def notify_miniapp_open(start_param: str | None, user: TelegramUser) -> bool:
                 "deep_link_param": normalized_start_param,
                 "start_param": normalized_start_param,
             },
-            headers={"X-Internal-Token": cms_internal_task_token},
+            headers={"X-Internal-Token": cms_api_token},
             timeout=settings.cms_tracking_timeout_seconds,
         )
         response.raise_for_status()

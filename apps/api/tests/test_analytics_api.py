@@ -19,7 +19,7 @@ def test_analytics_events_forward_to_cms_with_session(client, monkeypatch) -> No
 
     monkeypatch.setattr("app.services.analytics_service.httpx.post", _fake_post)
     monkeypatch.setattr("app.services.analytics_service.settings.cms_api_url", "https://cms.example")
-    monkeypatch.setattr("app.services.analytics_service.settings.cms_internal_task_token", "test-internal-token")
+    monkeypatch.setattr("app.services.analytics_service.settings.cms_api_token", "test-internal-token")
 
     auth_response = client.post(
         "/api/auth/telegram",
@@ -60,7 +60,7 @@ def test_analytics_events_require_session(client) -> None:
 
 def test_analytics_events_return_unaccepted_when_cms_is_not_configured(client, monkeypatch) -> None:
     monkeypatch.setattr("app.services.analytics_service.settings.cms_api_url", "")
-    monkeypatch.setattr("app.services.analytics_service.settings.cms_internal_task_token", "")
+    monkeypatch.setattr("app.services.analytics_service.settings.cms_api_token", "")
 
     auth_response = client.post("/api/auth/telegram", json={"devUser": {"id": 7, "username": "tester"}})
     assert auth_response.status_code == 200

@@ -61,7 +61,7 @@ Copy [.env.example](/Users/guywatson/Projects/clip-search-mini-app/.env.example)
 | `CORS_ALLOWED_ORIGINS` | Yes | `http://localhost:5173,https://mini.example.com` | Comma-separated allowed origins. |
 | `BOT_USERNAME` | Yes | `mistressbjqueenbot` | Bot username used to build all bot handoff deep links. |
 | `CMS_API_URL` | Tracking only | `https://telegram-cms.mistressbjqueen.com` | Base URL for the CMS service that receives internal mini-app attribution events. |
-| `CMS_INTERNAL_TASK_TOKEN` | Tracking only | `change-me` | Shared secret sent as `X-Internal-Token` when the mini-app API relays tracked `startapp` opens to the CMS. |
+| `CMS_API_TOKEN` | Tracking only | `change-me` | Shared secret sent as `X-Internal-Token` when the mini-app API relays tracked `startapp` opens to the CMS. |
 | `CMS_TRACKING_TIMEOUT_SECONDS` | No | `4` | Timeout for the CMS mini-app tracking relay request. |
 | `FEATURED_TIER_PRODUCT_IDS` | No | `26,23,21` | Manual ordered list of featured `product_id` values for `/tasks`. Leave empty to hide the featured task carousel. |
 | `PAYMENT_SYSTEM_API_URL` | Tasks prices only | `https://payments.example.com` | Base URL for the payment-system API used to resolve package prices from `product_id`. |
@@ -149,6 +149,6 @@ This gives you one service, one origin, and multiple Telegram Mini Apps by path.
 
 - Clip Store behavior remains under `/clips`.
 - Custom Obedience Tasks uses the `premium_tiers` table.
-- Tracked `startapp` payloads are forwarded to the CMS only when `CMS_API_URL` and `CMS_INTERNAL_TASK_TOKEN` are configured.
+- Tracked `startapp` payloads are forwarded to the CMS only when `CMS_API_URL` and `CMS_API_TOKEN` are configured.
 - If `FEATURED_TIER_PRODUCT_IDS` is empty, the featured task carousel is hidden.
 - If Bunny preview settings are missing, `/clips` still works but preview assets fall back gracefully.

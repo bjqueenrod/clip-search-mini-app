@@ -19,10 +19,10 @@ def _build_dedupe_key(event_name: str, telegram_user_id: int) -> str:
 
 def forward_analytics_event(event: MiniAppAnalyticsEventRequest, session: dict) -> bool:
     cms_api_url = settings.normalized_cms_api_url
-    cms_internal_task_token = settings.cms_internal_task_token.strip()
+    cms_api_token = settings.cms_api_token.strip()
     telegram_user_id = int(session.get("telegram_user_id") or 0)
 
-    if not cms_api_url or not cms_internal_task_token or not telegram_user_id:
+    if not cms_api_url or not cms_api_token or not telegram_user_id:
         return False
 
     occurred_at = event.occurred_at or datetime.now(timezone.utc)
@@ -47,7 +47,7 @@ def forward_analytics_event(event: MiniAppAnalyticsEventRequest, session: dict) 
         response = httpx.post(
             f"{cms_api_url}/internal/analytics/events",
             json=payload,
-            headers={"X-Internal-Token": cms_internal_task_token},
+            headers={"X-Internal-Token": cms_api_token},
             timeout=settings.cms_tracking_timeout_seconds,
         )
         response.raise_for_status()
