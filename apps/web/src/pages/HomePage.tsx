@@ -17,13 +17,14 @@ export function HomePage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const startapp = (params.get('startapp') || '').trim().toLowerCase();
+    const queryStart = (params.get('startapp') || params.get('tgWebAppStartParam') || '').trim().toLowerCase();
+    const startapp = (session.startParam || queryStart).trim().toLowerCase();
     const target =
       startapp === 'clips' || startapp === 'tasks' || startapp === 'keyholding' ? `/${startapp}` : null;
     if (target) {
       navigate(target, { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, session.startParam]);
 
   useEffect(() => {
     setAnalyticsContext({
