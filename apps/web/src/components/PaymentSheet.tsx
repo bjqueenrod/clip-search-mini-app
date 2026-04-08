@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
+import { formatPrice } from '../utils/format';
 import { openBotDeepLink } from '../app/telegram';
 
 type SheetState = 'loading' | 'select' | 'submitting' | 'waiting' | 'success' | 'error';
@@ -52,6 +53,11 @@ export function PaymentSheet({
   const [invoiceId, setInvoiceId] = useState<string>('');
   const [paymentUrl, setPaymentUrl] = useState<string | undefined>('');
 
+  const selectedMethodInfo = useMemo(
+    () => methods.find((m) => m.paymentMethod === selectedMethod),
+    [methods, selectedMethod],
+  );
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -74,8 +80,32 @@ export function PaymentSheet({
   }, [productId, quantity, mode]);
 
   const selectedLabel = useMemo(
-    () => methods.find((m) => m.paymentMethod === selectedMethod)?.label || 'Pay',
-    [methods, selectedMethod],
+    () => selectedMethodInfo?.label || 'Pay',
+    [selectedMethodInfo],
+  );
+
+  const selectedPriceLabel = useMemo(() => {
+    if (selectedMethodInfo?.priceCents != null) {
+      return formatPrice(selectedMethodInfo.priceCents / 100);
+    }
+    return priceLabel;
+  }, [selectedMethodInfo, priceLabel]);
+
+  const payButtonLabel = useMemo(() => {
+    if (selectedPriceLabel) {
+      return `Pay ${selectedPriceLabel}`;
+    }
+    return `Pay with ${selectedLabel}`;
+  }, [selectedPriceLabel, selectedLabel]);
+
+  const primaryButtonDisabled = state === 'loading' || state === 'submitting' || !selectedMethod;
+
+  const retryButtonDisabled = !selectedMethod;
+
+  const paymentButton = (
+    <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={primaryButtonDisabled}>
+      {payButtonLabel}
+    </button>
   );
 
   useEffect(() => {
@@ -162,9 +192,7 @@ export function PaymentSheet({
                 </label>
               ))}
             </div>
-            <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={!selectedMethod}>
-              {`Pay ${priceLabel || ''}`.trim() || `Pay with ${selectedLabel}`}
-            </button>
+            {paymentButton}
             {botFallbackUrl ? (
               <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
                 Pay in bot instead
@@ -208,7 +236,7 @@ export function PaymentSheet({
         {state === 'error' ? (
           <div className="payment-sheet__body">
             <div className="payment-sheet__error">{error || 'Payment unavailable right now.'}</div>
-            <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={!selectedMethod}>
+            <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={retryButtonDisabled}>
               Retry checkout
             </button>
             {showRetry ? (
