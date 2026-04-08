@@ -44,6 +44,14 @@ export function KeyholdingPage() {
     <AppShell>
       {!session.isTelegram && <TelegramDevBanner />}
 
+      <section className="hero hero--tasks">
+        <img
+          className="hero__banner"
+          src="/header-keyholding.jpeg?v=20260409a"
+          alt="Mistress BJQueen Chastity Keyholding banner"
+        />
+      </section>
+
       <section className="tasks-hero">
         <div className="tasks-hero__grid">
           <div className="tasks-hero__main">
