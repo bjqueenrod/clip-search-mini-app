@@ -1445,8 +1445,8 @@ button {
 .top-sellers__pill {
   border-radius: 14px;
   padding: 10px 14px;
-  background: rgba(176, 106, 214, 0.12);
-  border: 1px solid rgba(176, 106, 214, 0.2);
+  background: rgba(193, 128, 229, 0.18);
+  border: 1px solid rgba(193, 128, 229, 0.28);
   color: var(--text);
   font-size: 0.88rem;
   line-height: 1.45;
