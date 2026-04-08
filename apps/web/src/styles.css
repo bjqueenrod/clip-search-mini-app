@@ -1132,6 +1132,14 @@ button {
   line-height: 1.55;
 }
 
+.top-sellers--tiers .top-sellers__body p {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+  white-space: normal;
+}
+
 .top-sellers__meta-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
