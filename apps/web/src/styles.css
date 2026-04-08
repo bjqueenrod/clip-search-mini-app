@@ -2320,6 +2320,7 @@ button {
   width: 100%;
   max-width: 460px;
   box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35);
+  min-height: 360px;
 }
 
 .payment-sheet__header {
@@ -2347,6 +2348,10 @@ button {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.payment-sheet__body--shimmer {
+  gap: 16px;
 }
 
 .payment-sheet__methods {
@@ -2389,6 +2394,60 @@ button {
   justify-content: flex-start;
   gap: 8px;
   color: var(--muted, #c6bdd6);
+}
+
+.payment-sheet__shimmer-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #2c2335, #3a2e46, #2c2335);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.payment-sheet__shimmer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-sheet__shimmer-line {
+  height: 12px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #2c2335, #3a2e46, #2c2335);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.payment-sheet__shimmer-line.wide {
+  width: 80%;
+}
+
+.payment-sheet__shimmer-line.short {
+  width: 45%;
+}
+
+.payment-sheet__shimmer-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-sheet__shimmer-card {
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2c2335, #3a2e46, #2c2335);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  border: 1px solid var(--line, #2c2335);
+}
+
+.payment-sheet__shimmer-button {
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #3f2bff33, #8d5bff55, #3f2bff33);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
 }
 
 .payment-sheet__success {

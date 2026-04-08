@@ -57,6 +57,7 @@ export function PaymentSheet({
     () => methods.find((m) => m.paymentMethod === selectedMethod),
     [methods, selectedMethod],
   );
+  const isLoading = state === 'loading' || state === 'submitting';
 
   useEffect(() => {
     let cancelled = false;
@@ -173,7 +174,24 @@ export function PaymentSheet({
           </button>
         </div>
 
-        {state === 'loading' || state === 'submitting' ? <div className="payment-sheet__spinner">Loading payment methods…</div> : null}
+        {isLoading ? (
+          <div className="payment-sheet__body payment-sheet__body--shimmer">
+            <div className="payment-sheet__spinner">
+              <div className="payment-sheet__shimmer-dot" />
+              <span>Loading payment methods…</span>
+            </div>
+            <div className="payment-sheet__shimmer">
+              <div className="payment-sheet__shimmer-line wide" />
+              <div className="payment-sheet__shimmer-line" />
+              <div className="payment-sheet__shimmer-line short" />
+            </div>
+            <div className="payment-sheet__shimmer-cards">
+              <div className="payment-sheet__shimmer-card" />
+              <div className="payment-sheet__shimmer-card" />
+            </div>
+            <div className="payment-sheet__shimmer-button" />
+          </div>
+        ) : null}
 
         {state === 'select' ? (
           <div className="payment-sheet__body">
