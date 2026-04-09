@@ -1099,6 +1099,14 @@ button {
     0 0 0 1px rgba(176, 106, 214, 0.08) inset;
 }
 
+.top-sellers--tiers {
+  overscroll-behavior-y: contain;
+}
+
+.top-sellers--tiers .top-sellers__card {
+  touch-action: pan-y;
+}
+
 .top-sellers--tiers .top-sellers__media {
   height: clamp(140px, 40vw, 180px);
 }
@@ -1254,7 +1262,7 @@ button {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   overscroll-behavior-y: contain;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   scrollbar-width: none;
 }
 
