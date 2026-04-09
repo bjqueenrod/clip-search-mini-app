@@ -21,20 +21,12 @@ export function ClipCard({
   const selectedTag = searchParams.get('tags')?.split(',')[0] ?? undefined;
   const displayTags = useMemo(() => pickPrimaryTags(clip.tags, selectedTag), [clip.tags, selectedTag]);
 
-  const [mediaUrl, setMediaUrl] = useState<string | undefined>(clip.thumbnailUrl);
-
-  useEffect(() => {
-    setMediaUrl(clip.thumbnailUrl);
-  }, [clip.thumbnailUrl, clip.previewWebpUrl, clip.id]);
+  const mediaUrl = clip.thumbnailUrl;
 
   return (
     <Link
       className="clip-card"
       to={toClipPath(clip.id, location.search)}
-      onMouseEnter={() => clip.previewWebpUrl && setMediaUrl(clip.previewWebpUrl)}
-      onFocus={() => clip.previewWebpUrl && setMediaUrl(clip.previewWebpUrl)}
-      onMouseLeave={() => setMediaUrl(clip.thumbnailUrl)}
-      onBlur={() => setMediaUrl(clip.thumbnailUrl)}
       onClick={() =>
         trackClipSelect({
           clip,
@@ -51,7 +43,6 @@ export function ClipCard({
             src={mediaUrl}
             alt={clip.title}
             loading="lazy"
-            onError={() => setMediaUrl(clip.thumbnailUrl || undefined)}
           />
         ) : (
           <div className="clip-card__media-placeholder">
