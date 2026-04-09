@@ -483,28 +483,6 @@ export function TasksPage() {
         </div>
       </section>
 
-      <section className="tasks-panel">
-        <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Benefits</p>
-          <h2>Why this feels structured and custom</h2>
-        </div>
-        <p className="tasks-panel__body-copy">Everything here is designed to keep the flow personal, accountable, and inside Telegram.</p>
-        <div className="tasks-style-grid" aria-label="Examples of custom task styles">
-          {BENEFIT_POINTS.map((card) => (
-            <article key={card.title} className="tasks-style-card">
-              <div className="tasks-style-card__header">
-                <span className="tasks-style-card__icon">
-                  <TaskIcon name={card.icon} />
-                </span>
-                <p className="tasks-style-card__eyebrow">{card.eyebrow}</p>
-              </div>
-              <strong>{card.title}</strong>
-              <p>{card.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       <section className="tasks-panel tasks-panel--light tasks-categories">
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">Available Fetish Categories</p>
