@@ -74,11 +74,12 @@ export function HomePage() {
             <span className="chooser-card__eyebrow">📝 CUSTOM TASKS</span>
             <strong>Be put to work for me.</strong>
             <p>
-              Choose your package and intensity, then receive obedience tasks assigned using your selected fetish
+              Choose your package and intensity, then receive obedience tasks built around your selected fetish
               categories and available toys.
             </p>
             <p>
-              You complete the task. You submit proof. I review it myself and decide if it meets my standard.
+              You complete the tasks, submit proof, and I review it myself to decide if you followed my orders
+              correctly.
             </p>
             <span className="chooser-card__cta">Start Your Tasks</span>
           </Link>
