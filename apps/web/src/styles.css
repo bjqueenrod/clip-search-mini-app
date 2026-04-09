@@ -1109,8 +1109,8 @@ button {
 }
 
 .top-sellers--tiers .top-sellers__media {
-  height: clamp(180px, 38vw, 240px);
-  padding: 12px 0 8px;
+  height: clamp(190px, 38vw, 240px);
+  padding: 0;
 }
 
 .top-sellers--tiers .top-sellers__body--tier {
@@ -1371,7 +1371,7 @@ button {
 }
 
 .top-sellers__media--tier img {
-  object-position: left top;
+  object-position: center center;
 }
 
 .top-sellers__media-fallback {
