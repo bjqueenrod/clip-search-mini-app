@@ -71,12 +71,17 @@ export function HomePage() {
             onClick={handleCardClick('chooser_tasks')}
           >
             <span className="chooser-card__eyebrow">📝 CUSTOM TASKS</span>
-            <strong>Get tasks built for you.</strong>
+            <strong>CUSTOM TASKS</strong>
             <p>
-              Choose your level, set the intensity, and receive obedience tasks designed around your limits,
-              weaknesses, and control level. Delivered privately. Enforced properly.
+              Be put to work for me. Choose your package, select your intensity, and receive obedience tasks assigned
+              specifically for you. Each task is built around your selected fetish categories and the toys you have
+              available.
             </p>
-            <span className="chooser-card__cta">View Task Packages</span>
+            <p>
+              You complete what you’re given. You submit proof. I review it myself and decide if it meets my standard.
+            </p>
+            <p>This is about control, consistency, and showing me exactly how well you follow instructions.</p>
+            <span className="chooser-card__cta">Start Your Tasks</span>
           </Link>
           <Link
             to="/clips"
