@@ -393,8 +393,8 @@ export function TasksPage() {
               I decide the tasks. You complete them properly and submit the proof I require.
             </p>
             <p className="tasks-hero__supporting-copy">
-              Every task requires photo, audio, or video proof. I judge each submission myself and approve or reject it
-              based on your effort, obedience, and how well you followed instructions.
+              Every task requires photo, audio, or video proof. I judge every submission myself and decide whether it is
+              accepted based on your effort and how closely you followed the task instructions.
             </p>
             <div className="tasks-hero__actions">
               <a className="tasks-button tasks-button--primary" href="#packages">
