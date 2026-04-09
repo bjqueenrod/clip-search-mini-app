@@ -71,7 +71,7 @@ export function HomePage() {
             onClick={handleCardClick('chooser_tasks')}
           >
             <span className="chooser-card__eyebrow">📝 CUSTOM TASKS</span>
-            <strong>CUSTOM TASKS</strong>
+            <strong>Be put to work for me.</strong>
             <p>
               Be put to work for me. Choose your package and intensity, then receive obedience tasks assigned using
               your selected fetish categories and available toys.
