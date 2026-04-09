@@ -154,9 +154,9 @@ const WHAT_YOURE_BUYING = [
 ] as const;
 
 const REASSURANCE_POINTS = [
-  'Packages can start softer with fewer daily tasks.',
-  'You do not need a big sex toy/prop collection—tasks use what you have.',
-  'Everything stays in Telegram with clear pacing and proof reviewed by Mistress BJQueen.',
+  'Submissive men who want strict direction.',
+  'You deliver proof for every order without excuses.',
+  'You accept my approval or rejection as final.',
 ] as const;
 
 const FAQS = [
@@ -386,19 +386,18 @@ export function TasksPage() {
         <div className="tasks-hero__grid">
           <div className="tasks-hero__main">
             <p className="hero__eyebrow">Custom Obedience Tasks</p>
-            <h1>Custom Obedience Tasks, delivered in Telegram</h1>
+            <h1>You are here to be given instructions and judged on how well you follow them.</h1>
             <p className="tasks-hero__lead">
-              Buy a time-limited package, set your categories, sex toys/props, schedule, limits, and auto-send
-              preferences, then receive obedience tasks hand-picked from a large collection to match you, one at a
-              time, with proof submission built in and reviewed by Mistress BJQueen.
+              Over a set period of time, I assign tasks for my amusement and your obedience. You choose the categories.
+              I decide the tasks. You complete them properly and submit the proof I require.
             </p>
             <p className="tasks-hero__supporting-copy">
-              Packages define how long you have and how many tasks you can receive per day. Everything runs inside the
-              Telegram bot—no auto-renewals, no live sexting, just structured, custom tasks.
+              Every task requires photo, audio, or video proof. I judge each submission myself and approve or reject it
+              based on your effort, obedience, and how well you followed instructions.
             </p>
             <div className="tasks-hero__actions">
               <a className="tasks-button tasks-button--primary" href="#packages">
-                Choose Your Package
+                Start Your Test
               </a>
             </div>
             <div className="tasks-strip tasks-strip--hero" aria-label="Why buyers choose custom obedience">
@@ -576,13 +575,13 @@ export function TasksPage() {
 
       <section className="tasks-panel">
         <div className="tasks-panel__header">
-          <p className="hero__eyebrow">Beginner Reassurance</p>
-          <h2>Easy to start, even if this is your first time</h2>
+          <p className="hero__eyebrow">Who this is for</p>
+          <h2>Who this is for</h2>
         </div>
         <div className="tasks-reassurance">
           <p className="tasks-panel__body-copy">
-            You do not need a huge sex toy/prop collection or advanced experience. Packages can be shaped around a
-            simpler setup and a lighter pace if that suits you better.
+            This is for submissive men who want structure, direction, and to be judged on how well they follow
+            instructions. If you can complete tasks properly and submit proof for approval, you will fit here.
           </p>
           <div className="tasks-strip tasks-strip--soft" aria-label="Beginner reassurance">
             {REASSURANCE_POINTS.map((point) => (
