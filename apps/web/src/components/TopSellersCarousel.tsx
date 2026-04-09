@@ -54,33 +54,6 @@ export function TopSellersCarousel({
                 key={clip.id}
                 className="top-sellers__card"
                 to={toClipPath(clip.id, location.search)}
-                onMouseEnter={(event) => {
-                  const target = event.currentTarget;
-                  const img = target.querySelector('img');
-                  if (img && clip.previewWebpUrl) {
-                    img.src = clip.previewWebpUrl;
-                  }
-                }}
-                onFocus={(event) => {
-                  const target = event.currentTarget;
-                  const img = target.querySelector('img');
-                  if (img && clip.previewWebpUrl) {
-                    img.src = clip.previewWebpUrl;
-                  }
-                }}
-                onMouseLeave={(event) => {
-                  const target = event.currentTarget;
-                  const img = target.querySelector('img');
-                  if (img && clip.thumbnailUrl) {
-                    img.src = clip.thumbnailUrl;
-                  }
-                }}
-                onBlur={(event) => {
-                  const img = event.currentTarget.querySelector('img');
-                  if (img && clip.thumbnailUrl) {
-                    img.src = clip.thumbnailUrl;
-                  }
-                }}
                 onClick={() =>
                   trackClipSelect({
                     clip,
@@ -92,8 +65,8 @@ export function TopSellersCarousel({
                 }
               >
                 <div className="top-sellers__media">
-                  {clip.thumbnailUrl || clip.previewWebpUrl ? (
-                    <img src={clip.thumbnailUrl || undefined} data-preview={clip.previewWebpUrl || ''} alt={clip.title} loading="lazy" />
+                  {clip.thumbnailUrl ? (
+                    <img src={clip.thumbnailUrl} alt={clip.title} loading="lazy" />
                   ) : (
                     <div className="top-sellers__media-fallback">Preview coming soon</div>
                   )}

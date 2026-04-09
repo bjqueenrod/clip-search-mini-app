@@ -13,7 +13,10 @@ export function PreviewPlayer({
 }) {
   const [active, setActive] = useState(false);
   const posterUrl = useMemo(() => thumbnailUrl || undefined, [thumbnailUrl]);
-  const animatedPosterUrl = useMemo(() => previewImageUrl || thumbnailUrl, [previewImageUrl, thumbnailUrl]);
+  const animatedPosterUrl = useMemo(
+    () => (previewImageUrl && previewImageUrl !== thumbnailUrl ? previewImageUrl : undefined),
+    [previewImageUrl, thumbnailUrl],
+  );
 
   if (embedUrl) {
     return (
@@ -48,13 +51,13 @@ export function PreviewPlayer({
   return (
     <div
       className="preview-player preview-player--fallback"
-      style={{ backgroundImage: active ? (animatedPosterUrl ? `url(${animatedPosterUrl})` : undefined) : posterUrl ? `url(${posterUrl})` : undefined }}
-      onPointerEnter={() => setActive(true)}
+      style={{ backgroundImage: posterUrl ? `url(${posterUrl})` : undefined }}
+      onPointerEnter={() => animatedPosterUrl && setActive(true)}
       onPointerLeave={() => setActive(false)}
-      onFocus={() => setActive(true)}
+      onFocus={() => animatedPosterUrl && setActive(true)}
       onBlur={() => setActive(false)}
     >
-      <span>{active ? 'Loading preview...' : 'No public preview available yet.'}</span>
+      <span>{animatedPosterUrl && active ? 'Loading preview...' : 'No public preview available yet.'}</span>
     </div>
   );
 }
