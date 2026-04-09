@@ -1249,7 +1249,7 @@ button {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: auto;
-  touch-action: pan-x;
+  touch-action: auto;
   scrollbar-width: none;
 }
 
