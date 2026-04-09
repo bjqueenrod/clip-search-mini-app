@@ -1266,6 +1266,11 @@ button {
   scrollbar-width: none;
 }
 
+.top-sellers,
+.top-sellers--tiers {
+  overscroll-behavior-y: contain;
+}
+
 .top-sellers__track::-webkit-scrollbar {
   display: none;
 }
