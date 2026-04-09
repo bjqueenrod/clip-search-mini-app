@@ -4,6 +4,7 @@ import { ClipItem } from '../features/clips/types';
 import { formatDuration, formatPrice } from '../utils/format';
 import { toClipPath } from '../utils/links';
 import { usePagedCarousel } from './usePagedCarousel';
+import { useStaticImage } from '../utils/useStaticImage';
 
 export function TopSellersCarousel({
   items,
@@ -49,43 +50,47 @@ export function TopSellersCarousel({
                 </div>
               </div>
             ))
-          : items.map((clip, index) => (
-              <Link
-                key={clip.id}
-                className="top-sellers__card"
-                to={toClipPath(clip.id, location.search)}
-                onClick={() =>
-                  trackClipSelect({
-                    clip,
-                    sourceList: listType,
-                    position: index + 1,
-                    query: searchParams.get('q') ?? '',
-                    tags: (searchParams.get('tags') ?? '').split(',').filter(Boolean),
-                  })
-                }
-              >
-                <div className="top-sellers__media">
-                  {clip.thumbnailUrl ? (
-                    <img src={clip.thumbnailUrl} alt={clip.title} loading="lazy" />
-                  ) : (
-                    <div className="top-sellers__media-fallback">Preview coming soon</div>
-                  )}
-                </div>
-                <div className="top-sellers__body">
-                  <div className="top-sellers__eyebrow">
-                    <span className="top-sellers__id">{clip.id}</span>
-                    <span>{formatDuration(clip.durationLabel, clip.durationSeconds)}</span>
+          : items.map((clip, index) => {
+              const isAnimated = clip.thumbnailUrl?.match(/\\.(webp|gif)(\\?|$)/i);
+              const mediaUrl = isAnimated ? undefined : useStaticImage(clip.thumbnailUrl) ?? clip.thumbnailUrl;
+              return (
+                <Link
+                  key={clip.id}
+                  className="top-sellers__card"
+                  to={toClipPath(clip.id, location.search)}
+                  onClick={() =>
+                    trackClipSelect({
+                      clip,
+                      sourceList: listType,
+                      position: index + 1,
+                      query: searchParams.get('q') ?? '',
+                      tags: (searchParams.get('tags') ?? '').split(',').filter(Boolean),
+                    })
+                  }
+                >
+                  <div className="top-sellers__media">
+                    {mediaUrl ? (
+                      <img src={mediaUrl} alt={clip.title} loading="lazy" />
+                    ) : (
+                      <div className="top-sellers__media-fallback">Preview coming soon</div>
+                    )}
                   </div>
-                  <h3>{clip.title}</h3>
-                  <p>{clip.shortDescription || clip.description || 'Preview this clip in Telegram.'}</p>
-                  <div className="top-sellers__prices">
-                    <span>{`🎬 ${formatPrice(clip.streamPrice ?? clip.price)}`}</span>
-                    <span className="top-sellers__price-separator">•</span>
-                    <span>{`📥 ${formatPrice(clip.downloadPrice ?? clip.price)}`}</span>
+                  <div className="top-sellers__body">
+                    <div className="top-sellers__eyebrow">
+                      <span className="top-sellers__id">{clip.id}</span>
+                      <span>{formatDuration(clip.durationLabel, clip.durationSeconds)}</span>
+                    </div>
+                    <h3>{clip.title}</h3>
+                    <p>{clip.shortDescription || clip.description || 'Preview this clip in Telegram.'}</p>
+                    <div className="top-sellers__prices">
+                      <span>{`🎬 ${formatPrice(clip.streamPrice ?? clip.price)}`}</span>
+                      <span className="top-sellers__price-separator">•</span>
+                      <span>{`📥 ${formatPrice(clip.downloadPrice ?? clip.price)}`}</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
       </div>
       {pageCount > 1 ? (
         <div className="top-sellers__pagination" aria-label={`${title} pages`}>

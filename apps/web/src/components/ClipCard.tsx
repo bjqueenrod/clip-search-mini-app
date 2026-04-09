@@ -6,6 +6,7 @@ import { formatDuration, formatPrice } from '../utils/format';
 import { pickPrimaryTags } from '../utils/tags';
 import { safeBackground } from '../utils/theme';
 import { toClipPath } from '../utils/links';
+import { useStaticImage } from '../utils/useStaticImage';
 
 export function ClipCard({
   clip,
@@ -21,7 +22,8 @@ export function ClipCard({
   const selectedTag = searchParams.get('tags')?.split(',')[0] ?? undefined;
   const displayTags = useMemo(() => pickPrimaryTags(clip.tags, selectedTag), [clip.tags, selectedTag]);
 
-  const mediaUrl = clip.thumbnailUrl;
+  const isAnimated = clip.thumbnailUrl?.match(/\\.(webp|gif)(\\?|$)/i);
+  const mediaUrl = isAnimated ? undefined : useStaticImage(clip.thumbnailUrl) ?? clip.thumbnailUrl;
 
   return (
     <Link

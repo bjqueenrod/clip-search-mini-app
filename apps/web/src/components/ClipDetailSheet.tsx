@@ -91,7 +91,7 @@ export function ClipDetailSheet({ clip, loading }: { clip?: ClipItem; loading?: 
             <PreviewPlayer
               embedUrl={clip.previewEmbedUrl}
               thumbnailUrl={clip.thumbnailUrl}
-              previewImageUrl={clip.previewWebpUrl}
+              previewImageUrl={undefined}
               title={clip.title}
             />
             <div className="detail-sheet__body">
