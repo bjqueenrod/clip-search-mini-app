@@ -19,6 +19,27 @@ export function PreviewPlayer({
   );
 
   if (embedUrl) {
+    const isEmbedUrl = embedUrl.includes('/embed');
+    if (!isEmbedUrl) {
+      return (
+        <div className="preview-player">
+          <video
+            src={embedUrl}
+            poster={posterUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls
+            preload="auto"
+            controlsList="nodownload noremoteplayback"
+            disablePictureInPicture
+            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#120f15' }}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className="preview-player">
         <iframe
