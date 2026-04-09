@@ -78,7 +78,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     title: 'Submit proof and continue',
     detail:
-      'Send proof where required. Proof is reviewed by Mistress BJQueen, and you move to the next task within your package limits.',
+      'Send proof you have completed the task. Proof is reviewed by Mistress BJQueen, and accepted/rejected. Once accepted you move to the next task within your package limits.',
     icon: 'chat',
   },
 ] as const;
