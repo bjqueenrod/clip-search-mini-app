@@ -18,28 +18,30 @@ export function PreviewPlayer({
     [previewImageUrl, thumbnailUrl],
   );
 
-  if (embedUrl) {
-    const isEmbedUrl = embedUrl.includes('/embed');
-    if (!isEmbedUrl) {
-      return (
-        <div className="preview-player">
-          <video
-            src={embedUrl}
-            poster={posterUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            controls
-            preload="auto"
-            controlsList="nodownload noremoteplayback"
-            disablePictureInPicture
-            style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#120f15' }}
-          />
-        </div>
-      );
-    }
+  const [useNative, setUseNative] = useState(Boolean(embedUrl));
 
+  if (embedUrl && useNative) {
+    return (
+      <div className="preview-player">
+        <video
+          src={embedUrl}
+          poster={posterUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls
+          preload="auto"
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
+          style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#120f15' }}
+          onError={() => setUseNative(false)}
+        />
+      </div>
+    );
+  }
+
+  if (embedUrl) {
     return (
       <div className="preview-player">
         <iframe
