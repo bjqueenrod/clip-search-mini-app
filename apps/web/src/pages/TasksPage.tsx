@@ -512,8 +512,8 @@ export function TasksPage() {
             <p className="hero__eyebrow">Packages</p>
             <h2>Choose the package that fits your pace</h2>
             <p className="tasks-panel__body-copy">
-              Each package sets the access window and maximum tasks per day. Payment, setup, delivery, and proof
-              (reviewed by Mistress BJQueen) all happen inside the Telegram bot.
+              Each package determines how long I can give you tasks for and the maximum number of tasks you can receive
+              each day. Payment, setup, delivery, and proof review all happen inside the Telegram bot.
             </p>
           </div>
         </div>
