@@ -1100,12 +1100,12 @@ button {
 }
 
 .top-sellers--tiers .top-sellers__media {
-  height: clamp(182px, 52vw, 228px);
+  height: clamp(140px, 40vw, 180px);
 }
 
 .top-sellers--tiers .top-sellers__body--tier {
-  gap: 14px;
-  padding: 20px 18px 18px;
+  gap: 10px;
+  padding: 14px 16px 16px;
 }
 
 .top-sellers--tiers .top-sellers__eyebrow {
@@ -1120,23 +1120,23 @@ button {
 
 .top-sellers--tiers .top-sellers__descriptor,
 .top-sellers--tiers .top-sellers__value-copy {
-  display: block;
-  overflow: visible;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .top-sellers--tiers .top-sellers__descriptor {
   color: var(--text);
   font-size: 0.94rem;
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .top-sellers--tiers .top-sellers__body p {
-  display: block;
-  overflow: visible;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   white-space: normal;
 }
 
