@@ -31,8 +31,8 @@ export function ClipCard({
     <Link
       className="clip-card"
       to={toClipPath(clip.id, location.search)}
-      onMouseEnter={() => setMediaUrl(clip.previewWebpUrl || clip.thumbnailUrl)}
-      onFocus={() => setMediaUrl(clip.previewWebpUrl || clip.thumbnailUrl)}
+      onMouseEnter={() => clip.previewWebpUrl && setMediaUrl(clip.previewWebpUrl)}
+      onFocus={() => clip.previewWebpUrl && setMediaUrl(clip.previewWebpUrl)}
       onMouseLeave={() => setMediaUrl(clip.thumbnailUrl)}
       onBlur={() => setMediaUrl(clip.thumbnailUrl)}
       onClick={() =>
