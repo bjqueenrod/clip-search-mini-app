@@ -12,11 +12,7 @@ export function PreviewPlayer({
   title: string;
 }) {
   const [active, setActive] = useState(false);
-  const isAnimatedPoster = useMemo(
-    () => Boolean(thumbnailUrl && thumbnailUrl.match(/\\.(webp|gif)(\\?|$)/i)),
-    [thumbnailUrl],
-  );
-  const posterUrl = useMemo(() => (isAnimatedPoster ? undefined : thumbnailUrl || undefined), [isAnimatedPoster, thumbnailUrl]);
+  const posterUrl = useMemo(() => thumbnailUrl || undefined, [thumbnailUrl]);
   const animatedPosterUrl = useMemo(
     () => (previewImageUrl && previewImageUrl !== thumbnailUrl ? previewImageUrl : undefined),
     [previewImageUrl, thumbnailUrl],

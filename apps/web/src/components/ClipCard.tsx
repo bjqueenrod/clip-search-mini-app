@@ -6,7 +6,6 @@ import { formatDuration, formatPrice } from '../utils/format';
 import { pickPrimaryTags } from '../utils/tags';
 import { safeBackground } from '../utils/theme';
 import { toClipPath } from '../utils/links';
-import { useStaticImage } from '../utils/useStaticImage';
 
 export function ClipCard({
   clip,
@@ -22,13 +21,20 @@ export function ClipCard({
   const selectedTag = searchParams.get('tags')?.split(',')[0] ?? undefined;
   const displayTags = useMemo(() => pickPrimaryTags(clip.tags, selectedTag), [clip.tags, selectedTag]);
 
-  const isAnimated = clip.thumbnailUrl?.match(/\\.(webp|gif)(\\?|$)/i);
-  const mediaUrl = isAnimated ? undefined : useStaticImage(clip.thumbnailUrl) ?? clip.thumbnailUrl;
+  const [mediaUrl, setMediaUrl] = useState<string | undefined>(clip.thumbnailUrl);
+
+  useEffect(() => {
+    setMediaUrl(clip.thumbnailUrl);
+  }, [clip.thumbnailUrl, clip.previewWebpUrl, clip.id]);
 
   return (
     <Link
       className="clip-card"
       to={toClipPath(clip.id, location.search)}
+      onMouseEnter={() => setMediaUrl(clip.previewWebpUrl || clip.thumbnailUrl)}
+      onFocus={() => setMediaUrl(clip.previewWebpUrl || clip.thumbnailUrl)}
+      onMouseLeave={() => setMediaUrl(clip.thumbnailUrl)}
+      onBlur={() => setMediaUrl(clip.thumbnailUrl)}
       onClick={() =>
         trackClipSelect({
           clip,
@@ -45,6 +51,7 @@ export function ClipCard({
             src={mediaUrl}
             alt={clip.title}
             loading="lazy"
+            onError={() => setMediaUrl(clip.thumbnailUrl || undefined)}
           />
         ) : (
           <div className="clip-card__media-placeholder">

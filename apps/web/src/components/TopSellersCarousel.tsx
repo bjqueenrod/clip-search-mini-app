@@ -4,7 +4,6 @@ import { ClipItem } from '../features/clips/types';
 import { formatDuration, formatPrice } from '../utils/format';
 import { toClipPath } from '../utils/links';
 import { usePagedCarousel } from './usePagedCarousel';
-import { useStaticImage } from '../utils/useStaticImage';
 
 export function TopSellersCarousel({
   items,
@@ -51,13 +50,32 @@ export function TopSellersCarousel({
               </div>
             ))
           : items.map((clip, index) => {
-              const isAnimated = clip.thumbnailUrl?.match(/\\.(webp|gif)(\\?|$)/i);
-              const mediaUrl = isAnimated ? undefined : useStaticImage(clip.thumbnailUrl) ?? clip.thumbnailUrl;
+              const mediaUrl = clip.thumbnailUrl;
               return (
                 <Link
                   key={clip.id}
                   className="top-sellers__card"
                   to={toClipPath(clip.id, location.search)}
+                  onMouseEnter={(event) => {
+                    if (clip.previewWebpUrl) {
+                      const img = event.currentTarget.querySelector('img');
+                      if (img) img.src = clip.previewWebpUrl;
+                    }
+                  }}
+                  onFocus={(event) => {
+                    if (clip.previewWebpUrl) {
+                      const img = event.currentTarget.querySelector('img');
+                      if (img) img.src = clip.previewWebpUrl;
+                    }
+                  }}
+                  onMouseLeave={(event) => {
+                    const img = event.currentTarget.querySelector('img');
+                    if (img && clip.thumbnailUrl) img.src = clip.thumbnailUrl;
+                  }}
+                  onBlur={(event) => {
+                    const img = event.currentTarget.querySelector('img');
+                    if (img && clip.thumbnailUrl) img.src = clip.thumbnailUrl;
+                  }}
                   onClick={() =>
                     trackClipSelect({
                       clip,
