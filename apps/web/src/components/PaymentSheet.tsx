@@ -160,9 +160,15 @@ export function PaymentSheet({
   }, [selectedMethodInfo, priceLabel]);
 
   const payButtonLabel = useMemo(() => {
-    if (state === 'confirm') return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+    if (state === 'confirm') {
+      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+    }
+    if (state === 'select') {
+      if (hasInstructions) return 'Confirm';
+      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+    }
     return 'Confirm';
-  }, [selectedPriceLabel, selectedLabel, state]);
+  }, [state, hasInstructions, selectedPriceLabel, selectedLabel]);
 
   const paymentNotes = selectedInstructions || selectedTributeCode ? (
     <div className="payment-sheet__note" role="note">
