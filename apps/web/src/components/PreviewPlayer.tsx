@@ -22,11 +22,12 @@ export function PreviewPlayer({
     return (
       <div className="preview-player">
         <iframe
-          src={embedUrl}
+          src={`${embedUrl}${embedUrl.includes('?') ? '&' : '?'}mute=1&autoplay=1`}
           title={title}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
           referrerPolicy="strict-origin-when-cross-origin"
+          loading="lazy"
         />
       </div>
     );
