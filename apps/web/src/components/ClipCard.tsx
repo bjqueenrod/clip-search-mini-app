@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { trackClipSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
@@ -6,6 +6,11 @@ import { formatDuration, formatPrice } from '../utils/format';
 import { pickPrimaryTags } from '../utils/tags';
 import { safeBackground } from '../utils/theme';
 import { toClipPath } from '../utils/links';
+
+function toStaticThumbnail(url?: string) {
+  if (!url) return url;
+  return url.replace(/preview\.webp(\?.*)?$/i, 'thumbnail.jpg$1');
+}
 
 export function ClipCard({
   clip,
@@ -21,7 +26,7 @@ export function ClipCard({
   const selectedTag = searchParams.get('tags')?.split(',')[0] ?? undefined;
   const displayTags = useMemo(() => pickPrimaryTags(clip.tags, selectedTag), [clip.tags, selectedTag]);
 
-  const mediaUrl = clip.thumbnailUrl;
+  const mediaUrl = toStaticThumbnail(clip.thumbnailUrl);
 
   return (
     <Link

@@ -5,6 +5,11 @@ import { formatDuration, formatPrice } from '../utils/format';
 import { toClipPath } from '../utils/links';
 import { usePagedCarousel } from './usePagedCarousel';
 
+function toStaticThumbnail(url?: string) {
+  if (!url) return url;
+  return url.replace(/preview\.webp(\?.*)?$/i, 'thumbnail.jpg$1');
+}
+
 export function TopSellersCarousel({
   items,
   title = '⭐ Top Sellers',
@@ -50,7 +55,7 @@ export function TopSellersCarousel({
               </div>
             ))
           : items.map((clip, index) => {
-              const mediaUrl = clip.thumbnailUrl;
+              const mediaUrl = toStaticThumbnail(clip.thumbnailUrl);
               return (
                 <Link
                   key={clip.id}
