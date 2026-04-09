@@ -397,7 +397,7 @@ export function TasksPage() {
             </p>
             <div className="tasks-hero__actions">
               <a className="tasks-button tasks-button--primary" href="#packages">
-                Start Your Test
+                Begin Obedience
               </a>
             </div>
             <div className="tasks-strip tasks-strip--hero" aria-label="Why buyers choose custom obedience">
