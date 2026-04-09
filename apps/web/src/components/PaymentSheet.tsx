@@ -160,11 +160,8 @@ export function PaymentSheet({
   }, [selectedMethodInfo, priceLabel]);
 
   const payButtonLabel = useMemo(() => {
-    if (state === 'confirm') return 'Open payment';
-    if (selectedPriceLabel) {
-      return `Pay ${selectedPriceLabel}`;
-    }
-    return `Pay with ${selectedLabel}`;
+    if (state === 'confirm') return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+    return 'Confirm';
   }, [selectedPriceLabel, selectedLabel, state]);
 
   const paymentNotes = selectedInstructions || selectedTributeCode ? (
@@ -248,8 +245,9 @@ export function PaymentSheet({
   }, [itemContext, mode, orderId, productId, quantity, selectedMethod, saveProgress]);
 
   const handlePrimaryClick = useCallback(() => {
-    if (state === 'select' && hasInstructions) {
-      setState('confirm');
+    if (state === 'select') {
+      setState(hasInstructions ? 'confirm' : 'submitting');
+      if (!hasInstructions) void handleCheckout();
       return;
     }
     void handleCheckout();
@@ -340,7 +338,7 @@ export function PaymentSheet({
             {paymentNotes}
             <div className="payment-sheet__actions">
               <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={primaryButtonDisabled}>
-                Open payment
+                {payButtonLabel}
               </button>
               <button type="button" className="payment-sheet__ghost" onClick={() => setState('select')}>
                 Choose a different method
