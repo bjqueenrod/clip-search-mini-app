@@ -61,11 +61,7 @@ function valueCopyLabel(tier: TierItem): string {
     return description;
   }
 
-  if (tier.isUnlimitedTasks) {
-    return 'Tasks are selected from a curated collection to match your saved preferences, with one active at a time and proof reviewed by Mistress BJQueen before you move forward.';
-  }
-
-  return 'Time-limited Telegram access. Tasks are selected to follow your preferences, one at a time, within the pace and duration you choose, with proof reviewed by Mistress BJQueen.';
+  return '';
 }
 
 export function TierCarousel({
@@ -188,7 +184,7 @@ export function TierCarousel({
                       <span className="top-sellers__meta-label">Price</span>
                       <strong>{priceLabel(tier)}</strong>
                     </div>
-                    <p className="top-sellers__value-copy">{valueSummary}</p>
+                    {valueSummary ? <p className="top-sellers__value-copy">{valueSummary}</p> : null}
                     <a
                       href={tier.botBuyUrl || '#'}
                       className="top-sellers__cta"
