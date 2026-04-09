@@ -61,26 +61,6 @@ export function TopSellersCarousel({
                   key={clip.id}
                   className="top-sellers__card"
                   to={toClipPath(clip.id, location.search)}
-                  onMouseEnter={(event) => {
-                    if (clip.previewWebpUrl) {
-                      const img = event.currentTarget.querySelector('img');
-                      if (img) img.src = clip.previewWebpUrl;
-                    }
-                  }}
-                  onFocus={(event) => {
-                    if (clip.previewWebpUrl) {
-                      const img = event.currentTarget.querySelector('img');
-                      if (img) img.src = clip.previewWebpUrl;
-                    }
-                  }}
-                  onMouseLeave={(event) => {
-                    const img = event.currentTarget.querySelector('img');
-                    if (img && clip.thumbnailUrl) img.src = clip.thumbnailUrl;
-                  }}
-                  onBlur={(event) => {
-                    const img = event.currentTarget.querySelector('img');
-                    if (img && clip.thumbnailUrl) img.src = clip.thumbnailUrl;
-                  }}
                   onClick={() =>
                     trackClipSelect({
                       clip,
