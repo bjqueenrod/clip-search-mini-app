@@ -1370,6 +1370,10 @@ button {
   object-position: center;
 }
 
+.top-sellers__media--tier img {
+  object-position: left top;
+}
+
 .top-sellers__media-fallback {
   position: absolute;
   inset: 0;
