@@ -419,8 +419,8 @@ export function TasksPage() {
               <strong>Structured, premium, and personal—inside Telegram.</strong>
               <p>
                 Buy access, finish setup, and receive tasks that match your categories, sex toys/props, limits, and
-                chosen pace. One task stays active until you complete, abandon, or have proof reviewed by Mistress
-                BJQueen. No live chat, no auto-renew.
+                chosen pace. One task stays active until you complete it, submit the required proof, and Mistress
+                BJQueen accepts it.
               </p>
               <div className="tasks-hero__private-list" aria-label="Private offering benefits">
                 {HERO_PRIVATE_POINTS.map((point) => (
