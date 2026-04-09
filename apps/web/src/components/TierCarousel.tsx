@@ -188,7 +188,7 @@ export function TierCarousel({
                       onClick={handleBotAction(tier, tier.botBuyUrl)}
                       aria-label={`Continue to payment for ${tier.name}`}
                     >
-                      <strong>Continue to Payment</strong>
+                      <strong>Continue to Payment — {priceLabel(tier)}</strong>
                     </a>
                   </div>
                 </article>
