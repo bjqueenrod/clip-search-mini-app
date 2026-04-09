@@ -32,6 +32,8 @@ def _normalize_methods(raw: list[dict[str, Any]] | None) -> list[PaymentMethod]:
                     paymentMethod=str(item.get("payment_method") or "").strip() or "unknown",
                     label=str(item.get("payment_method") or "").strip().capitalize() or "Pay",
                     requiresCode=bool(item.get("requires_code")),
+                    instructions=(item.get("instructions") or None),
+                    tributeCode=(item.get("tribute_code") or item.get("tributeCode") or None),
                     priceCents=item.get("price_cents"),
                     details=item.get("method_details") if isinstance(item.get("method_details"), dict) else None,
                 )

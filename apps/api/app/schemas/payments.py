@@ -22,6 +22,8 @@ class PaymentMethod(BaseModel):
     payment_method: str = Field(alias="paymentMethod")
     label: str
     requires_code: bool = Field(default=False, alias="requiresCode")
+    instructions: str | None = None
+    tribute_code: str | None = Field(default=None, alias="tributeCode")
     price_cents: int | None = Field(default=None, alias="priceCents")
     details: dict[str, Any] | None = None
 

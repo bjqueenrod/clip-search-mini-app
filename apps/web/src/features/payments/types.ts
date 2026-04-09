@@ -4,6 +4,8 @@ export type PaymentMethod = {
   label: string;
   requiresCode?: boolean;
   priceCents?: number;
+  instructions?: string | null;
+  tributeCode?: string | null;
   details?: Record<string, unknown> | null;
 };
 

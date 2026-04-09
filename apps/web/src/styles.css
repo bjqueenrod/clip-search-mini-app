@@ -2488,6 +2488,42 @@ button {
   align-items: center;
 }
 
+.payment-sheet__note {
+  width: 100%;
+  border: 1px dashed var(--line, #2c2335);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(176, 106, 214, 0.07);
+  display: grid;
+  gap: 10px;
+}
+
+.payment-sheet__note-block {
+  display: grid;
+  gap: 4px;
+}
+
+.payment-sheet__note-label {
+  font-size: 0.82rem;
+  color: var(--muted, #c6bdd6);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.payment-sheet__note-text {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.payment-sheet__note-code {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #1f1828;
+  border: 1px solid var(--line, #2c2335);
+  letter-spacing: 0.04em;
+}
+
 .payment-sheet__shimmer-dot {
   width: 10px;
   height: 10px;

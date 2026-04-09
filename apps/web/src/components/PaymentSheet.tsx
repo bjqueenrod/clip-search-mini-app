@@ -108,6 +108,8 @@ export function PaymentSheet({
     () => methods.find((m) => m.paymentMethod === selectedMethod),
     [methods, selectedMethod],
   );
+  const selectedInstructions = selectedMethodInfo?.instructions?.trim();
+  const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
   const isLoading = state === 'loading' || state === 'submitting';
 
   useEffect(() => {
@@ -161,6 +163,23 @@ export function PaymentSheet({
     }
     return `Pay with ${selectedLabel}`;
   }, [selectedPriceLabel, selectedLabel]);
+
+  const paymentNotes = selectedInstructions || selectedTributeCode ? (
+    <div className="payment-sheet__note" role="note">
+      {selectedInstructions ? (
+        <div className="payment-sheet__note-block">
+          <div className="payment-sheet__note-label">Payment instructions</div>
+          <p className="payment-sheet__note-text">{selectedInstructions}</p>
+        </div>
+      ) : null}
+      {selectedTributeCode ? (
+        <div className="payment-sheet__note-block">
+          <div className="payment-sheet__note-label">Tribute code</div>
+          <code className="payment-sheet__note-code">{selectedTributeCode}</code>
+        </div>
+      ) : null}
+    </div>
+  ) : null;
 
   const primaryButtonDisabled = state === 'loading' || state === 'submitting' || !selectedMethod;
 
@@ -294,6 +313,7 @@ export function PaymentSheet({
                 </label>
               ))}
             </div>
+            {paymentNotes}
             {paymentButton}
             {botFallbackUrl ? (
               <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
@@ -319,6 +339,7 @@ export function PaymentSheet({
               <button type="button" className="payment-sheet__ghost" onClick={handleChangeMethod}>
                 Choose a different method
               </button>
+              {paymentNotes}
               {botFallbackUrl ? (
                 <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
                   Pay in bot instead
