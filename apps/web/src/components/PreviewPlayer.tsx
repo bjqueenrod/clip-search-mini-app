@@ -20,30 +20,14 @@ export function PreviewPlayer({
 
   if (embedUrl) {
     return (
-      <div
-        className="preview-player"
-        onPointerEnter={() => setActive(true)}
-        onPointerLeave={() => setActive(false)}
-        onFocus={() => setActive(true)}
-        onBlur={() => setActive(false)}
-      >
-        {active ? (
-          <iframe
-            src={embedUrl}
-            title={title}
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        ) : (
-          <div
-            className="preview-player__poster"
-            style={{ backgroundImage: posterUrl ? `url(${posterUrl})` : undefined }}
-            aria-label={title}
-          >
-            <span className="preview-player__hint">Hover to play</span>
-          </div>
-        )}
+      <div className="preview-player">
+        <iframe
+          src={embedUrl}
+          title={title}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
       </div>
     );
   }
