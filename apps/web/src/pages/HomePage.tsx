@@ -61,10 +61,10 @@ export function HomePage() {
             <strong>Give up ownership of your cock.</strong>
             <p>
               Choose your tier, submit your application, and let me control access to your cock with check-ins, proof,
-              obedience tasks, enforced rules, and clear consequences. A structured, hands-on keyholding service with
-              clear expectations.
+              obedience tasks, enforced rules, and clear consequences.
             </p>
-            <span className="chooser-card__cta">Apply for Keyholding</span>
+            <p>A structured, hands-on keyholding service with clear expectations.</p>
+            <span className="chooser-card__cta">View Keyholding Options</span>
           </Link>
           <Link
             to="/tasks"
@@ -74,8 +74,8 @@ export function HomePage() {
             <span className="chooser-card__eyebrow">📝 CUSTOM TASKS</span>
             <strong>Be put to work for me.</strong>
             <p>
-              Be put to work for me. Choose your package and intensity, then receive obedience tasks assigned using
-              your selected fetish categories and available toys.
+              Choose your package and intensity, then receive obedience tasks assigned using your selected fetish
+              categories and available toys.
             </p>
             <p>
               You complete the task. You submit proof. I review it myself and decide if it meets my standard.
