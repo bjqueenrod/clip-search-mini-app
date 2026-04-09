@@ -61,7 +61,8 @@ const WHY_CUSTOM_POINTS = [
 const HOW_IT_WORKS_STEPS = [
   {
     title: 'Choose your package',
-    detail: 'Pick the duration and task pace that fits you. Purchase unlocks a time-limited window inside Telegram.',
+    detail:
+      'Pick the duration and task pace you want. Your package determines how long I can give you tasks for and the maximum number of tasks you can receive each day.',
     icon: 'package',
   },
   {
