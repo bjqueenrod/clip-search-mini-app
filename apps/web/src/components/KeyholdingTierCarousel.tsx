@@ -4,11 +4,12 @@ import { CurrencyCode, formatPrice } from '../utils/format';
 
 function formatMoney(value: string | number | undefined, currency: CurrencyCode): string {
   if (value === undefined || value === null) return 'Price on request';
-  if (typeof value === 'number') return formatPrice(value);
+  if (typeof value === 'number') return formatPrice(value, currency);
   const trimmed = value.toString().trim();
   if (!trimmed) return 'Price on request';
-  if (/^\d+(\.\d+)?$/.test(trimmed)) {
-    const numeric = Number(trimmed);
+  const numericText = trimmed.replace(/[^\d.]/g, '');
+  if (numericText) {
+    const numeric = Number(numericText);
     if (!Number.isNaN(numeric)) return formatPrice(numeric, currency);
   }
   return trimmed;
@@ -49,8 +50,11 @@ export function KeyholdingTierCarousel({
             ))
           : items.map((tier, index) => {
               const includes = tier.includes || [];
-              const priceLabel = formatMoney(tier.priceLabel ?? tier.price ?? tier.priceValue, currency);
-              const pricePerWeekLabel = formatMoney(tier.pricePerWeek, currency);
+              const basePrice = tier.priceValue ?? (typeof tier.price === 'number' ? tier.price : undefined);
+              const priceLabel = formatMoney(basePrice ?? tier.price ?? tier.priceLabel, currency);
+              const pricePerWeekNumeric =
+                typeof tier.pricePerWeek === 'number' ? tier.pricePerWeek : undefined;
+              const pricePerWeekLabel = formatMoney(pricePerWeekNumeric ?? tier.pricePerWeek, currency);
               const controlLabel =
                 tier.badge ||
                 (index === 0
