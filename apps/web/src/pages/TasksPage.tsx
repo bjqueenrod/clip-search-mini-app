@@ -3,7 +3,6 @@ import { AppShell } from '../components/AppShell';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { TierCarousel } from '../components/TierCarousel';
-import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { CurrencyToggleBanner } from '../components/CurrencyToggleBanner';
 import { setAnalyticsContext } from '../app/analytics';
 import { applyTelegramTheme } from '../app/telegram';
@@ -378,10 +377,7 @@ export function TasksPage() {
   return (
     <AppShell>
       {!session.isTelegram && (
-        <>
-          <TelegramDevBanner />
-          <CurrencyToggleBanner />
-        </>
+        <CurrencyToggleBanner />
       )}
       <section className="hero hero--tasks">
         <img

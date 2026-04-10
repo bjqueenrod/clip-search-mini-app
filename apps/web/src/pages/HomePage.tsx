@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
-import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { CurrencyToggleBanner } from '../components/CurrencyToggleBanner';
 import { setAnalyticsContext } from '../app/analytics';
 import { trackInteraction } from '../app/analytics';
@@ -48,10 +47,7 @@ export function HomePage() {
   return (
     <AppShell>
       {!session.isTelegram && (
-        <>
-          <TelegramDevBanner />
-          <CurrencyToggleBanner />
-        </>
+        <CurrencyToggleBanner />
       )}
       <section className="chooser-panel">
         <div className="chooser-grid">
