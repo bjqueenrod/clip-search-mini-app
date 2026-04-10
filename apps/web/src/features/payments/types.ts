@@ -1,3 +1,5 @@
+import { PricingEnvelope } from '../../utils/pricing';
+
 export type PaymentMethod = {
   id?: number;
   paymentMethod: string;
@@ -7,6 +9,7 @@ export type PaymentMethod = {
   instructions?: string | null;
   tributeCode?: string | null;
   details?: Record<string, unknown> | null;
+  pricing?: PricingEnvelope | null;
 };
 
 export type CheckoutOptionsResponse = {

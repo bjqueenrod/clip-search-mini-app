@@ -4,6 +4,7 @@ import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackClipBotCtaClick, trackClipDetailView, trackClipTagSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
 import { CurrencyCode, formatDuration, formatPrice } from '../utils/format';
+import { resolvePriceLabel } from '../utils/pricing';
 import { PreviewPlayer } from './PreviewPlayer';
 import { PaymentSheet } from './PaymentSheet';
 
@@ -76,6 +77,38 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
     trackClipDetailView(clip);
   }, [clip]);
 
+  const streamPriceLabel = clip
+    ? resolvePriceLabel({
+        currency,
+        pricings: [clip.streamPricing, clip.watchPricing, clip.pricing],
+        fallbackAmountPenceCandidates: [clip.streamPricePence, clip.watchPricePence, clip.pricePence],
+        fallbackAmountCandidates: [clip.streamPrice, clip.price],
+        fallbackLabelCandidates: [clip.streamPriceLabel, clip.watchPriceLabel, clip.priceLabel],
+        defaultLabel: formatPrice(clip.streamPrice ?? clip.price, currency),
+      })
+    : undefined;
+
+  const downloadPriceLabel = clip
+    ? resolvePriceLabel({
+        currency,
+        pricings: [clip.downloadPricing, clip.pricing],
+        fallbackAmountPenceCandidates: [clip.downloadPricePence, clip.pricePence],
+        fallbackAmountCandidates: [clip.downloadPrice, clip.price],
+        fallbackLabelCandidates: [clip.downloadPriceLabel, clip.priceLabel],
+        defaultLabel: formatPrice(clip.downloadPrice ?? clip.price, currency),
+      })
+    : undefined;
+
+  const streamUnitPence =
+    clip?.streamPricePence ??
+    clip?.watchPricePence ??
+    clip?.pricePence ??
+    Math.round(100 * (clip?.streamPrice ?? clip?.price ?? 0));
+  const downloadUnitPence =
+    clip?.downloadPricePence ??
+    clip?.pricePence ??
+    Math.round(100 * (clip?.downloadPrice ?? clip?.price ?? 0));
+
   return (
     <div className="detail-sheet__backdrop">
       <div className="detail-sheet">
@@ -125,7 +158,7 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
                 <div className="detail-sheet__action-stack">
                   <span aria-hidden="true">🎬</span>
                   <strong>Stream Now</strong>
-                  <span>{formatPrice(clip.streamPrice ?? clip.price, currency)}</span>
+                  <span>{streamPriceLabel}</span>
                 </div>
               </a>
               <a
@@ -138,7 +171,7 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
                 <div className="detail-sheet__action-stack">
                   <span aria-hidden="true">📥</span>
                   <strong>Download Now</strong>
-                  <span>{formatPrice(clip.downloadPrice ?? clip.price, currency)}</span>
+                  <span>{downloadPriceLabel}</span>
                 </div>
               </a>
             </div>
@@ -147,12 +180,10 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
                 productId={showPayment === 'stream' ? String(clip.watchProductId) : String(clip.downloadProductId)}
                 quantity={1}
                 mode={showPayment === 'stream' ? 'watch' : 'download'}
-                priceLabel={formatPrice(showPayment === 'stream' ? clip.streamPrice ?? clip.price : clip.downloadPrice ?? clip.price, currency)}
+                priceLabel={showPayment === 'stream' ? streamPriceLabel : downloadPriceLabel}
                 botFallbackUrl={showPayment === 'stream' ? clip.botStreamUrl : clip.botDownloadUrl}
                 itemContext={{
-                  unitPriceCents: Math.round(
-                    100 * (showPayment === 'stream' ? clip.streamPrice ?? clip.price ?? 0 : clip.downloadPrice ?? clip.price ?? 0),
-                  ),
+                  unitPriceCents: showPayment === 'stream' ? streamUnitPence : downloadUnitPence,
                   clipId: clip.id,
                 }}
                 onClose={() => setShowPayment(null)}

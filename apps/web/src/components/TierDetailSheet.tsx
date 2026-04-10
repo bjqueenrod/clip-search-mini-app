@@ -5,7 +5,8 @@ import { getTierArtwork, TierArtworkVariant } from '../features/tiers/artwork';
 import { trackTierBotCtaClick, trackTierDetailView } from '../features/tiers/analytics';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
-import { formatPrice } from '../utils/format';
+import { CurrencyCode } from '../utils/format';
+import { resolvePriceLabel } from '../utils/pricing';
 import { PaymentSheet } from './PaymentSheet';
 
 const PACKAGE_HIGHLIGHTS = [
@@ -20,13 +21,28 @@ export function TierDetailSheet({
   tier,
   loading,
   artworkVariant = 'base',
+  currency = 'GBP',
 }: {
   tier?: TierItem;
   loading?: boolean;
   artworkVariant?: TierArtworkVariant;
+  currency?: CurrencyCode;
 }) {
   const lastTrackedTierIdRef = useRef('');
   const [showPayment, setShowPayment] = useState(false);
+  const tierPriceLabel = tier
+    ? resolvePriceLabel({
+        currency,
+        pricings: [tier.pricing],
+        fallbackAmountPenceCandidates: [tier.pricePence],
+        fallbackAmountCandidates: [tier.price],
+        fallbackLabelCandidates: [tier.priceLabel],
+        defaultLabel: 'Price on request',
+      })
+    : 'Price on request';
+  const hasTierPrice = Boolean(
+    tier?.pricing || tier?.pricePence != null || tier?.price != null || (typeof tier?.priceLabel === 'string' && tier.priceLabel.trim()),
+  );
 
   const handleBotAction = (url?: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     if (tier?.productId) {
@@ -129,10 +145,10 @@ export function TierDetailSheet({
                   <span className="tier-detail__label">Pace</span>
                   <strong>{getTierTasksLabel(tier)}</strong>
                 </div>
-                {tier.priceLabel || tier.price ? (
+                {hasTierPrice ? (
                   <div className="tier-detail__fact">
                     <span className="tier-detail__label">Price</span>
-                    <strong>{tier.priceLabel || formatPrice(tier.price)}</strong>
+                    <strong>{tierPriceLabel}</strong>
                   </div>
                 ) : null}
               </div>
@@ -156,14 +172,14 @@ export function TierDetailSheet({
                 onClick={handleBotAction(tier.botBuyUrl)}
               >
                 <strong>Continue to Payment</strong>
-                <span>{tier.priceLabel || formatPrice(tier.price)}</span>
+                <span>{tierPriceLabel}</span>
               </a>
             </div>
             {showPayment && tier.productId ? (
               <PaymentSheet
                 productId={tier.productId}
                 quantity={1}
-                priceLabel={tier.priceLabel || formatPrice(tier.price)}
+                priceLabel={tierPriceLabel}
                 botFallbackUrl={tier.botBuyUrl}
                 onClose={() => setShowPayment(false)}
               />

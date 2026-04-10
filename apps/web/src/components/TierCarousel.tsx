@@ -8,13 +8,20 @@ import {
   getTierTasksLabel,
 } from '../features/tiers/presentation';
 import { TierItem } from '../features/tiers/types';
-import { CurrencyCode, formatPrice } from '../utils/format';
+import { CurrencyCode } from '../utils/format';
+import { resolvePriceLabel } from '../utils/pricing';
 import { PaymentSheet } from './PaymentSheet';
 import { usePagedCarousel } from './usePagedCarousel';
 
 function priceLabel(tier: TierItem, currency: CurrencyCode): string {
-  const base = typeof tier.price === 'number' ? formatPrice(tier.price, currency) : undefined;
-  return (typeof tier.priceLabel === 'string' && tier.priceLabel.trim()) ? tier.priceLabel : base || 'Price on request';
+  return resolvePriceLabel({
+    currency,
+    pricings: [tier.pricing],
+    fallbackAmountPenceCandidates: [tier.pricePence],
+    fallbackAmountCandidates: [tier.price],
+    fallbackLabelCandidates: [tier.priceLabel],
+    defaultLabel: 'Price on request',
+  });
 }
 
 function displayBadgeLabel(badgeLabel?: string): string | undefined {

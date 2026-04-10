@@ -4,12 +4,30 @@ import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackTierBotCtaClick, trackTierSelect } from '../features/tiers/analytics';
 import { TierItem } from '../features/tiers/types';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
-import { formatPrice } from '../utils/format';
+import { CurrencyCode } from '../utils/format';
 import { toTierPath } from '../utils/links';
+import { resolvePriceLabel } from '../utils/pricing';
 import { PaymentSheet } from './PaymentSheet';
 
-export function TierCard({ tier, guideLabel }: { tier: TierItem; guideLabel?: string }) {
+export function TierCard({
+  tier,
+  guideLabel,
+  currency = 'GBP',
+}: {
+  tier: TierItem;
+  guideLabel?: string;
+  currency?: CurrencyCode;
+}) {
   const [showPayment, setShowPayment] = useState(false);
+  const tierPriceLabel = resolvePriceLabel({
+    currency,
+    pricings: [tier.pricing],
+    fallbackAmountPenceCandidates: [tier.pricePence],
+    fallbackAmountCandidates: [tier.price],
+    fallbackLabelCandidates: [tier.priceLabel],
+    defaultLabel: 'Price on request',
+  });
+
   const handleBotAction = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     trackTierBotCtaClick({ tier, source: 'tier_card' });
@@ -48,7 +66,7 @@ export function TierCard({ tier, guideLabel }: { tier: TierItem; guideLabel?: st
       </Link>
       <div className="tier-card__facts">
         <span>{getTierTasksLabel(tier)}</span>
-        <strong>{tier.priceLabel || formatPrice(tier.price)}</strong>
+        <strong>{tierPriceLabel}</strong>
       </div>
       <div className="tier-card__actions">
         <Link to={toTierPath(tier.id)} className="tier-card__link" onClick={() => trackTierSelect({ tier, source: 'tier_card' })}>
@@ -62,7 +80,7 @@ export function TierCard({ tier, guideLabel }: { tier: TierItem; guideLabel?: st
         <PaymentSheet
           productId={String(tier.productId)}
           quantity={1}
-          priceLabel={tier.priceLabel || formatPrice(tier.price)}
+          priceLabel={tierPriceLabel}
           botFallbackUrl={tier.botBuyUrl}
           itemContext={{ tierId: tier.id }}
           onClose={() => setShowPayment(false)}

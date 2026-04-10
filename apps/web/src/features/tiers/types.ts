@@ -1,3 +1,5 @@
+import { PricingEnvelope } from '../../utils/pricing';
+
 export type TierItem = {
   id: string;
   name: string;
@@ -7,7 +9,9 @@ export type TierItem = {
   durationDays?: number;
   tasksPerDay?: number;
   price?: number;
+  pricePence?: number;
   priceLabel?: string;
+  pricing?: PricingEnvelope;
   isUnlimitedTasks: boolean;
   badge?: string;
   botBuyUrl?: string;

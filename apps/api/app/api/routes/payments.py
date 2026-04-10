@@ -36,6 +36,7 @@ def _normalize_methods(raw: list[dict[str, Any]] | None) -> list[PaymentMethod]:
                     tributeCode=(item.get("tribute_code") or item.get("tributeCode") or None),
                     priceCents=item.get("price_pence"),
                     details=item.get("method_details") if isinstance(item.get("method_details"), dict) else None,
+                    pricing=item.get("pricing") if isinstance(item.get("pricing"), dict) else None,
                 )
             )
         except Exception:

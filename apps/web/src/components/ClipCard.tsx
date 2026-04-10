@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { trackClipSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
 import { CurrencyCode, formatDuration, formatPrice } from '../utils/format';
+import { resolvePriceLabel } from '../utils/pricing';
 import { pickPrimaryTags } from '../utils/tags';
 import { safeBackground } from '../utils/theme';
 import { toClipPath } from '../utils/links';
@@ -27,6 +28,22 @@ export function ClipCard({
   const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const selectedTag = searchParams.get('tags')?.split(',')[0] ?? undefined;
   const displayTags = useMemo(() => pickPrimaryTags(clip.tags, selectedTag), [clip.tags, selectedTag]);
+  const streamPriceLabel = resolvePriceLabel({
+    currency,
+    pricings: [clip.streamPricing, clip.watchPricing, clip.pricing],
+    fallbackAmountPenceCandidates: [clip.streamPricePence, clip.watchPricePence, clip.pricePence],
+    fallbackAmountCandidates: [clip.streamPrice, clip.price],
+    fallbackLabelCandidates: [clip.streamPriceLabel, clip.watchPriceLabel, clip.priceLabel],
+    defaultLabel: formatPrice(clip.streamPrice ?? clip.price, currency),
+  });
+  const downloadPriceLabel = resolvePriceLabel({
+    currency,
+    pricings: [clip.downloadPricing, clip.pricing],
+    fallbackAmountPenceCandidates: [clip.downloadPricePence, clip.pricePence],
+    fallbackAmountCandidates: [clip.downloadPrice, clip.price],
+    fallbackLabelCandidates: [clip.downloadPriceLabel, clip.priceLabel],
+    defaultLabel: formatPrice(clip.downloadPrice ?? clip.price, currency),
+  });
 
   const mediaUrl = toStaticThumbnail(clip.thumbnailUrl);
 
@@ -66,9 +83,9 @@ export function ClipCard({
         <p>{clip.description || clip.shortDescription || 'Preview this clip in Telegram.'}</p>
         <div className="clip-card__footer">
           <div className="clip-card__prices">
-            <span>{`🎬 ${formatPrice(clip.streamPrice ?? clip.price, currency)}`}</span>
+            <span>{`🎬 ${streamPriceLabel}`}</span>
             <span className="clip-card__price-separator">•</span>
-            <span>{`📥 ${formatPrice(clip.downloadPrice ?? clip.price, currency)}`}</span>
+            <span>{`📥 ${downloadPriceLabel}`}</span>
           </div>
           <span className="clip-card__tags">{displayTags.map((tag) => `#${tag}`).join(' ')}</span>
         </div>

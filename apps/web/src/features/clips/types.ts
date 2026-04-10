@@ -1,11 +1,25 @@
+import { PricingEnvelope } from '../../utils/pricing';
+
 export type ClipItem = {
   id: string;
   title: string;
   shortDescription?: string;
   description?: string;
   price?: number;
+  pricePence?: number;
+  priceLabel?: string;
+  pricing?: PricingEnvelope;
   streamPrice?: number;
+  streamPricePence?: number;
+  streamPriceLabel?: string;
+  streamPricing?: PricingEnvelope;
+  watchPricePence?: number;
+  watchPriceLabel?: string;
+  watchPricing?: PricingEnvelope;
   downloadPrice?: number;
+  downloadPricePence?: number;
+  downloadPriceLabel?: string;
+  downloadPricing?: PricingEnvelope;
   durationSeconds?: number;
   durationLabel?: string;
   thumbnailUrl?: string;

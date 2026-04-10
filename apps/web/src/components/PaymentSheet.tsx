@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
-import { formatPrice, CurrencyCode } from '../utils/format';
+import { CurrencyCode } from '../utils/format';
+import { resolvePriceLabelOptional } from '../utils/pricing';
 import { openBotDeepLink } from '../app/telegram';
 
 type SheetState = 'loading' | 'select' | 'confirm' | 'submitting' | 'waiting' | 'success' | 'error';
@@ -153,12 +154,17 @@ export function PaymentSheet({
   const selectedPriceLabel = useMemo(() => {
     if (selectedMethodInfo) {
       const details = (selectedMethodInfo.details || {}) as Record<string, unknown>;
-      const pence =
-        selectedMethodInfo.pricePence ??
-        (typeof details.price_pence === 'number' ? (details.price_pence as number) : undefined);
-      if (pence != null) {
-        return formatPrice(pence / 100, currency);
-      }
+      const methodPriceLabel = resolvePriceLabelOptional({
+        currency,
+        pricings: [selectedMethodInfo.pricing],
+        fallbackAmountPenceCandidates: [
+          selectedMethodInfo.pricePence,
+          typeof details.price_pence === 'number' ? (details.price_pence as number) : undefined,
+        ],
+        fallbackAmountCandidates: [typeof details.price === 'number' ? (details.price as number) : undefined],
+        fallbackLabelCandidates: [details.price_label, details.priceLabel],
+      });
+      if (methodPriceLabel) return methodPriceLabel;
     }
     return priceLabel;
   }, [selectedMethodInfo, priceLabel, currency]);
@@ -357,7 +363,22 @@ export function PaymentSheet({
                     checked={selectedMethod === method.paymentMethod}
                     onChange={() => setSelectedMethod(method.paymentMethod)}
                   />
-                  <span>{method.label}</span>
+                  <span>
+                    {(() => {
+                      const details = (method.details || {}) as Record<string, unknown>;
+                      const methodPriceLabel = resolvePriceLabelOptional({
+                        currency,
+                        pricings: [method.pricing],
+                        fallbackAmountPenceCandidates: [
+                          method.pricePence,
+                          typeof details.price_pence === 'number' ? (details.price_pence as number) : undefined,
+                        ],
+                        fallbackAmountCandidates: [typeof details.price === 'number' ? (details.price as number) : undefined],
+                        fallbackLabelCandidates: [details.price_label, details.priceLabel],
+                      });
+                      return methodPriceLabel ? `${method.label} · ${methodPriceLabel}` : method.label;
+                    })()}
+                  </span>
                 </label>
               ))}
             </div>

@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { trackClipSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
 import { CurrencyCode, formatDuration, formatPrice } from '../utils/format';
+import { resolvePriceLabel } from '../utils/pricing';
 import { toClipPath } from '../utils/links';
 import { usePagedCarousel } from './usePagedCarousel';
 
@@ -58,6 +59,22 @@ export function TopSellersCarousel({
             ))
           : items.map((clip, index) => {
               const mediaUrl = toStaticThumbnail(clip.thumbnailUrl);
+              const streamPriceLabel = resolvePriceLabel({
+                currency,
+                pricings: [clip.streamPricing, clip.watchPricing, clip.pricing],
+                fallbackAmountPenceCandidates: [clip.streamPricePence, clip.watchPricePence, clip.pricePence],
+                fallbackAmountCandidates: [clip.streamPrice, clip.price],
+                fallbackLabelCandidates: [clip.streamPriceLabel, clip.watchPriceLabel, clip.priceLabel],
+                defaultLabel: formatPrice(clip.streamPrice ?? clip.price, currency),
+              });
+              const downloadPriceLabel = resolvePriceLabel({
+                currency,
+                pricings: [clip.downloadPricing, clip.pricing],
+                fallbackAmountPenceCandidates: [clip.downloadPricePence, clip.pricePence],
+                fallbackAmountCandidates: [clip.downloadPrice, clip.price],
+                fallbackLabelCandidates: [clip.downloadPriceLabel, clip.priceLabel],
+                defaultLabel: formatPrice(clip.downloadPrice ?? clip.price, currency),
+              });
               return (
                 <Link
                   key={clip.id}
@@ -88,9 +105,9 @@ export function TopSellersCarousel({
                     <h3>{clip.title}</h3>
                     <p>{clip.shortDescription || clip.description || 'Preview this clip in Telegram.'}</p>
                     <div className="top-sellers__prices">
-                      <span>{`🎬 ${formatPrice(clip.streamPrice ?? clip.price, currency)}`}</span>
+                      <span>{`🎬 ${streamPriceLabel}`}</span>
                       <span className="top-sellers__price-separator">•</span>
-                      <span>{`📥 ${formatPrice(clip.downloadPrice ?? clip.price, currency)}`}</span>
+                      <span>{`📥 ${downloadPriceLabel}`}</span>
                     </div>
                   </div>
                 </Link>

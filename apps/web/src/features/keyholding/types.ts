@@ -1,3 +1,5 @@
+import { PricingEnvelope } from '../../utils/pricing';
+
 export type KeyholdingTier = {
   id: string;
   slug?: string;
@@ -7,9 +9,16 @@ export type KeyholdingTier = {
   idealFor?: string;
   includes: string[];
   price?: string | number;
+  pricePence?: number;
   priceLabel?: string | number;
+  pricing?: PricingEnvelope;
   pricePerWeek?: string | number;
+  pricePerWeekPence?: number;
+  pricePerWeekValue?: number;
+  pricePerWeekPricing?: PricingEnvelope;
   priceValue?: number;
+  paymentProductPricePence?: number;
+  paymentProductPricing?: PricingEnvelope;
   paymentProductId?: number;
   badge?: string;
   durationWeeksOptions: number[];
@@ -26,6 +35,8 @@ export type KeyholdingOption = {
   requiresLockboxPhoto: boolean;
   priceLabel?: string;
   priceCents?: number;
+  pricePence?: number;
+  pricing?: PricingEnvelope;
   paymentProductId?: number;
   order?: number;
 };

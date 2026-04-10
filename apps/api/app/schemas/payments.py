@@ -26,6 +26,7 @@ class PaymentMethod(BaseModel):
     tribute_code: str | None = Field(default=None, alias="tributeCode")
     price_pence: int | None = Field(default=None, alias="priceCents")
     details: dict[str, Any] | None = None
+    pricing: dict[str, Any] | None = None
 
     class Config:
         populate_by_name = True
