@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
 import { CurrencyToggleBanner } from '../components/CurrencyToggleBanner';
@@ -8,8 +8,17 @@ import { applyTelegramTheme } from '../app/telegram';
 import { useTelegramSession } from '../features/auth/hooks';
 import { useEffect } from 'react';
 
+export function resolveHomeRedirectTarget(search: string, startParam?: string | null): string | null {
+  const params = new URLSearchParams(search);
+  const queryStart = (params.get('startapp') || params.get('tgWebAppStartParam') || '').trim().toLowerCase();
+  const startapp = (startParam || queryStart).trim().toLowerCase();
+  const target = startapp === 'clips' || startapp === 'tasks' || startapp === 'keyholding' ? `/${startapp}` : null;
+  return target ? `${target}${search}` : null;
+}
+
 export function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const session = useTelegramSession();
 
   useEffect(() => {
@@ -17,15 +26,11 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const queryStart = (params.get('startapp') || params.get('tgWebAppStartParam') || '').trim().toLowerCase();
-    const startapp = (session.startParam || queryStart).trim().toLowerCase();
-    const target =
-      startapp === 'clips' || startapp === 'tasks' || startapp === 'keyholding' ? `/${startapp}` : null;
+    const target = resolveHomeRedirectTarget(location.search, session.startParam);
     if (target) {
       navigate(target, { replace: true });
     }
-  }, [navigate, session.startParam]);
+  }, [location.search, navigate, session.startParam]);
 
   useEffect(() => {
     setAnalyticsContext({
