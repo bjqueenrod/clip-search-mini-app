@@ -6,7 +6,7 @@ from typing import Iterable
 
 
 def normalize_tag(value: str) -> str:
-    cleaned = re.sub(r"[^a-z0-9]+", "", value.strip().lower().replace("#", ""))
+    cleaned = re.sub(r"[^a-z0-9_]+", "", value.strip().lower().replace("#", ""))
     return cleaned
 
 
