@@ -13,6 +13,43 @@ def test_top_sellers_returns_ordered_selection(client, monkeypatch) -> None:
     assert payload["hasMore"] is False
 
 
+def test_top_sellers_uses_payment_product_pricing(client, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.services.clip_service.TOP_SELLER_CLIP_IDS",
+        ("BJQ0002", "BJQ0001"),
+    )
+    monkeypatch.setattr(
+        "app.services.clip_service.list_payment_products",
+        lambda active_only=False: [
+            {
+                "id": 28,
+                "active": True,
+                "pricing": {
+                    "gbp": {"amount_pence": 1599, "formatted": "£15.99"},
+                    "usd": {"amount_pence": 1999, "formatted": "$19.99"},
+                },
+            },
+            {
+                "id": 27,
+                "active": True,
+                "pricing": {
+                    "gbp": {"amount_pence": 1099, "formatted": "£10.99"},
+                    "usd": {"amount_pence": 1399, "formatted": "$13.99"},
+                },
+            },
+        ],
+    )
+    monkeypatch.setattr("app.services.clip_service.get_payment_product", lambda product_id: None)
+
+    response = client.get("/api/clips/top-sellers")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["items"][0]["streamPrice"] == 15.99
+    assert payload["items"][0]["downloadPrice"] == 10.99
+    assert payload["items"][0]["streamPricing"]["gbp"]["formatted"] == "£15.99"
+    assert payload["items"][0]["downloadPricing"]["gbp"]["formatted"] == "£10.99"
+
+
 
 def test_new_clips_returns_highest_clip_ids_first(client) -> None:
     response = client.get("/api/clips/new")
