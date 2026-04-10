@@ -91,22 +91,24 @@ def _resolve_pricing(
         pricing = pricing_from_gbp_pence(fallback_amount_pence, fx_snapshot=fx_snapshot or _fx_snapshot())
         return _price_from_pence(fallback_amount_pence), fallback_amount_pence, fallback_label, pricing
 
-    pricing = None
-    for key in pricing_keys:
-        value = source.get(key)
-        if isinstance(value, dict):
-            pricing = value
-            break
+    pricing = source if any(key in source for key in ("gbp", "usd", "fx")) else None
+    if pricing is None:
+        for key in pricing_keys:
+            value = source.get(key)
+            if isinstance(value, dict):
+                pricing = value
+                break
 
     price_pence = coerce_pence(_first_value(source, *amount_keys))
     if price_pence is None and isinstance(pricing, dict):
         gbp_bucket = pricing.get("gbp") if isinstance(pricing.get("gbp"), dict) else {}
         price_pence = coerce_pence(gbp_bucket.get("amount_pence") or gbp_bucket.get("amountPence"))
-    if price_pence is None:
-        price_pence = coerce_pence(fallback_pence)
 
-    if pricing is None and price_pence is not None:
-        pricing = pricing_from_gbp_pence(price_pence, fx_snapshot=fx_snapshot or _fx_snapshot())
+    if pricing is None:
+        if price_pence is None:
+            price_pence = coerce_pence(fallback_pence)
+        if price_pence is not None:
+            pricing = pricing_from_gbp_pence(price_pence, fx_snapshot=fx_snapshot or _fx_snapshot())
 
     price = _price_from_pence(price_pence)
     price_label = _text(_first_value(source, *label_keys))
@@ -117,6 +119,16 @@ def _resolve_pricing(
         price_label = fallback_label
 
     return price, price_pence, price_label, pricing
+
+
+def _pricing_bucket(source: dict[str, Any] | None, *keys: str) -> dict[str, Any] | None:
+    if not isinstance(source, dict):
+        return None
+    for key in keys:
+        value = source.get(key)
+        if isinstance(value, dict):
+            return value
+    return None
 
 
 @lru_cache(maxsize=1)
@@ -240,29 +252,32 @@ def _row_to_item(
     watch_pence = coerce_pence(data.get("watch_price_pence")) or base_pence
     download_pence = coerce_pence(data.get("download_price_pence")) or base_pence
     payment_pricing = clip_pricing if isinstance(clip_pricing, dict) else None
+    base_pricing_source = _pricing_bucket(payment_pricing, "pricing")
+    stream_pricing_source = _pricing_bucket(payment_pricing, "streamPricing", "watchPricing") or base_pricing_source
+    download_pricing_source = _pricing_bucket(payment_pricing, "downloadPricing") or base_pricing_source
     base_price, base_price_pence, base_price_label, pricing = _resolve_pricing(
-        payment_pricing,
-        pricing_keys=("pricing",),
-        amount_keys=("price_pence", "pricePence"),
-        label_keys=("price_label", "priceLabel"),
+        base_pricing_source,
+        pricing_keys=(),
+        amount_keys=("amount_pence", "amountPence"),
+        label_keys=("formatted",),
         fallback_pence=base_pence,
         fallback_label=None,
         fx_snapshot=fx_snapshot,
     )
     stream_price, stream_price_pence, stream_price_label, watch_pricing = _resolve_pricing(
-        payment_pricing,
-        pricing_keys=("streamPricing", "watchPricing"),
-        amount_keys=("stream_price_pence", "streamPricePence", "watch_price_pence", "watchPricePence"),
-        label_keys=("stream_price_label", "streamPriceLabel", "watch_price_label", "watchPriceLabel"),
+        stream_pricing_source,
+        pricing_keys=(),
+        amount_keys=("amount_pence", "amountPence"),
+        label_keys=("formatted",),
         fallback_pence=watch_pence,
         fallback_label=None,
         fx_snapshot=fx_snapshot,
     )
     download_price, download_price_pence, download_price_label, download_pricing = _resolve_pricing(
-        payment_pricing,
-        pricing_keys=("downloadPricing",),
-        amount_keys=("download_price_pence", "downloadPricePence"),
-        label_keys=("download_price_label", "downloadPriceLabel"),
+        download_pricing_source,
+        pricing_keys=(),
+        amount_keys=("amount_pence", "amountPence"),
+        label_keys=("formatted",),
         fallback_pence=download_pence,
         fallback_label=None,
         fx_snapshot=fx_snapshot,

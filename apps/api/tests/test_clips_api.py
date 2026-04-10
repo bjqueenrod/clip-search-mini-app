@@ -180,6 +180,27 @@ def test_clip_detail_uses_payment_system_pricing(client, monkeypatch) -> None:
     assert item["previewEmbedUrl"].endswith("preview-1")
 
 
+def test_clip_detail_reuses_base_payment_pricing_when_specific_buckets_missing(client, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "app.services.clip_service.get_clip_pricing",
+        lambda clip_id: {
+            "pricing": {
+                "gbp": {"amount_pence": 1599, "formatted": "£15.99"},
+                "usd": {"amount_pence": 1999, "formatted": "$19.99"},
+            }
+        }
+        if str(clip_id).upper() == "BJQ0001"
+        else None,
+    )
+
+    response = client.get("/api/clips/BJQ0001")
+    assert response.status_code == 200
+    item = response.json()
+    assert item["pricing"]["usd"]["formatted"] == "$19.99"
+    assert item["streamPricing"]["usd"]["formatted"] == "$19.99"
+    assert item["downloadPricing"]["usd"]["formatted"] == "$19.99"
+
+
 def test_clip_detail_uses_tracking_redirect_urls_when_configured(client, monkeypatch) -> None:
     monkeypatch.setattr('app.utils.bot_links._build_tracked_redirect_url', lambda slug, payload=None: f'https://links.mistressbjqueen.com/{slug}?payload={payload}')
     monkeypatch.setattr('app.utils.bot_links.get_settings', lambda: type('S', (), {
