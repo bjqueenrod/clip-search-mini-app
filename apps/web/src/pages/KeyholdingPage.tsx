@@ -3,6 +3,7 @@ import { AppShell } from '../components/AppShell';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
 import { TelegramDevBanner } from '../components/TelegramDevBanner';
+import { CurrencyToggleBanner } from '../components/CurrencyToggleBanner';
 import { applyTelegramTheme, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { setAnalyticsContext } from '../app/analytics';
 import { useTelegramSession } from '../features/auth/hooks';
@@ -47,6 +48,7 @@ export function KeyholdingPage() {
       {!session.isTelegram && (
         <>
           <TelegramDevBanner />
+          <CurrencyToggleBanner />
         </>
       )}
 

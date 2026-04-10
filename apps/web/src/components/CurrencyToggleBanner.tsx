@@ -6,11 +6,7 @@ export function CurrencyToggleBanner() {
   return (
     <div className="dev-banner currency-banner">
       <div className="currency-banner__row">
-        <div className="currency-banner__label">
-          Price display
-          <span className="currency-banner__hint">(toggle for your currency)</span>
-        </div>
-        <div className="currency-banner__toggle">
+        <div className="currency-banner__toggle" role="group" aria-label="Choose currency">
           <button
             type="button"
             className={`currency-pill ${currency === 'GBP' ? 'is-active' : ''}`}
