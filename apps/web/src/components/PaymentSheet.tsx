@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
-import { CurrencyCode } from '../utils/format';
 import { resolvePriceLabelOptional } from '../utils/pricing';
 import { openBotDeepLink } from '../app/telegram';
+import { useCurrencyPreference } from '../hooks/useCurrencyPreference';
 
 type SheetState = 'loading' | 'select' | 'confirm' | 'submitting' | 'waiting' | 'success' | 'error';
 
@@ -54,11 +54,7 @@ export function PaymentSheet({
   const [invoiceId, setInvoiceId] = useState<string>('');
   const [paymentUrl, setPaymentUrl] = useState<string | undefined>('');
   const [orderId, setOrderId] = useState<number | null>(null);
-  const [currency, setCurrency] = useState<CurrencyCode>(() => {
-    if (typeof window === 'undefined') return 'GBP';
-    const saved = window.localStorage.getItem('currencyPreference');
-    return saved === 'USD' ? 'USD' : 'GBP';
-  });
+  const [currency] = useCurrencyPreference();
   const storageKey = useMemo(
     () => `paymentSheet:${productId}:${mode || 'default'}`,
     [productId, mode],
@@ -194,19 +190,6 @@ export function PaymentSheet({
 
   const retryButtonDisabled = !selectedMethod;
 
-  const toggleCurrency = useCallback(
-    (next: CurrencyCode) => {
-      setCurrency(next);
-      try {
-        window.localStorage.setItem('currencyPreference', next);
-        document.cookie = `currency=${next};path=/;max-age=${60 * 60 * 24 * 90}`;
-      } catch {
-        // ignore storage errors
-      }
-    },
-    [],
-  );
-
   useEffect(() => {
     if (state !== 'waiting' || !invoiceId) return undefined;
     const startedAt = Date.now();
@@ -305,22 +288,6 @@ export function PaymentSheet({
           <h3>Complete Payment</h3>
           <button type="button" className="payment-sheet__close" onClick={onClose} aria-label="Close">
             ×
-          </button>
-        </div>
-        <div className="payment-sheet__currency-toggle" role="group" aria-label="Currency">
-          <button
-            type="button"
-            className={currency === 'GBP' ? 'active' : ''}
-            onClick={() => toggleCurrency('GBP')}
-          >
-            £ GBP
-          </button>
-          <button
-            type="button"
-            className={currency === 'USD' ? 'active' : ''}
-            onClick={() => toggleCurrency('USD')}
-          >
-            $ USD
           </button>
         </div>
 
