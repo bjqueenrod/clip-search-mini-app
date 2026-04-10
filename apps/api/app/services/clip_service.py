@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Any
 
 from sqlalchemy import String, and_, func, literal, or_, select
@@ -8,7 +9,9 @@ from sqlalchemy.orm import Session
 from app.db.clip_mapping import DEFAULT_SHORT_DESCRIPTION_LENGTH, get_clip_mapping
 from app.db.session import engine
 from app.schemas.clips import ClipQueryParams
+from app.services.payment_product_service import list_payment_products
 from app.services.preview_service import build_preview_assets
+from app.services.pricing_service import coerce_pence, fx_snapshot_from_pricing, pricing_from_gbp_pence
 from app.utils.bot_links import build_clip_download_url, build_clip_stream_url
 from app.core.config import get_settings
 
@@ -39,10 +42,21 @@ def _first_column(*values: Any) -> Any:
 
 
 def _price_from_pence(value: Any) -> float | None:
-    cents = 0 if value in (None, "") else int(value)
-    if cents <= 0:
+    pence = coerce_pence(value)
+    if pence is None or pence <= 0:
         return None
-    return round(cents / 100.0, 2)
+    return round(pence / 100.0, 2)
+
+
+@lru_cache(maxsize=1)
+def _fx_snapshot() -> dict[str, Any]:
+    for product in list_payment_products(active_only=True):
+        if not isinstance(product, dict):
+            continue
+        snapshot = fx_snapshot_from_pricing(product.get("pricing") if isinstance(product.get("pricing"), dict) else None)
+        if snapshot:
+            return snapshot
+    return {"rate": 1.0, "fetched_at": None}
 
 
 
@@ -136,7 +150,12 @@ def _build_preview(preview_id: str | None, *, include_embed_url: bool) -> dict[s
         return build_preview_assets(preview_id)
 
 
-def _row_to_item(row: Any, *, include_embed_url: bool = True) -> dict[str, Any]:
+def _row_to_item(
+    row: Any,
+    *,
+    include_embed_url: bool = True,
+    fx_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     data = dict(row._mapping)
     clip_id = str(data.get("clip_id") or data.get("id") or "")
     tags = parse_tags(data.get("keywords"), data.get("hashtags"))
@@ -145,17 +164,27 @@ def _row_to_item(row: Any, *, include_embed_url: bool = True) -> dict[str, Any]:
         str(data.get("thumbnail_url") or data.get("custom_thumbnail_url") or "").strip() or None
     )
     description = str(data.get("description") or "").strip() or None
-    base_price = _price_from_pence(data.get("price_pence"))
-    stream_price = _price_from_pence(data.get("watch_price_pence")) or base_price
-    download_price = _price_from_pence(data.get("download_price_pence")) or base_price
+    base_pence = coerce_pence(data.get("price_pence"))
+    watch_pence = coerce_pence(data.get("watch_price_pence")) or base_pence
+    download_pence = coerce_pence(data.get("download_price_pence")) or base_pence
+    base_price = _price_from_pence(base_pence)
+    stream_price = _price_from_pence(watch_pence) or base_price
+    download_price = _price_from_pence(download_pence) or base_price
+    pricing = pricing_from_gbp_pence(base_pence, fx_snapshot=fx_snapshot)
+    watch_pricing = pricing_from_gbp_pence(watch_pence, fx_snapshot=fx_snapshot)
+    download_pricing = pricing_from_gbp_pence(download_pence, fx_snapshot=fx_snapshot)
     return {
         "id": clip_id,
         "title": str(data.get("title") or clip_id),
         "shortDescription": _short_description(description),
         "description": description,
         "price": base_price,
+        "pricing": pricing,
         "streamPrice": stream_price,
+        "streamPricing": watch_pricing,
         "downloadPrice": download_price,
+        "downloadPricing": download_pricing,
+        "watchPricing": watch_pricing,
         "durationSeconds": parse_duration_seconds(data.get("duration")),
         "durationLabel": format_duration_label(data.get("duration")),
         "thumbnailUrl": custom_thumbnail_url or preview.get("thumbnailUrl"),
@@ -189,7 +218,8 @@ def search_clips(db: Session, params: ClipQueryParams) -> dict[str, Any]:
 
     total = int(db.execute(count_query).scalar_one())
     rows = db.execute(query).all()
-    items = [_row_to_item(row, include_embed_url=False) for row in rows]
+    fx_snapshot = _fx_snapshot()
+    items = [_row_to_item(row, include_embed_url=False, fx_snapshot=fx_snapshot) for row in rows]
 
     categories: list[str] = []
     category_col = mapping.get("category")
@@ -243,7 +273,7 @@ def get_clip_detail(db: Session, clip_id: str) -> dict[str, Any] | None:
     row = db.execute(stmt).first()
     if row is None:
         return None
-    item = _row_to_item(row)
+    item = _row_to_item(row, fx_snapshot=_fx_snapshot())
     return item
 
 
@@ -267,9 +297,10 @@ def get_top_seller_clips(db: Session) -> dict[str, Any]:
         stmt = stmt.where(active_col == 1)
 
     rows = db.execute(stmt).all()
+    fx_snapshot = _fx_snapshot()
     item_map: dict[str, dict[str, Any]] = {}
     for row in rows:
-        item = _row_to_item(row, include_embed_url=False)
+        item = _row_to_item(row, include_embed_url=False, fx_snapshot=fx_snapshot)
         item_map[item["id"].upper()] = item
     items = [item_map[clip_id] for clip_id in TOP_SELLER_CLIP_IDS if clip_id in item_map]
     return {
@@ -303,7 +334,8 @@ def get_new_clips(db: Session, *, limit: int = 10) -> dict[str, Any]:
     stmt = stmt.order_by(clip_id_col.desc()).limit(max(1, min(limit, 20)))
 
     rows = db.execute(stmt).all()
-    items = [_row_to_item(row, include_embed_url=False) for row in rows]
+    fx_snapshot = _fx_snapshot()
+    items = [_row_to_item(row, include_embed_url=False, fx_snapshot=fx_snapshot) for row in rows]
     return {
         "items": items,
         "page": 1,

@@ -25,8 +25,12 @@ class ClipItemResponse(BaseModel):
     short_description: str | None = Field(default=None, alias="shortDescription")
     description: str | None = None
     price: float | None = None
+    pricing: dict | None = None
     stream_price: float | None = Field(default=None, alias="streamPrice")
+    stream_pricing: dict | None = Field(default=None, alias="streamPricing")
     download_price: float | None = Field(default=None, alias="downloadPrice")
+    download_pricing: dict | None = Field(default=None, alias="downloadPricing")
+    watch_pricing: dict | None = Field(default=None, alias="watchPricing")
     duration_seconds: int | None = Field(default=None, alias="durationSeconds")
     duration_label: str | None = Field(default=None, alias="durationLabel")
     thumbnail_url: str | None = Field(default=None, alias="thumbnailUrl")

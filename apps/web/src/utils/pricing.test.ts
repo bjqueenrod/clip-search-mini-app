@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolvePriceLabel, resolvePriceLabelOptional } from './pricing';
+import { resolvePriceAmountPenceOptional, resolvePriceLabel, resolvePriceLabelOptional } from './pricing';
 
 describe('resolvePriceLabel', () => {
   it('prefers formatted pricing for selected currency', () => {
@@ -11,7 +11,6 @@ describe('resolvePriceLabel', () => {
           gbp: { formatted: '£19.00', amount_pence: 1900 },
         },
       ],
-      fallbackAmountPence: 1900,
     });
     expect(label).toBe('$24.50');
   });
@@ -24,18 +23,24 @@ describe('resolvePriceLabel', () => {
     expect(label).toBe('£12.99');
   });
 
-  it('falls back to legacy values when pricing object is absent', () => {
+  it('returns default label when pricing object is absent', () => {
     const label = resolvePriceLabel({
       currency: 'GBP',
-      fallbackAmountCandidates: [9.99],
-      fallbackLabelCandidates: ['£9.99 legacy'],
+      defaultLabel: 'Price on request',
     });
-    expect(label).toBe('£9.99');
+    expect(label).toBe('Price on request');
   });
 
   it('returns optional undefined when no values are present', () => {
     const label = resolvePriceLabelOptional({ currency: 'GBP' });
     expect(label).toBeUndefined();
   });
-});
 
+  it('resolves pricing amount pence for selected currency', () => {
+    const amount = resolvePriceAmountPenceOptional({
+      currency: 'USD',
+      pricings: [{ usd: { amount_pence: 1525 }, gbp: { amount_pence: 1200 } }],
+    });
+    expect(amount).toBe(1525);
+  });
+});

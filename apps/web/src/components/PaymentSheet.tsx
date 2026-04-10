@@ -153,16 +153,9 @@ export function PaymentSheet({
 
   const selectedPriceLabel = useMemo(() => {
     if (selectedMethodInfo) {
-      const details = (selectedMethodInfo.details || {}) as Record<string, unknown>;
       const methodPriceLabel = resolvePriceLabelOptional({
         currency,
         pricings: [selectedMethodInfo.pricing],
-        fallbackAmountPenceCandidates: [
-          selectedMethodInfo.pricePence,
-          typeof details.price_pence === 'number' ? (details.price_pence as number) : undefined,
-        ],
-        fallbackAmountCandidates: [typeof details.price === 'number' ? (details.price as number) : undefined],
-        fallbackLabelCandidates: [details.price_label, details.priceLabel],
       });
       if (methodPriceLabel) return methodPriceLabel;
     }
@@ -365,16 +358,9 @@ export function PaymentSheet({
                   />
                   <span>
                     {(() => {
-                      const details = (method.details || {}) as Record<string, unknown>;
                       const methodPriceLabel = resolvePriceLabelOptional({
                         currency,
                         pricings: [method.pricing],
-                        fallbackAmountPenceCandidates: [
-                          method.pricePence,
-                          typeof details.price_pence === 'number' ? (details.price_pence as number) : undefined,
-                        ],
-                        fallbackAmountCandidates: [typeof details.price === 'number' ? (details.price as number) : undefined],
-                        fallbackLabelCandidates: [details.price_label, details.priceLabel],
                       });
                       return methodPriceLabel ? `${method.label} · ${methodPriceLabel}` : method.label;
                     })()}

@@ -12,7 +12,9 @@ class TierItemResponse(BaseModel):
     duration_days: int | None = Field(default=None, alias='durationDays')
     tasks_per_day: int | None = Field(default=None, alias='tasksPerDay')
     price: float | None = None
+    price_pence: int | None = Field(default=None, alias='pricePence')
     price_label: str | None = Field(default=None, alias='priceLabel')
+    pricing: dict | None = None
     is_unlimited_tasks: bool = Field(alias='isUnlimitedTasks')
     badge: str | None = None
     bot_buy_url: str | None = Field(default=None, alias='botBuyUrl')

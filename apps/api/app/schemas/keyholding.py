@@ -12,9 +12,15 @@ class KeyholdingTierResponse(BaseModel):
     ideal_for: str | None = Field(default=None, alias="idealFor")
     includes: list[str] = Field(default_factory=list)
     price: str | float | None = None
+    price_pence: int | None = Field(default=None, alias="pricePence")
     price_label: str | float | None = Field(default=None, alias="priceLabel")
+    pricing: dict | None = None
     price_per_week: str | float | None = Field(default=None, alias="pricePerWeek")
+    price_per_week_pence: int | None = Field(default=None, alias="pricePerWeekPence")
+    price_per_week_pricing: dict | None = Field(default=None, alias="pricePerWeekPricing")
     price_value: float | None = Field(default=None, alias="priceValue")
+    payment_product_price_pence: int | None = Field(default=None, alias="paymentProductPricePence")
+    payment_product_pricing: dict | None = Field(default=None, alias="paymentProductPricing")
     payment_product_id: int | None = Field(default=None, alias="paymentProductId")
     badge: str | None = None
     duration_weeks_options: list[int] = Field(default_factory=list, alias="durationWeeksOptions")
@@ -36,6 +42,8 @@ class KeyholdingOptionResponse(BaseModel):
     requires_lockbox_photo: bool = Field(default=False, alias="requiresLockboxPhoto")
     price_label: str | None = Field(default=None, alias="priceLabel")
     price_pence: int | None = Field(default=None, alias="priceCents")
+    price_pence_value: int | None = Field(default=None, alias="pricePence")
+    pricing: dict | None = None
     payment_product_id: int | None = Field(default=None, alias="paymentProductId")
     order: int | None = None
 

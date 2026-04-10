@@ -21,12 +21,6 @@ export type PricingEnvelope = {
 type ResolvePriceLabelOptions = {
   currency?: CurrencyCode;
   pricings?: Array<PricingEnvelope | null | undefined>;
-  fallbackAmountPence?: unknown;
-  fallbackAmountPenceCandidates?: unknown[];
-  fallbackAmount?: unknown;
-  fallbackAmountCandidates?: unknown[];
-  fallbackLabel?: unknown;
-  fallbackLabelCandidates?: unknown[];
   defaultLabel?: string;
 };
 
@@ -92,30 +86,6 @@ function firstPricingPence(
   return undefined;
 }
 
-function firstText(values: unknown[]): string | undefined {
-  for (const value of values) {
-    const text = asText(value);
-    if (text) return text;
-  }
-  return undefined;
-}
-
-function firstPence(values: unknown[]): number | undefined {
-  for (const value of values) {
-    const amount = asPence(value);
-    if (amount != null) return amount;
-  }
-  return undefined;
-}
-
-function firstAmount(values: unknown[]): number | undefined {
-  for (const value of values) {
-    const amount = asNumber(value);
-    if (amount != null) return amount;
-  }
-  return undefined;
-}
-
 export function resolvePriceLabel(options: ResolvePriceLabelOptions): string {
   const currency = options.currency || 'GBP';
 
@@ -125,25 +95,20 @@ export function resolvePriceLabel(options: ResolvePriceLabelOptions): string {
   const pricingPence = firstPricingPence(options.pricings, currency);
   if (pricingPence != null) return formatPrice(pricingPence / 100, currency);
 
-  const fallbackPence = firstPence([
-    options.fallbackAmountPence,
-    ...(options.fallbackAmountPenceCandidates || []),
-  ]);
-  if (fallbackPence != null) return formatPrice(fallbackPence / 100, currency);
-
-  const fallbackAmount = firstAmount([
-    options.fallbackAmount,
-    ...(options.fallbackAmountCandidates || []),
-  ]);
-  if (fallbackAmount != null) return formatPrice(fallbackAmount, currency);
-
-  const fallbackLabel = firstText([options.fallbackLabel, ...(options.fallbackLabelCandidates || [])]);
-  if (fallbackLabel) return fallbackLabel;
-
   return options.defaultLabel !== undefined ? options.defaultLabel : 'Price on request';
 }
 
 export function resolvePriceLabelOptional(options: ResolvePriceLabelOptions): string | undefined {
   const label = resolvePriceLabel({ ...options, defaultLabel: '' });
   return label || undefined;
+}
+
+type ResolvePriceAmountPenceOptions = {
+  currency?: CurrencyCode;
+  pricings?: Array<PricingEnvelope | null | undefined>;
+};
+
+export function resolvePriceAmountPenceOptional(options: ResolvePriceAmountPenceOptions): number | undefined {
+  const currency = options.currency || 'GBP';
+  return firstPricingPence(options.pricings, currency);
 }

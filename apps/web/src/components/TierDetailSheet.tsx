@@ -34,15 +34,10 @@ export function TierDetailSheet({
     ? resolvePriceLabel({
         currency,
         pricings: [tier.pricing],
-        fallbackAmountPenceCandidates: [tier.pricePence],
-        fallbackAmountCandidates: [tier.price],
-        fallbackLabelCandidates: [tier.priceLabel],
         defaultLabel: 'Price on request',
       })
     : 'Price on request';
-  const hasTierPrice = Boolean(
-    tier?.pricing || tier?.pricePence != null || tier?.price != null || (typeof tier?.priceLabel === 'string' && tier.priceLabel.trim()),
-  );
+  const hasTierPrice = Boolean(tier?.pricing);
 
   const handleBotAction = (url?: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     if (tier?.productId) {

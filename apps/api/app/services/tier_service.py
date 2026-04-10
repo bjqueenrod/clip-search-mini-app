@@ -10,6 +10,7 @@ from app.core.config import get_settings
 from app.db.session import engine
 from app.db.tier_mapping import TierFieldMapping, get_tier_mapping
 from app.services.payment_product_service import get_payment_product, list_payment_products
+from app.services.pricing_service import coerce_pence, fx_snapshot_from_pricing, pricing_from_gbp_pence
 from app.utils.bot_links import build_tier_buy_url
 
 settings = get_settings()
@@ -52,10 +53,10 @@ def _float(value: Any) -> float | None:
 
 
 def _price_from_pence(value: Any) -> float | None:
-    cents = _int(value)
-    if cents is None or cents <= 0:
+    pence = coerce_pence(value)
+    if pence is None or pence <= 0:
         return None
-    return round(cents / 100.0, 2)
+    return round(pence / 100.0, 2)
 
 
 def _format_price(value: float | None) -> str | None:
@@ -88,6 +89,22 @@ def _price_parts(data: dict[str, Any]) -> tuple[float | None, str | None]:
             label = '£' + label[1:]
         return price, label
     return price, _format_price(price)
+
+
+def _price_pence_value(data: dict[str, Any]) -> int | None:
+    candidates = (
+        _first_value(data, 'price_pence', 'payment_product_price_pence'),
+        _first_value(data, 'price'),
+        _first_value(data, 'price_value', 'priceValue'),
+    )
+    for value in candidates:
+        pence = coerce_pence(value)
+        if pence is not None:
+            return pence
+        number = _float(value)
+        if number is not None and number >= 0:
+            return int(round(number * 100))
+    return None
 
 
 def _short_description(text: str | None, *, max_length: int = 120) -> str | None:
@@ -154,10 +171,17 @@ def _row_to_item(row: Any, products_by_id: dict[str, dict[str, Any]] | None = No
     price, price_label = _price_parts(data)
     payment_product = (products_by_id or {}).get(_payment_product_key(data) or '')
     payment_price, payment_price_label = _price_parts(payment_product or {})
+    payment_pricing = payment_product.get('pricing') if isinstance(payment_product, dict) and isinstance(payment_product.get('pricing'), dict) else None
+    payment_fx_snapshot = fx_snapshot_from_pricing(payment_pricing if isinstance(payment_pricing, dict) else None)
+    price_pence = _price_pence_value(data)
+    if price_pence is None and isinstance(payment_pricing, dict):
+        gbp_bucket = payment_pricing.get('gbp') if isinstance(payment_pricing.get('gbp'), dict) else {}
+        price_pence = coerce_pence(gbp_bucket.get('amount_pence') or gbp_bucket.get('amountPence'))
     if price is None:
         price = payment_price
     if not price_label:
         price_label = payment_price_label
+    pricing = payment_pricing if payment_pricing else pricing_from_gbp_pence(price_pence, fx_snapshot=payment_fx_snapshot)
     return {
         'id': item_id,
         'name': name,
@@ -167,7 +191,9 @@ def _row_to_item(row: Any, products_by_id: dict[str, dict[str, Any]] | None = No
         'durationDays': duration_days,
         'tasksPerDay': tasks_per_day,
         'price': price,
+        'pricePence': price_pence,
         'priceLabel': price_label,
+        'pricing': pricing,
         'isUnlimitedTasks': tasks_per_day == 0,
         'badge': _badge(data),
         'botBuyUrl': _bot_buy_url(product_id),

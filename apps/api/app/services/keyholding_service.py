@@ -73,9 +73,21 @@ def fetch_keyholding_tiers() -> dict[str, Any]:
                 "includes": item.get("includes") or [],
                 "price": price_value if isinstance(price_value, (int, float)) else None,
                 "priceLabel": item.get("price_label") or item.get("priceLabel") or item.get("price") or None,
+                "pricing": item.get("pricing") if isinstance(item.get("pricing"), dict) else None,
                 "pricePerWeek": item.get("price_per_week") or item.get("pricePerWeek") or None,
+                "pricePerWeekPricing": item.get("price_per_week_pricing")
+                if isinstance(item.get("price_per_week_pricing"), dict)
+                else (item.get("pricePerWeekPricing") if isinstance(item.get("pricePerWeekPricing"), dict) else None),
                 "priceValue": price_value if isinstance(price_value, (int, float)) else None,
+                "pricePence": item.get("price_pence") or item.get("pricePence") or None,
+                "pricePerWeekPence": item.get("price_per_week_pence") or item.get("pricePerWeekPence") or None,
                 "paymentProductId": item.get("payment_product_id") or item.get("paymentProductId") or None,
+                "paymentProductPricePence": item.get("payment_product_price_pence")
+                or item.get("paymentProductPricePence")
+                or None,
+                "paymentProductPricing": item.get("payment_product_pricing")
+                if isinstance(item.get("payment_product_pricing"), dict)
+                else (item.get("paymentProductPricing") if isinstance(item.get("paymentProductPricing"), dict) else None),
                 "badge": item.get("badge") or item.get("ideal_for") or item.get("idealFor") or None,
                 "durationWeeksOptions": item.get("duration_weeks_options")
                 or item.get("durationWeeksOptions")
@@ -106,6 +118,8 @@ def fetch_keyholding_options() -> dict[str, Any]:
                 "requiresLockboxPhoto": bool(item.get("requires_lockbox_photo") or item.get("requiresLockboxPhoto")),
                 "priceLabel": item.get("price_label") or item.get("priceLabel") or None,
                 "priceCents": item.get("price_pence") or item.get("priceCents") or None,
+                "pricePence": item.get("price_pence") or item.get("pricePence") or None,
+                "pricing": item.get("pricing") if isinstance(item.get("pricing"), dict) else None,
                 "paymentProductId": item.get("payment_product_id") or item.get("paymentProductId") or None,
                 "order": item.get("order"),
             }
