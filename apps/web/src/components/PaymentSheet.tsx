@@ -150,7 +150,6 @@ export function PaymentSheet({
       const details = (selectedMethodInfo.details || {}) as Record<string, unknown>;
       const cents =
         selectedMethodInfo.priceCents ??
-        (typeof details.fansly_price_usd_cents === 'number' ? (details.fansly_price_usd_cents as number) : undefined) ??
         (typeof details.price_cents === 'number' ? (details.price_cents as number) : undefined);
       if (cents != null) {
         return formatPrice(cents / 100);
