@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
+from typing import Any, Iterable
 
 import httpx
 
@@ -9,6 +12,10 @@ from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
+_CLIP_PRICING_CACHE_TTL_SECONDS = 300
+_CLIP_PRICING_CACHE_MISS = object()
+_clip_pricing_cache: dict[str, tuple[float, dict[str, Any] | None]] = {}
+_clip_pricing_cache_lock = Lock()
 
 
 def _normalize_record(record: dict[str, Any]) -> dict[str, Any]:
@@ -44,6 +51,62 @@ def _extract_item(payload: Any) -> dict[str, Any] | None:
         return _normalize_record(payload)
 
     return None
+
+
+def _normalize_clip_id(clip_id: str) -> str:
+    return str(clip_id).strip().upper()
+
+
+def _fetch_clip_pricing(clip_id: str) -> dict[str, Any] | None:
+    request_url = _request_url(f'/api/clips/{clip_id}/pricing')
+    if request_url is None:
+        return None
+
+    try:
+        response = httpx.get(
+            request_url,
+            headers=_request_headers(),
+            timeout=settings.payment_system_timeout_seconds,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except (httpx.HTTPError, ValueError) as exc:
+        logger.warning('Unable to load clip pricing %s from payment system: %s', clip_id, exc)
+        return None
+
+    return _extract_item(payload)
+
+
+def _clip_pricing_cache_get(clip_id: str) -> dict[str, Any] | None | object:
+    normalized_clip_id = _normalize_clip_id(clip_id)
+    if not normalized_clip_id:
+        return _CLIP_PRICING_CACHE_MISS
+
+    now = time.monotonic()
+    with _clip_pricing_cache_lock:
+        cached = _clip_pricing_cache.get(normalized_clip_id)
+        if cached is None:
+            return _CLIP_PRICING_CACHE_MISS
+        expires_at, value = cached
+        if expires_at < now:
+            _clip_pricing_cache.pop(normalized_clip_id, None)
+            return _CLIP_PRICING_CACHE_MISS
+        return value
+
+
+def _clip_pricing_cache_set(clip_id: str, pricing: dict[str, Any] | None) -> None:
+    normalized_clip_id = _normalize_clip_id(clip_id)
+    if not normalized_clip_id:
+        return
+
+    expires_at = time.monotonic() + _CLIP_PRICING_CACHE_TTL_SECONDS
+    with _clip_pricing_cache_lock:
+        _clip_pricing_cache[normalized_clip_id] = (expires_at, pricing)
+
+
+def clear_clip_pricing_cache() -> None:
+    with _clip_pricing_cache_lock:
+        _clip_pricing_cache.clear()
 
 
 def list_payment_products(active_only: bool = False) -> list[dict[str, Any]]:
@@ -99,24 +162,92 @@ def get_payment_product(product_id: int | str) -> dict[str, Any] | None:
 
 
 def get_clip_pricing(clip_id: str) -> dict[str, Any] | None:
-    clip_id = str(clip_id).strip()
+    clip_id = _normalize_clip_id(clip_id)
     if not clip_id:
         return None
 
-    request_url = _request_url(f'/api/clips/{clip_id}/pricing')
-    if request_url is None:
-        return None
+    cached = _clip_pricing_cache_get(clip_id)
+    if cached is not _CLIP_PRICING_CACHE_MISS:
+        return cached if isinstance(cached, dict) else None
 
-    try:
-        response = httpx.get(
-            request_url,
-            headers=_request_headers(),
-            timeout=settings.payment_system_timeout_seconds,
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except (httpx.HTTPError, ValueError) as exc:
-        logger.warning('Unable to load clip pricing %s from payment system: %s', clip_id, exc)
-        return None
+    pricing = _fetch_clip_pricing(clip_id)
+    _clip_pricing_cache_set(clip_id, pricing)
+    return pricing
 
-    return _extract_item(payload)
+
+def get_clip_pricings(clip_ids: Iterable[str]) -> dict[str, dict[str, Any]]:
+    normalized_clip_ids: list[str] = []
+    seen: set[str] = set()
+    for clip_id in clip_ids:
+        normalized_clip_id = _normalize_clip_id(clip_id)
+        if not normalized_clip_id or normalized_clip_id in seen:
+            continue
+        seen.add(normalized_clip_id)
+        normalized_clip_ids.append(normalized_clip_id)
+
+    if not normalized_clip_ids:
+        return {}
+
+    pricing_by_id: dict[str, dict[str, Any]] = {}
+    missing_clip_ids: list[str] = []
+    for clip_id in normalized_clip_ids:
+        cached = _clip_pricing_cache_get(clip_id)
+        if cached is _CLIP_PRICING_CACHE_MISS:
+            missing_clip_ids.append(clip_id)
+            continue
+        if isinstance(cached, dict):
+            pricing_by_id[clip_id] = cached
+
+    if not missing_clip_ids:
+        return pricing_by_id
+
+    batch_url = _request_url('/api/clips/pricing')
+    if batch_url is not None:
+        try:
+            response = httpx.get(
+                batch_url,
+                headers=_request_headers(),
+                params={'clip_ids': ','.join(missing_clip_ids)},
+                timeout=settings.payment_system_timeout_seconds,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            items = payload.get('items')
+            if isinstance(items, list):
+                found_ids: set[str] = set()
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    clip_id = _normalize_clip_id(item.get('clip_id'))
+                    if not clip_id:
+                        continue
+                    found_ids.add(clip_id)
+                    _clip_pricing_cache_set(clip_id, item)
+                    pricing_by_id[clip_id] = item
+                for clip_id in missing_clip_ids:
+                    if clip_id not in found_ids:
+                        _clip_pricing_cache_set(clip_id, None)
+                return pricing_by_id
+        except (httpx.HTTPError, ValueError, AttributeError) as exc:
+            logger.warning('Unable to batch load clip pricing from payment system: %s', exc)
+
+    if len(missing_clip_ids) == 1:
+        clip_id = missing_clip_ids[0]
+        pricing = get_clip_pricing(clip_id)
+        if isinstance(pricing, dict):
+            pricing_by_id[clip_id] = pricing
+        return pricing_by_id
+
+    with ThreadPoolExecutor(max_workers=min(8, len(missing_clip_ids))) as executor:
+        future_to_clip_id = {executor.submit(get_clip_pricing, clip_id): clip_id for clip_id in missing_clip_ids}
+        for future in as_completed(future_to_clip_id):
+            clip_id = future_to_clip_id[future]
+            try:
+                pricing = future.result()
+            except Exception as exc:  # pragma: no cover - defensive logging
+                logger.warning('Unable to load clip pricing %s from payment system: %s', clip_id, exc)
+                pricing = None
+            if isinstance(pricing, dict):
+                pricing_by_id[clip_id] = pricing
+
+    return pricing_by_id

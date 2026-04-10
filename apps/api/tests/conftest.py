@@ -114,6 +114,15 @@ def setup_database() -> None:
     yield
 
 
+@pytest.fixture(autouse=True)
+def clear_payment_clip_pricing_cache() -> None:
+    from app.services.payment_product_service import clear_clip_pricing_cache
+
+    clear_clip_pricing_cache()
+    yield
+    clear_clip_pricing_cache()
+
+
 @pytest.fixture()
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(

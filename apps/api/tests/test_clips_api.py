@@ -45,8 +45,12 @@ def test_clips_use_payment_system_pricing(client, monkeypatch) -> None:
         },
     }
     monkeypatch.setattr(
-        "app.services.clip_service.get_clip_pricing",
-        lambda clip_id: pricing_map.get(str(clip_id).upper()),
+        "app.services.clip_service.get_clip_pricings",
+        lambda clip_ids: {
+            str(clip_id).upper(): pricing_map[str(clip_id).upper()]
+            for clip_id in clip_ids
+            if str(clip_id).upper() in pricing_map
+        },
     )
 
     search_response = client.get("/api/clips", params={"q": "countdown"})

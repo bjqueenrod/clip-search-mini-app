@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.db.clip_mapping import DEFAULT_SHORT_DESCRIPTION_LENGTH, get_clip_mapping
 from app.db.session import engine
 from app.schemas.clips import ClipQueryParams
-from app.services.payment_product_service import get_clip_pricing, list_payment_products
+from app.services.payment_product_service import get_clip_pricing, get_clip_pricings, list_payment_products
 from app.services.preview_service import build_preview_assets
 from app.services.pricing_service import coerce_pence, fx_snapshot_from_pricing, pricing_from_gbp_pence
 from app.utils.bot_links import build_clip_download_url, build_clip_stream_url
@@ -65,13 +65,7 @@ def _price_from_pence(value: Any) -> float | None:
 def _clip_pricing_map(clip_ids: set[str]) -> dict[str, dict[str, Any]]:
     if not clip_ids:
         return {}
-
-    pricing_by_id: dict[str, dict[str, Any]] = {}
-    for clip_id in clip_ids:
-        pricing = get_clip_pricing(clip_id)
-        if isinstance(pricing, dict):
-            pricing_by_id[clip_id.upper()] = pricing
-    return pricing_by_id
+    return get_clip_pricings(clip_ids)
 
 
 def _resolve_pricing(
