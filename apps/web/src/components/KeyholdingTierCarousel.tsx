@@ -98,17 +98,17 @@ export function KeyholdingTierCarousel({
                         </div>
                       </div>
                     ) : null}
-                    <p>
-                      <strong>Price:</strong> {priceLabel}
-                    </p>
-                    {tier.pricePerWeek ? (
-                      <p>
-                        <strong>Price per week:</strong> {pricePerWeekLabel}
-                      </p>
-                    ) : null}
+                    <div className="top-sellers__price-block top-sellers__price-block--keyholding">
+                      <span className="top-sellers__meta-label">Price</span>
+                      <strong>{priceLabel}</strong>
+                      {tier.pricePerWeek ? (
+                        <span className="top-sellers__price-subtext">or {pricePerWeekLabel} per week</span>
+                      ) : null}
+                    </div>
                     {onApply ? (
-                      <button type="button" className="tasks-button tasks-button--primary" onClick={onApply}>
-                        Apply for this tier
+                      <button type="button" className="top-sellers__cta top-sellers__cta--apply" onClick={onApply}>
+                        <strong>Apply for this tier</strong>
+                        <span>Application reviewed within 24h</span>
                       </button>
                     ) : null}
                   </div>

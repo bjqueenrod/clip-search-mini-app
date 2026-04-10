@@ -1175,10 +1175,31 @@ button {
     rgba(24, 19, 30, 0.72);
 }
 
+.top-sellers__price-block--keyholding {
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(193, 128, 229, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(193, 128, 229, 0.16), transparent 52%),
+    radial-gradient(circle at bottom left, rgba(176, 106, 214, 0.12), transparent 48%),
+    linear-gradient(180deg, rgba(38, 31, 45, 0.98), rgba(26, 21, 31, 0.98));
+  box-shadow: 0 18px 36px rgba(7, 4, 10, 0.32), 0 0 0 1px rgba(193, 128, 229, 0.08) inset;
+}
+
 .top-sellers__price-block strong {
   display: block;
   font-size: 1.58rem;
   line-height: 1;
+}
+
+.top-sellers__price-block--keyholding strong {
+  font-size: 1.82rem;
+}
+
+.top-sellers__price-subtext {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .top-sellers--tiers .top-sellers__value-copy {
@@ -1203,6 +1224,24 @@ button {
   font-weight: 700;
   letter-spacing: 0.01em;
   transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.top-sellers__cta--apply {
+  justify-content: center;
+  text-align: left;
+  border-color: rgba(193, 128, 229, 0.4);
+  background: linear-gradient(180deg, #d08cff 0%, #b06ad6 100%);
+  box-shadow: 0 18px 28px rgba(176, 106, 214, 0.32);
+  color: #160f1d;
+}
+
+.top-sellers__cta--apply strong {
+  font-size: 1rem;
+}
+
+.top-sellers__cta--apply span {
+  color: #2d0c46;
+  font-size: 0.9rem;
 }
 
 .top-sellers__cta strong,
