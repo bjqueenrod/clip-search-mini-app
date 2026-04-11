@@ -50,7 +50,11 @@ export function HomePage() {
 
   return (
     <AppShell>
-      <CurrencyToggleBanner alignRight syncWithServer={session.ready} />
+      <CurrencyToggleBanner
+        alignRight
+        syncWithServer={session.ready}
+        telegramUserId={session.isTelegram ? session.user?.id : null}
+      />
       <section className="hero">
         <img
           className="hero__banner"
