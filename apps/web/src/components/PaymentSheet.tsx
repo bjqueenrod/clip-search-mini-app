@@ -385,7 +385,10 @@ export function PaymentSheet({
             <p>Select a payment method to open checkout in your browser.</p>
             <div className="payment-sheet__methods">
               {methods.map((method) => (
-                <label key={`${method.paymentMethod}-${method.id ?? 'default'}`} className="payment-sheet__method">
+                <label
+                  key={`${method.paymentMethod}-${method.id ?? 'default'}`}
+                  className={`payment-sheet__method${selectedMethod === method.paymentMethod ? ' is-selected' : ''}`}
+                >
                   <input
                     type="radio"
                     name="payment-method"

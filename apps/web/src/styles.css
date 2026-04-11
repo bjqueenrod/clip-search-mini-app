@@ -2572,6 +2572,16 @@ button {
   border-radius: 10px;
 }
 
+.payment-sheet__method.is-selected {
+  border-color: rgba(66, 145, 255, 0.95);
+  background: rgba(66, 145, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(66, 145, 255, 0.18) inset;
+}
+
+.payment-sheet__method.is-selected input[type='radio'] {
+  accent-color: #4291ff;
+}
+
 .payment-sheet__primary {
   background: linear-gradient(135deg, #d07bff, #8d5bff);
   border: none;
