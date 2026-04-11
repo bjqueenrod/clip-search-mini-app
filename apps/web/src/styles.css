@@ -2364,26 +2364,25 @@ button {
 }
 
 .clips-faq__body {
-  display: grid;
-  grid-template-rows: 0fr;
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
   transform: translateY(-8px);
   pointer-events: none;
   transition:
-    grid-template-rows 320ms ease,
+    max-height 320ms ease,
     opacity 220ms ease,
     transform 220ms ease;
 }
 
 .clips-faq--open .clips-faq__body {
-  grid-template-rows: 1fr;
+  max-height: 4000px;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
 .clips-faq__body-inner {
-  overflow: hidden;
   min-height: 0;
 }
 
