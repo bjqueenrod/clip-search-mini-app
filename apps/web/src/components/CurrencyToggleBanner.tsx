@@ -6,6 +6,7 @@ type CurrencyToggleBannerProps = {
   alignRight?: boolean;
   syncWithServer?: boolean;
   telegramUserId?: number | null;
+  isTelegramSession?: boolean;
 };
 
 export function CurrencyToggleBanner({
@@ -14,8 +15,9 @@ export function CurrencyToggleBanner({
   alignRight = false,
   syncWithServer = false,
   telegramUserId,
+  isTelegramSession = false,
 }: CurrencyToggleBannerProps) {
-  const [currency, setCurrency] = useCurrencyPreference(syncWithServer, telegramUserId);
+  const [currency, setCurrency] = useCurrencyPreference(syncWithServer, telegramUserId, isTelegramSession);
 
   return (
     <div

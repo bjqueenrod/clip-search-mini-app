@@ -53,6 +53,7 @@ export function HomePage() {
       <CurrencyToggleBanner
         alignRight
         syncWithServer={session.ready}
+        isTelegramSession={session.isTelegram}
       />
       <section className="hero">
         <img

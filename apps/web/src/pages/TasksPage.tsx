@@ -383,6 +383,7 @@ export function TasksPage() {
         showBackButton
         syncWithServer={session.ready}
         telegramUserId={telegramUserId}
+        isTelegramSession={session.isTelegram}
         onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
       />
       <section className="hero hero--tasks">

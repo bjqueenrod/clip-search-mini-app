@@ -381,6 +381,7 @@ export function BrowsePage() {
         showBackButton
         syncWithServer={session.ready}
         telegramUserId={telegramUserId}
+        isTelegramSession={session.isTelegram}
         onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
       />
       <section className="hero">
