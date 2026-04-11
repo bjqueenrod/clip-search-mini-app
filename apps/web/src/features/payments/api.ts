@@ -112,6 +112,7 @@ export async function startCheckout(
 
 export async function pollInvoice(invoiceId: string): Promise<InvoiceStatusResponse> {
   const response = await fetch(`${API_BASE}/payments/invoices/${encodeURIComponent(invoiceId)}`, {
+    cache: 'no-store',
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Unable to check payment status');

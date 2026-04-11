@@ -276,6 +276,8 @@ def test_invoice_status_does_not_require_session_cookie(client, monkeypatch) -> 
     assert response.status_code == 200
     assert response.json()["invoiceId"] == "inv_123"
     assert response.json()["status"] == "pending"
+    assert response.headers["cache-control"] == "no-store, no-cache, must-revalidate, max-age=0"
+    assert response.headers["pragma"] == "no-cache"
 
 
 def test_invoice_status_surfaces_not_found_detail(client, monkeypatch) -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 
 from app.api.deps import get_session
 from app.schemas.payments import (
@@ -263,7 +263,10 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
 
 
 @router.get("/payments/invoices/{invoice_id}", response_model=InvoiceStatusResponse)
-def invoice_status(invoice_id: str) -> InvoiceStatusResponse:
+def invoice_status(invoice_id: str, response: Response) -> InvoiceStatusResponse:
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     cached = INVOICE_CACHE.get(invoice_id)
     if cached and cached.status in {"paid", "cancelled"}:
         return cached
