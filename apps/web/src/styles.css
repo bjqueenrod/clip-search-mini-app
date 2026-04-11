@@ -2625,7 +2625,8 @@ button {
 }
 
 .payment-sheet__actions--confirm {
-  margin-top: 12px;
+  margin-top: 16px;
+  gap: 14px;
 }
 
 .payment-sheet__note {
@@ -2640,7 +2641,7 @@ button {
 
 .payment-sheet__note-block {
   display: grid;
-  gap: 4px;
+  gap: 8px;
 }
 
 .payment-sheet__note-label {
@@ -2665,8 +2666,8 @@ button {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 50px;
-  padding: 13px 16px;
+  min-height: 56px;
+  padding: 16px 18px;
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(52, 39, 64, 0.98), rgba(34, 25, 44, 0.98));
   border: 1px solid rgba(193, 128, 229, 0.38);
@@ -2675,6 +2676,7 @@ button {
   font-size: 1.06rem;
   font-weight: 700;
   letter-spacing: 0.06em;
+  line-height: 1.15;
   text-align: center;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
 }
