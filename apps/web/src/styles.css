@@ -2649,6 +2649,8 @@ button {
 .payment-sheet__note-text {
   margin: 0;
   line-height: 1.4;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 .payment-sheet__note-code {
