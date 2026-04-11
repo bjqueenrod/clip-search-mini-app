@@ -403,7 +403,11 @@ def get_clip_hashtags(db: Session, *, limit: int = 250) -> dict[str, Any]:
 def get_clip_detail(db: Session, clip_id: str) -> dict[str, Any] | None:
     mapping = get_clip_mapping(engine)
     table = mapping.table
-    stmt = select(table).where(table.c.clip_id == clip_id)
+    clip_col = mapping.get("clip_id")
+    if clip_col is None:
+        return None
+    normalized_clip_id = (clip_id or "").strip().upper()
+    stmt = select(table).where(func.upper(func.trim(clip_col.cast(String))) == normalized_clip_id)
     active_col = mapping.get("active")
     if active_col is not None:
         stmt = stmt.where(active_col == 1)

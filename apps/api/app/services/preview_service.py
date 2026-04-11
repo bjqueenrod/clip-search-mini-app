@@ -43,7 +43,7 @@ def build_preview_assets(
             candidate_embed_url = client.build_embed_url(preview_id)
             if not verify_embed_access or client.is_embed_url_accessible(candidate_embed_url):
                 preview_embed_url = candidate_embed_url
-        except BunnyConfigError:
+        except (BunnyConfigError, Exception):
             preview_embed_url = None
 
     return {
