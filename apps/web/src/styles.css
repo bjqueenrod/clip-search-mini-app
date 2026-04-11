@@ -2620,6 +2620,11 @@ button {
   flex: none;
 }
 
+.payment-sheet__primary-logo--throne {
+  height: 24px;
+  max-width: 66px;
+}
+
 .payment-sheet__ghost {
   background: transparent;
   border: 1px solid var(--line, #2c2335);

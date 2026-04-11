@@ -200,36 +200,43 @@ export function PaymentSheet({
     [selectedMethodInfo],
   );
   const isPaypalSelected = selectedMethodInfo?.paymentMethod === 'paypal';
+  const isThroneSelected = selectedMethodInfo?.paymentMethod === 'throne';
+  const isBrandPayButton = isPaypalSelected || isThroneSelected;
 
   const payButtonLabel = useMemo(() => {
     const paypalPayLabel = selectedPriceLabel ? `Pay - ${selectedPriceLabel}` : 'Pay';
+    const thronePayLabel = selectedPriceLabel ? `Pay - ${selectedPriceLabel}` : 'Pay';
     if (state === 'confirm') {
-      return isPaypalSelected ? paypalPayLabel : selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+      if (isPaypalSelected) return paypalPayLabel;
+      if (isThroneSelected) return thronePayLabel;
+      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
     }
     if (state === 'select') {
       if (hasInstructions) return 'Confirm';
-      return isPaypalSelected ? paypalPayLabel : selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+      if (isPaypalSelected) return paypalPayLabel;
+      if (isThroneSelected) return thronePayLabel;
+      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
     }
     return 'Confirm';
-  }, [state, hasInstructions, selectedPriceLabel, selectedLabel, isPaypalSelected]);
+  }, [state, hasInstructions, selectedPriceLabel, selectedLabel, isPaypalSelected, isThroneSelected]);
 
   const primaryButtonContent = useMemo(() => {
-    if (!isPaypalSelected || !payButtonLabel.toLowerCase().startsWith('pay')) {
+    if (!isBrandPayButton || !payButtonLabel.toLowerCase().startsWith('pay')) {
       return payButtonLabel;
     }
     return (
       <>
         <img
-          src="/paypal-logo.png"
+          src={isPaypalSelected ? '/paypal-logo.png' : '/throne-logo.png'}
           alt=""
           aria-hidden="true"
-          className="payment-sheet__primary-logo"
+          className={`payment-sheet__primary-logo${isThroneSelected ? ' payment-sheet__primary-logo--throne' : ''}`}
         />
         <span>{payButtonLabel}</span>
       </>
     );
-  }, [isPaypalSelected, payButtonLabel]);
-  const isPaypalPayButton = isPaypalSelected && payButtonLabel.toLowerCase().startsWith('pay');
+  }, [isBrandPayButton, isPaypalSelected, isThroneSelected, payButtonLabel]);
+  const isWhitePayButton = isBrandPayButton && payButtonLabel.toLowerCase().startsWith('pay');
 
   const handleCopyTributeCode = useCallback(async () => {
     if (!selectedTributeCode) return;
@@ -376,7 +383,7 @@ export function PaymentSheet({
   const paymentButton = (
     <button
       type="button"
-      className={`payment-sheet__primary${isPaypalPayButton ? ' payment-sheet__primary--white' : ''}`}
+      className={`payment-sheet__primary${isWhitePayButton ? ' payment-sheet__primary--white' : ''}`}
       onClick={handlePrimaryClick}
       disabled={primaryButtonDisabled}
     >
@@ -478,7 +485,7 @@ export function PaymentSheet({
             <div className="payment-sheet__actions payment-sheet__actions--confirm">
               <button
                 type="button"
-                className={`payment-sheet__primary${isPaypalPayButton ? ' payment-sheet__primary--white' : ''}`}
+                className={`payment-sheet__primary${isWhitePayButton ? ' payment-sheet__primary--white' : ''}`}
                 onClick={handleCheckout}
                 disabled={primaryButtonDisabled}
               >
