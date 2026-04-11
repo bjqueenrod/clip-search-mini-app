@@ -126,7 +126,7 @@ export function PaymentSheet({
     selectedMethodInfo?.instructionTemplates?.checkoutDefault?.trim() ||
     selectedMethodInfo?.instructions?.trim();
   const selectedInstructions =
-    selectedInstructionsTemplate?.replace(/\{price\}/g, selectedPriceLabel || '') || undefined;
+    selectedInstructionsTemplate?.replace(/\{price\}/g, () => selectedPriceLabel || '') || undefined;
   const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
   const showPaymentDetails = state !== 'select';
   const requiresCode = Boolean(selectedMethodInfo?.requiresCode);
@@ -211,12 +211,22 @@ export function PaymentSheet({
     }
   }, [selectedTributeCode]);
 
+  const renderInstructionText = useCallback((text: string) => {
+    const lines = text.split(/\r?\n/);
+    return lines.map((line, index) => (
+      <span key={`${index}:${line}`}>
+        {line}
+        {index < lines.length - 1 ? <br /> : null}
+      </span>
+    ));
+  }, []);
+
   const paymentNotes = showPaymentDetails && (selectedInstructions || selectedTributeCode) ? (
     <div className="payment-sheet__note" role="note">
       {selectedInstructions ? (
         <div className="payment-sheet__note-block">
           <div className="payment-sheet__note-label">Payment instructions</div>
-          <p className="payment-sheet__note-text">{selectedInstructions}</p>
+          <div className="payment-sheet__note-text">{renderInstructionText(selectedInstructions)}</div>
         </div>
       ) : null}
       {selectedTributeCode ? (

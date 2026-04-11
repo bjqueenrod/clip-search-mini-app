@@ -2649,7 +2649,7 @@ button {
 .payment-sheet__note-text {
   margin: 0;
   line-height: 1.4;
-  white-space: pre-line;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
