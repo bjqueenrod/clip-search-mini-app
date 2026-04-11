@@ -379,7 +379,12 @@ export function BrowsePage() {
       <CurrencyToggleBanner
         showBackButton
         syncWithServer={session.ready}
-        telegramUserId={session.isTelegram ? session.user?.id : null}
+        debugInfo={{
+          isTelegram: session.isTelegram,
+          hasInitData: Boolean(session.initData),
+          source: session.initData ? 'telegram' : 'development',
+          telegramUserId: session.user?.id ?? null,
+        }}
         onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
       />
       <section className="hero">
