@@ -54,6 +54,7 @@ export function PaymentSheet({
   const [invoiceId, setInvoiceId] = useState<string>('');
   const [paymentUrl, setPaymentUrl] = useState<string | undefined>('');
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [savedPaymentCode, setSavedPaymentCode] = useState<string>('');
   const [copiedTributeCode, setCopiedTributeCode] = useState(false);
   const [currency] = useCurrencyPreference();
   const storageKey = useMemo(
@@ -62,13 +63,22 @@ export function PaymentSheet({
   );
 
   const saveProgress = useCallback(
-    (payload: { invoiceId?: string; paymentUrl?: string; selectedMethod?: string; orderId?: number | null }) => {
+    (
+      payload: {
+        invoiceId?: string;
+        paymentUrl?: string;
+        paymentCode?: string;
+        selectedMethod?: string;
+        orderId?: number | null;
+      },
+    ) => {
       try {
         sessionStorage.setItem(
           storageKey,
           JSON.stringify({
             invoiceId: payload.invoiceId || '',
             paymentUrl: payload.paymentUrl || '',
+            paymentCode: payload.paymentCode || '',
             selectedMethod: payload.selectedMethod || '',
             orderId: payload.orderId ?? null,
           }),
@@ -92,13 +102,20 @@ export function PaymentSheet({
     try {
       const raw = sessionStorage.getItem(storageKey);
       if (!raw) return;
-      const parsed = JSON.parse(raw) as { invoiceId?: string; paymentUrl?: string; selectedMethod?: string; orderId?: number };
+      const parsed = JSON.parse(raw) as {
+        invoiceId?: string;
+        paymentUrl?: string;
+        paymentCode?: string;
+        selectedMethod?: string;
+        orderId?: number;
+      };
       if (parsed?.orderId) {
         setOrderId(parsed.orderId);
       }
       if (parsed?.invoiceId) {
         setInvoiceId(parsed.invoiceId);
         setPaymentUrl(parsed.paymentUrl || '');
+        setSavedPaymentCode(parsed.paymentCode || '');
         if (parsed.selectedMethod) setSelectedMethod(parsed.selectedMethod);
         setState('waiting');
       }
@@ -128,7 +145,7 @@ export function PaymentSheet({
     selectedMethodInfo?.instructions?.trim();
   const selectedInstructions =
     selectedInstructionsTemplate?.replace(/\{price\}/g, () => selectedPriceLabel || '') || undefined;
-  const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
+  const selectedTributeCode = savedPaymentCode?.trim() || selectedMethodInfo?.tributeCode?.trim();
   const botFallbackLink = botFallbackUrl || '';
   const showBotFallbackActions = Boolean(botFallbackLink && isTelegramWebView());
   const showPaymentDetails = state !== 'select';
@@ -328,9 +345,16 @@ export function PaymentSheet({
       });
       setOrderId(res.orderId);
       setInvoiceId(res.invoiceId);
+      setSavedPaymentCode(res.paymentCode || '');
       const url = res.paymentUrl || res.providerInvoiceUrl || '';
       setPaymentUrl(url);
-      saveProgress({ invoiceId: res.invoiceId, paymentUrl: url, selectedMethod, orderId: res.orderId });
+      saveProgress({
+        invoiceId: res.invoiceId,
+        paymentUrl: url,
+        paymentCode: res.paymentCode || '',
+        selectedMethod,
+        orderId: res.orderId,
+      });
       openPaymentUrl(url);
       setState('waiting');
     } catch (err) {
@@ -357,9 +381,10 @@ export function PaymentSheet({
   const handleChangeMethod = useCallback(() => {
     setInvoiceId('');
     setPaymentUrl('');
+    setSavedPaymentCode('');
     setState('select');
     setError('');
-    saveProgress({ orderId, selectedMethod });
+    saveProgress({ orderId, selectedMethod, paymentCode: '' });
   }, [orderId, saveProgress]);
 
   useEffect(() => {
@@ -414,7 +439,10 @@ export function PaymentSheet({
                     name="payment-method"
                     value={method.paymentMethod}
                     checked={selectedMethod === method.paymentMethod}
-                    onChange={() => setSelectedMethod(method.paymentMethod)}
+                    onChange={() => {
+                      setSelectedMethod(method.paymentMethod);
+                      setSavedPaymentCode('');
+                    }}
                   />
                   <span>
                     {(() => {
