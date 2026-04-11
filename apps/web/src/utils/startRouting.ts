@@ -6,6 +6,11 @@ function parseStartPayload(payload?: string | null): URLSearchParams | null {
 
   const normalized = raw.startsWith('?') ? raw.slice(1) : raw;
 
+  const clipIdMatch = normalized.match(/^clips(?:[_.-]|__|_-|-_)([A-Za-z0-9_-]{1,64})$/i);
+  if (clipIdMatch) {
+    return new URLSearchParams(`startapp=clips&clipId=${encodeURIComponent(clipIdMatch[1] || '')}`);
+  }
+
   if (/^clips(?:[&?]|$)/i.test(normalized) && normalized.toLowerCase().includes('clipid=')) {
     const rest = normalized.replace(/^clips(?:[&?])?/i, '');
     return new URLSearchParams(`startapp=clips&${rest}`);
@@ -47,4 +52,3 @@ export function stripStartRoutingParams(search: string): string {
   searchParams.delete('tgWebAppStartParam');
   return searchParams.toString();
 }
-
