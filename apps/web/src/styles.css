@@ -2363,6 +2363,21 @@ button {
   margin-bottom: 0;
 }
 
+.clips-faq {
+  margin-bottom: 14px;
+  padding-top: 18px;
+  gap: 10px;
+}
+
+.clips-faq .tasks-panel__header {
+  margin-bottom: 0;
+  padding: 16px 16px 18px;
+}
+
+.clips-faq + .search-panel {
+  margin-top: 0;
+}
+
 .clips-faq__body {
   max-height: 0;
   overflow: hidden;
@@ -2388,7 +2403,7 @@ button {
 
 .clips-faq__toggle {
   justify-self: start;
-  margin-top: 4px;
+  margin-top: 0;
   padding: 10px 14px;
   border: 1px solid rgba(176, 106, 214, 0.22);
   border-radius: 999px;
