@@ -268,3 +268,25 @@ def test_invoice_status_surfaces_not_found_detail(client, monkeypatch) -> None:
 
     assert response.status_code == 404
     assert response.json()["detail"] == "invoice not found"
+
+
+def test_cancel_invoice_clears_cached_status(client, monkeypatch) -> None:
+    from app.api.routes import payments as payments_routes
+    from app.services import payment_gateway
+
+    payments_routes.INVOICE_CACHE["abc-123"] = payments_routes.InvoiceStatusResponse(
+        invoiceId="abc-123",
+        status="pending",
+        paymentUrl=None,
+        providerInvoiceUrl=None,
+    )
+
+    def fake_cancel_invoice(*args, **kwargs):
+        return {"status": "cancelled"}
+
+    monkeypatch.setattr(payment_gateway, "cancel_invoice", fake_cancel_invoice)
+    response = client.post("/api/payments/invoices/abc-123/cancel")
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True}
+    assert "abc-123" not in payments_routes.INVOICE_CACHE

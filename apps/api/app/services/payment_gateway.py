@@ -234,3 +234,24 @@ def get_invoice(invoice_id: str) -> dict[str, Any]:
     except httpx.HTTPError as exc:
         logger.warning("Get invoice failed: %s", exc)
         raise PaymentSystemError("unable to load invoice") from exc
+
+
+def cancel_invoice(invoice_id: str) -> dict[str, Any]:
+    base = _api_base_url()
+    if not base:
+        raise PaymentSystemError("PAYMENT_SYSTEM_API_URL is not configured")
+    try:
+        response = httpx.post(
+            f"{base}/api/invoices/{invoice_id}/cancel",
+            headers=_headers(),
+            timeout=settings.payment_system_timeout_seconds,
+        )
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as exc:
+        logger.warning("Cancel invoice failed: %s", exc)
+        message = _response_error_message(exc.response, "unable to cancel invoice")
+        raise PaymentSystemError(message) from exc
+    except httpx.HTTPError as exc:
+        logger.warning("Cancel invoice failed: %s", exc)
+        raise PaymentSystemError("unable to cancel invoice") from exc

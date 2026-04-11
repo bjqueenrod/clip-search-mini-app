@@ -276,6 +276,22 @@ def invoice_status(invoice_id: str) -> InvoiceStatusResponse:
     return result
 
 
+@router.post("/payments/invoices/{invoice_id}/cancel")
+def cancel_invoice(invoice_id: str) -> dict[str, bool | str]:
+    try:
+        invoice = payment_gateway.cancel_invoice(invoice_id)
+    except payment_gateway.PaymentSystemError as exc:
+        logger.warning("invoice cancel error: %s", exc)
+        detail = str(exc).strip() or "invoice unavailable"
+        if "not found" in detail.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail) from exc
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from exc
+
+    if isinstance(invoice, dict):
+        INVOICE_CACHE.pop(invoice_id, None)
+    return {"ok": True}
+
+
 @router.post("/payments/webhook")
 def payment_webhook(
     payload: dict,

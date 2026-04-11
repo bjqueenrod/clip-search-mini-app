@@ -117,3 +117,32 @@ export async function pollInvoice(invoiceId: string): Promise<InvoiceStatusRespo
   if (!response.ok) throw new Error('Unable to check payment status');
   return response.json();
 }
+
+export async function cancelInvoice(invoiceId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/payments/invoices/${encodeURIComponent(invoiceId)}/cancel`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    let message = 'Unable to cancel payment';
+    try {
+      const text = await response.text();
+      if (text) {
+        try {
+          const data = JSON.parse(text);
+          const detail = data?.detail || data?.error;
+          if (detail) {
+            message = `${message}: ${detail}`;
+          } else {
+            message = `${message}: ${text}`;
+          }
+        } catch {
+          message = `${message}: ${text}`;
+        }
+      }
+    } catch {
+      // keep generic message
+    }
+    throw new Error(message);
+  }
+}

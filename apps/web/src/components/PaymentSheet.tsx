@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
+import { cancelInvoice, pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
 import { resolvePriceLabelOptional } from '../utils/pricing';
 import { isTelegramWebView, openBotDeepLink } from '../app/telegram';
@@ -357,6 +357,11 @@ export function PaymentSheet({
       }
       const elapsed = Date.now() - startedAt;
       if (elapsed > 5 * 60 * 1000) {
+        try {
+          await cancelInvoice(invoiceId);
+        } catch {
+          // best-effort cancellation; still surface the timeout
+        }
         setError('Timed out waiting for payment.');
         setState('error');
         return;
