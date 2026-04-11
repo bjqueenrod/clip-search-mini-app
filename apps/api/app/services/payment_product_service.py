@@ -57,21 +57,53 @@ def _normalize_clip_id(clip_id: str) -> str:
     return str(clip_id).strip().upper()
 
 
+def _clip_pricing_timeout_seconds() -> float:
+    return max(float(settings.payment_system_timeout_seconds) * 2, 8.0)
+
+
+def _request_clip_pricing_payload(
+    request_url: str,
+    *,
+    clip_label: str,
+    params: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    timeout_seconds = _clip_pricing_timeout_seconds()
+    last_error: Exception | None = None
+    for attempt in range(2):
+        try:
+            response = httpx.get(
+                request_url,
+                headers=_request_headers(),
+                params=params,
+                timeout=timeout_seconds,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            return payload if isinstance(payload, dict) else None
+        except httpx.HTTPStatusError as exc:
+            last_error = exc
+            status_code = getattr(exc.response, "status_code", None)
+            if attempt == 0 and status_code in {502, 503, 504}:
+                time.sleep(0.25)
+                continue
+            break
+        except (httpx.TimeoutException, httpx.RequestError, ValueError) as exc:
+            last_error = exc
+            if attempt == 0:
+                time.sleep(0.25)
+                continue
+            break
+    logger.warning('Unable to load clip pricing %s from payment system: %s', clip_label, last_error)
+    return None
+
+
 def _fetch_clip_pricing(clip_id: str) -> dict[str, Any] | None:
     request_url = _request_url(f'/api/clips/{clip_id}/pricing')
     if request_url is None:
         return None
 
-    try:
-        response = httpx.get(
-            request_url,
-            headers=_request_headers(),
-            timeout=settings.payment_system_timeout_seconds,
-        )
-        response.raise_for_status()
-        payload = response.json()
-    except (httpx.HTTPError, ValueError) as exc:
-        logger.warning('Unable to load clip pricing %s from payment system: %s', clip_id, exc)
+    payload = _request_clip_pricing_payload(request_url, clip_label=clip_id)
+    if payload is None:
         return None
 
     return _extract_item(payload)
@@ -203,15 +235,12 @@ def get_clip_pricings(clip_ids: Iterable[str]) -> dict[str, dict[str, Any]]:
 
     batch_url = _request_url('/api/clips/pricing')
     if batch_url is not None:
-        try:
-            response = httpx.get(
-                batch_url,
-                headers=_request_headers(),
-                params={'clip_ids': ','.join(missing_clip_ids)},
-                timeout=settings.payment_system_timeout_seconds,
-            )
-            response.raise_for_status()
-            payload = response.json()
+        payload = _request_clip_pricing_payload(
+            batch_url,
+            clip_label=','.join(missing_clip_ids),
+            params={'clip_ids': ','.join(missing_clip_ids)},
+        )
+        if isinstance(payload, dict):
             items = payload.get('items')
             if isinstance(items, list):
                 found_ids: set[str] = set()
@@ -228,8 +257,6 @@ def get_clip_pricings(clip_ids: Iterable[str]) -> dict[str, dict[str, Any]]:
                     if clip_id not in found_ids:
                         _clip_pricing_cache_set(clip_id, None)
                 return pricing_by_id
-        except (httpx.HTTPError, ValueError, AttributeError) as exc:
-            logger.warning('Unable to batch load clip pricing from payment system: %s', exc)
 
     if len(missing_clip_ids) == 1:
         clip_id = missing_clip_ids[0]

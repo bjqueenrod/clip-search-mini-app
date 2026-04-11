@@ -29,6 +29,9 @@ def _headers() -> dict[str, str]:
 
 
 def _response_error_message(response: httpx.Response, fallback: str) -> str:
+    status_code = getattr(response, "status_code", None)
+    if isinstance(status_code, int) and status_code >= 500:
+        return fallback
     try:
         payload = response.json()
     except Exception:
