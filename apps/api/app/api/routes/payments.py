@@ -64,6 +64,18 @@ def _invoice_urls(data: dict[str, Any] | None) -> tuple[str | None, str | None]:
     return invoice_url, provider_url
 
 
+def _invoice_payload(data: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not isinstance(data, dict):
+        return None
+    payload = data.get("invoice")
+    if isinstance(payload, dict):
+        return payload
+    payload = data.get("item")
+    if isinstance(payload, dict):
+        return payload
+    return data
+
+
 def _normalize_status(value: str | None) -> str:
     raw = (value or "").strip().lower()
     if raw == "paid":
@@ -280,8 +292,9 @@ def invoice_status(invoice_id: str, response: Response) -> InvoiceStatusResponse
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail) from exc
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from exc
 
+    invoice_payload = _invoice_payload(invoice)
     invoice_url, provider_url = _invoice_urls(invoice)
-    status_value = invoice.get("status") if isinstance(invoice, dict) else None
+    status_value = invoice_payload.get("status") if isinstance(invoice_payload, dict) else None
     result = InvoiceStatusResponse(
         invoiceId=invoice_id,
         status=_normalize_status(status_value),
@@ -329,8 +342,9 @@ def payment_webhook(
         return {"ok": True, "refreshed": False}
     try:
         invoice = payment_gateway.get_invoice(invoice_id, cache_bust=True)
+        invoice_payload = _invoice_payload(invoice)
         invoice_url, provider_url = _invoice_urls(invoice)
-        status_value = invoice.get("status") if isinstance(invoice, dict) else None
+        status_value = invoice_payload.get("status") if isinstance(invoice_payload, dict) else None
         result = InvoiceStatusResponse(
             invoiceId=invoice_id,
             status=_normalize_status(status_value),

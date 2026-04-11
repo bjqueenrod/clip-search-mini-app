@@ -265,7 +265,10 @@ def test_invoice_status_does_not_require_session_cookie(client, monkeypatch) -> 
         payment_gateway,
         "get_invoice",
         lambda invoice_id, **kwargs: {
-            "status": "pending",
+            "invoice": {
+                "invoice_id": invoice_id,
+                "status": "pending",
+            },
             "invoice_url": f"https://example.com/{invoice_id}",
             "provider_invoice_url": f"https://provider.example/{invoice_id}",
         },
@@ -276,6 +279,8 @@ def test_invoice_status_does_not_require_session_cookie(client, monkeypatch) -> 
     assert response.status_code == 200
     assert response.json()["invoiceId"] == "inv_123"
     assert response.json()["status"] == "pending"
+    assert response.json()["paymentUrl"] == f"https://example.com/inv_123"
+    assert response.json()["providerInvoiceUrl"] == f"https://provider.example/inv_123"
     assert response.headers["cache-control"] == "no-store, no-cache, must-revalidate, max-age=0"
     assert response.headers["pragma"] == "no-cache"
 
@@ -309,14 +314,18 @@ def test_invoice_status_refreshes_pending_invoices(client, monkeypatch) -> None:
         calls["count"] += 1
         if calls["count"] == 1:
             return {
-                "invoice_id": "abc-123",
-                "status": "pending",
+                "item": {
+                    "invoice_id": "abc-123",
+                    "status": "pending",
+                },
                 "invoice_url": None,
                 "provider_invoice_url": None,
             }
         return {
-            "invoice_id": "abc-123",
-            "status": "paid",
+            "invoice": {
+                "invoice_id": "abc-123",
+                "status": "paid",
+            },
             "invoice_url": "https://example.com/invoice",
             "provider_invoice_url": "https://example.com/provider",
         }
