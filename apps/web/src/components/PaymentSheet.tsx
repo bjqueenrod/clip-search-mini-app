@@ -295,9 +295,8 @@ export function PaymentSheet({
     setPaymentUrl('');
     setSavedPaymentCode('');
     setWaitingStartedAt(null);
-    setOrderId(null);
-    clearProgress();
-  }, [clearProgress]);
+    saveProgress({ orderId, selectedMethod, paymentCode: '', waitingStartedAt: null });
+  }, [orderId, saveProgress, selectedMethod]);
 
   const waitingCountdownLabel = useMemo(() => {
     const minutes = Math.floor(waitingRemainingSeconds / 60);
@@ -396,7 +395,6 @@ export function PaymentSheet({
       let effectivePaymentCode = selectedTributeCode;
       if (freshCheckout) {
         clearTimedOutCheckout();
-        effectiveOrderId = null;
         effectivePaymentCode = '';
       }
       const waitingStartedAt = Date.now();
@@ -464,7 +462,7 @@ export function PaymentSheet({
   }, [invoiceId, orderId, saveProgress, selectedMethod, state]);
 
   useEffect(() => {
-    if (state === 'success' || state === 'error') {
+    if (state === 'success') {
       setOrderId(null);
       clearProgress();
     }
