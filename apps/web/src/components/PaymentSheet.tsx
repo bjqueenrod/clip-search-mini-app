@@ -229,6 +229,7 @@ export function PaymentSheet({
       </>
     );
   }, [isPaypalSelected, payButtonLabel]);
+  const isPaypalPayButton = isPaypalSelected && payButtonLabel.toLowerCase().startsWith('pay');
 
   const handleCopyTributeCode = useCallback(async () => {
     if (!selectedTributeCode) return;
@@ -373,7 +374,12 @@ export function PaymentSheet({
   }, [state, hasInstructions, handleCheckout]);
 
   const paymentButton = (
-    <button type="button" className="payment-sheet__primary" onClick={handlePrimaryClick} disabled={primaryButtonDisabled}>
+    <button
+      type="button"
+      className={`payment-sheet__primary${isPaypalPayButton ? ' payment-sheet__primary--white' : ''}`}
+      onClick={handlePrimaryClick}
+      disabled={primaryButtonDisabled}
+    >
       <span className="payment-sheet__primary-content">{primaryButtonContent}</span>
     </button>
   );
@@ -470,7 +476,12 @@ export function PaymentSheet({
           <div className="payment-sheet__body">
             {paymentNotes}
             <div className="payment-sheet__actions payment-sheet__actions--confirm">
-              <button type="button" className="payment-sheet__primary" onClick={handleCheckout} disabled={primaryButtonDisabled}>
+              <button
+                type="button"
+                className={`payment-sheet__primary${isPaypalPayButton ? ' payment-sheet__primary--white' : ''}`}
+                onClick={handleCheckout}
+                disabled={primaryButtonDisabled}
+              >
                 <span className="payment-sheet__primary-content">{primaryButtonContent}</span>
               </button>
               <button type="button" className="payment-sheet__ghost" onClick={() => setState('select')}>
