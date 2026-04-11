@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db, get_session
+from app.api.deps import get_db, get_optional_session
 from app.schemas.preferences import CurrencyPreferenceRequest, CurrencyPreferenceResponse
 
 router = APIRouter(prefix="/preferences", tags=["preferences"])
@@ -34,19 +34,24 @@ def _ensure_user_preferences_table(db: Session) -> None:
         connection.execute(text(CREATE_USER_PREFERENCES_TABLE_SQL))
 
 
-def _require_telegram_user_id(session: dict) -> int:
-    if session.get("source") != "telegram":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Currency preferences can only be saved in Telegram.",
-        )
-    user_id = session.get("telegram_user_id")
+def _normalize_user_id(user_id: int | str | None) -> int:
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="telegram_user_id is required")
     try:
         return int(user_id)
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="telegram_user_id must be numeric") from exc
+
+
+def _resolve_currency_user_id(session: dict | None, telegram_user_id: int | None) -> int:
+    if session and session.get("source") == "telegram":
+        return _normalize_user_id(session.get("telegram_user_id"))
+    if telegram_user_id is not None:
+        return _normalize_user_id(telegram_user_id)
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Telegram session or telegram_user_id is required.",
+    )
 
 
 def _load_currency_preference(db: Session, user_id: int) -> str:
@@ -80,8 +85,12 @@ def _save_currency_preference(db: Session, user_id: int, currency: str) -> str:
 
 
 @router.get("/currency", response_model=CurrencyPreferenceResponse)
-def get_currency_preference(session: dict = Depends(get_session), db: Session = Depends(get_db)) -> CurrencyPreferenceResponse:
-    user_id = _require_telegram_user_id(session)
+def get_currency_preference(
+    session: dict | None = Depends(get_optional_session),
+    telegram_user_id: int | None = Query(default=None, alias="telegram_user_id"),
+    db: Session = Depends(get_db),
+) -> CurrencyPreferenceResponse:
+    user_id = _resolve_currency_user_id(session, telegram_user_id)
     currency = _load_currency_preference(db, user_id)
     logger.info("Loaded currency preference user_id=%s currency=%s", user_id, currency)
     return CurrencyPreferenceResponse(currency=currency)
@@ -90,10 +99,11 @@ def get_currency_preference(session: dict = Depends(get_session), db: Session = 
 @router.post("/currency", response_model=CurrencyPreferenceResponse)
 def set_currency_preference(
     payload: CurrencyPreferenceRequest,
-    session: dict = Depends(get_session),
+    session: dict | None = Depends(get_optional_session),
+    telegram_user_id: int | None = Query(default=None, alias="telegram_user_id"),
     db: Session = Depends(get_db),
 ) -> CurrencyPreferenceResponse:
-    user_id = _require_telegram_user_id(session)
+    user_id = _resolve_currency_user_id(session, telegram_user_id)
     currency = _save_currency_preference(db, user_id, payload.currency)
     logger.info("Saved currency preference user_id=%s currency=%s", user_id, currency)
     return CurrencyPreferenceResponse(currency=currency)

@@ -7,7 +7,7 @@ from app.db.session import engine
 def test_currency_preference_round_trip_for_telegram_session(client) -> None:
     app = __import__("app.main", fromlist=["app"]).app
 
-    app.dependency_overrides[deps.get_session] = lambda: {
+    app.dependency_overrides[deps.get_optional_session] = lambda: {
         "telegram_user_id": 123456,
         "source": "telegram",
     }
@@ -31,10 +31,10 @@ def test_currency_preference_round_trip_for_telegram_session(client) -> None:
     assert row[0] == "USD"
 
 
-def test_currency_preference_requires_telegram_session(client) -> None:
+def test_currency_preference_requires_telegram_session_or_user_id(client) -> None:
     app = __import__("app.main", fromlist=["app"]).app
 
-    app.dependency_overrides[deps.get_session] = lambda: {
+    app.dependency_overrides[deps.get_optional_session] = lambda: {
         "telegram_user_id": 123456,
         "source": "development",
     }
@@ -43,4 +43,16 @@ def test_currency_preference_requires_telegram_session(client) -> None:
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 403
+    assert response.status_code == 401
+
+
+def test_currency_preference_can_use_explicit_user_id_without_session(client) -> None:
+    app = __import__("app.main", fromlist=["app"]).app
+
+    app.dependency_overrides[deps.get_optional_session] = lambda: None
+    try:
+        response = client.get("/api/preferences/currency?telegram_user_id=123456")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200

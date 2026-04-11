@@ -348,7 +348,8 @@ function TaskIcon({ name }: { name: TaskIconName }) {
 export function TasksPage() {
   const session = useTelegramSession();
   const navigate = useNavigate();
-  const [currency] = useCurrencyPreference(session.ready);
+  const telegramUserId = session.user?.id ?? null;
+  const [currency] = useCurrencyPreference(session.ready, telegramUserId);
   const tiersQuery = useTiers(currency);
   const didTrackOpenRef = useRef(false);
 
@@ -381,11 +382,12 @@ export function TasksPage() {
       <CurrencyToggleBanner
         showBackButton
         syncWithServer={session.ready}
+        telegramUserId={telegramUserId}
         debugInfo={{
           isTelegram: session.isTelegram,
           hasInitData: Boolean(session.initData),
           source: session.initData ? 'telegram' : 'development',
-          telegramUserId: session.user?.id ?? null,
+          telegramUserId,
         }}
         onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
       />

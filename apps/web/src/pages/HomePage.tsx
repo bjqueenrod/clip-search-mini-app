@@ -19,6 +19,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const session = useTelegramSession();
+  const telegramUserId = session.user?.id ?? null;
 
   useEffect(() => {
     applyTelegramTheme();
@@ -53,11 +54,12 @@ export function HomePage() {
       <CurrencyToggleBanner
         alignRight
         syncWithServer={session.ready}
+        telegramUserId={telegramUserId}
         debugInfo={{
           isTelegram: session.isTelegram,
           hasInitData: Boolean(session.initData),
           source: session.initData ? 'telegram' : 'development',
-          telegramUserId: session.user?.id ?? null,
+          telegramUserId,
         }}
       />
       <section className="hero">

@@ -22,7 +22,8 @@ function SectionEyebrow({ children }: { children: string }) {
 export function KeyholdingPage() {
   const session = useTelegramSession();
   const navigate = useNavigate();
-  const [currency] = useCurrencyPreference(session.ready);
+  const telegramUserId = session.user?.id ?? null;
+  const [currency] = useCurrencyPreference(session.ready, telegramUserId);
   const tiersQuery = useKeyholdingTiers(currency);
   const optionsQuery = useKeyholdingOptions(currency);
   const didInitRef = useRef(false);
@@ -49,11 +50,12 @@ export function KeyholdingPage() {
       <CurrencyToggleBanner
         showBackButton
         syncWithServer={session.ready}
+        telegramUserId={telegramUserId}
         debugInfo={{
           isTelegram: session.isTelegram,
           hasInitData: Boolean(session.initData),
           source: session.initData ? 'telegram' : 'development',
-          telegramUserId: session.user?.id ?? null,
+          telegramUserId,
         }}
         onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
       />
