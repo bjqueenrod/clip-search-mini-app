@@ -21,11 +21,21 @@ export async function fetchCheckoutOptions(
   if (!response.ok) {
     let message = 'Unable to load payment options';
     try {
-      const data = await response.json();
-      if (data?.detail) message = `${message}: ${data.detail}`;
-    } catch {
       const text = await response.text();
-      if (text) message = `${message}: ${text}`;
+      if (text) {
+        try {
+          const data = JSON.parse(text);
+          if (data?.detail) {
+            message = `${message}: ${data.detail}`;
+          } else {
+            message = `${message}: ${text}`;
+          }
+        } catch {
+          message = `${message}: ${text}`;
+        }
+      }
+    } catch {
+      // fall back to the generic message
     }
     throw new Error(message);
   }
