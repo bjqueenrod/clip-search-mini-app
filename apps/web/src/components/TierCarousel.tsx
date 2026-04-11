@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react';
-import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
+import { isTelegramWebView, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackTierBotCtaClick } from '../features/tiers/analytics';
 import { getTierArtwork, getTierArtworkVariant } from '../features/tiers/artwork';
 import {
@@ -105,7 +105,7 @@ export function TierCarousel({
     }
 
     const payloadId = tier.productId || tier.id;
-    const isTelegramWebApp = Boolean(window.Telegram?.WebApp);
+    const isTelegramWebApp = isTelegramWebView();
     if (payloadId && isTelegramWebApp && sendBotWebAppData(`buy_${payloadId}`)) {
       return;
     }
@@ -114,6 +114,7 @@ export function TierCarousel({
     }
     openBotDeepLink(url);
   };
+  const showTelegramCta = isTelegramWebView();
 
   return (
     <section className="top-sellers top-sellers--tiers">
@@ -192,14 +193,16 @@ export function TierCarousel({
                       <span className="top-sellers__meta-label">Price</span>
                       <strong>{priceLabel(tier, currency)}</strong>
                     </div>
-                    <a
-                      href={tier.botBuyUrl || '#'}
-                      className="top-sellers__cta"
-                      onClick={handleBotAction(tier, tier.botBuyUrl)}
-                      aria-label={`Continue to payment for ${tier.name}`}
-                    >
-                      <strong>Continue to Payment</strong>
-                    </a>
+                    {tier.productId || showTelegramCta ? (
+                      <a
+                        href={tier.productId ? '#' : tier.botBuyUrl || '#'}
+                        className="top-sellers__cta"
+                        onClick={handleBotAction(tier, tier.botBuyUrl)}
+                        aria-label={`Continue to payment for ${tier.name}`}
+                      >
+                        <strong>Continue to Payment</strong>
+                      </a>
+                    ) : null}
                   </div>
                 </article>
               );

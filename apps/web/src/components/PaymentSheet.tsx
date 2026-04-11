@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { pollInvoice, fetchCheckoutOptions, startCheckout } from '../features/payments/api';
 import { PaymentMethod } from '../features/payments/types';
 import { resolvePriceLabelOptional } from '../utils/pricing';
-import { openBotDeepLink } from '../app/telegram';
+import { isTelegramWebView, openBotDeepLink } from '../app/telegram';
 import { useCurrencyPreference } from '../hooks/useCurrencyPreference';
 
 type SheetState = 'loading' | 'select' | 'confirm' | 'submitting' | 'waiting' | 'success' | 'error';
@@ -129,6 +129,8 @@ export function PaymentSheet({
   const selectedInstructions =
     selectedInstructionsTemplate?.replace(/\{price\}/g, () => selectedPriceLabel || '') || undefined;
   const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
+  const botFallbackLink = botFallbackUrl || '';
+  const showBotFallbackActions = Boolean(botFallbackLink && isTelegramWebView());
   const showPaymentDetails = state !== 'select';
   const requiresCode = Boolean(selectedMethodInfo?.requiresCode);
   const hasInstructions = Boolean(selectedInstructions || selectedTributeCode || requiresCode);
@@ -346,7 +348,7 @@ export function PaymentSheet({
     }
   }, [state, clearProgress]);
 
-  const showRetry = state === 'error' && !!botFallbackUrl;
+  const showRetry = state === 'error' && showBotFallbackActions;
 
   return (
     <div className="payment-sheet__backdrop">
@@ -404,8 +406,8 @@ export function PaymentSheet({
             </div>
             {paymentNotes}
             {paymentButton}
-            {botFallbackUrl ? (
-              <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
+            {showBotFallbackActions ? (
+              <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackLink)}>
                 Pay in bot instead
               </button>
             ) : null}
@@ -443,8 +445,8 @@ export function PaymentSheet({
                 Choose a different method
               </button>
               {paymentNotes}
-              {botFallbackUrl ? (
-                <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
+              {showBotFallbackActions ? (
+                <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackLink)}>
                   Pay in bot instead
                 </button>
               ) : null}
@@ -459,8 +461,8 @@ export function PaymentSheet({
             <button type="button" className="payment-sheet__primary" onClick={onClose}>
               Close
             </button>
-            {botFallbackUrl ? (
-              <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackUrl)}>
+            {showBotFallbackActions ? (
+              <button type="button" className="payment-sheet__ghost" onClick={() => openBotDeepLink(botFallbackLink)}>
                 Open bot
               </button>
             ) : null}

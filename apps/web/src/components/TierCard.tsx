@@ -1,6 +1,6 @@
 import { MouseEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
+import { isTelegramWebView, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackTierBotCtaClick, trackTierSelect } from '../features/tiers/analytics';
 import { TierItem } from '../features/tiers/types';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
@@ -24,6 +24,8 @@ export function TierCard({
     pricings: [tier.pricing],
     defaultLabel: 'Price on request',
   });
+  const showBotCta = Boolean(tier.productId || isTelegramWebView());
+  const ctaLabel = tier.productId ? 'Continue to Payment' : 'Choose in Bot';
 
   const handleBotAction = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -38,7 +40,7 @@ export function TierCard({
       return;
     }
     const payloadId = tier.productId || tier.id;
-    const isTelegramWebApp = Boolean(window.Telegram?.WebApp);
+    const isTelegramWebApp = isTelegramWebView();
     if (payloadId && isTelegramWebApp && sendBotWebAppData(`buy_${payloadId}`)) {
       return;
     }
@@ -69,9 +71,11 @@ export function TierCard({
         <Link to={toTierPath(tier.id)} className="tier-card__link" onClick={() => trackTierSelect({ tier, source: 'tier_card' })}>
           View package
         </Link>
-        <a href={tier.botBuyUrl || '#'} className="tier-card__cta" onClick={handleBotAction}>
-          Choose in Bot
-        </a>
+        {showBotCta ? (
+          <a href={tier.productId ? '#' : tier.botBuyUrl || '#'} className="tier-card__cta" onClick={handleBotAction}>
+            {ctaLabel}
+          </a>
+        ) : null}
       </div>
       {showPayment ? (
         <PaymentSheet

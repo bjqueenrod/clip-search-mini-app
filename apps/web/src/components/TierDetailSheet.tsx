@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
+import { isTelegramWebView, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { getTierArtwork, TierArtworkVariant } from '../features/tiers/artwork';
 import { trackTierBotCtaClick, trackTierDetailView } from '../features/tiers/analytics';
 import { getTierDurationLabel, getTierSummary, getTierTasksLabel } from '../features/tiers/presentation';
@@ -38,6 +38,7 @@ export function TierDetailSheet({
       })
     : 'Price on request';
   const hasTierPrice = Boolean(tier?.pricing);
+  const showBotCta = Boolean(tier?.productId || isTelegramWebView());
 
   const handleBotAction = (url?: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     if (tier?.productId) {
@@ -55,7 +56,7 @@ export function TierDetailSheet({
       trackTierBotCtaClick({ tier, source: 'detail_sheet' });
     }
     const payloadId = tier?.productId || tier?.id;
-    const isTelegramWebApp = Boolean(window.Telegram?.WebApp);
+    const isTelegramWebApp = isTelegramWebView();
     if (payloadId && isTelegramWebApp && sendBotWebAppData(`buy_${payloadId}`)) {
       return;
     }
@@ -159,16 +160,18 @@ export function TierDetailSheet({
               </div>
             </div>
             <div className="detail-sheet__actions detail-sheet__actions--single">
-              <a
-                href={tier.botBuyUrl || '#'}
-                target="_blank"
-                rel="noreferrer"
-                className="detail-sheet__action detail-sheet__action--stream"
-                onClick={handleBotAction(tier.botBuyUrl)}
-              >
-                <strong>Continue to Payment</strong>
-                <span>{tierPriceLabel}</span>
-              </a>
+              {showBotCta ? (
+                <a
+                  href={tier?.productId ? '#' : tier.botBuyUrl || '#'}
+                  target={tier?.productId ? undefined : '_blank'}
+                  rel={tier?.productId ? undefined : 'noreferrer'}
+                  className="detail-sheet__action detail-sheet__action--stream"
+                  onClick={handleBotAction(tier.botBuyUrl)}
+                >
+                  <strong>Continue to Payment</strong>
+                  <span>{tierPriceLabel}</span>
+                </a>
+              ) : null}
             </div>
             {showPayment && tier.productId ? (
               <PaymentSheet

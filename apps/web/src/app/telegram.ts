@@ -72,6 +72,10 @@ export function applyTelegramTheme(): void {
   });
 }
 
+export function isTelegramWebView(): boolean {
+  return Boolean(window.Telegram?.WebApp);
+}
+
 function scheduleMiniAppClose(): void {
   const webApp = window.Telegram?.WebApp;
   const closeMiniApp = () => {

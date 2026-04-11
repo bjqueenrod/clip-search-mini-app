@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { openBotDeepLink, sendBotWebAppData } from '../app/telegram';
+import { isTelegramWebView, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackClipBotCtaClick, trackClipDetailView, trackClipTagSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
 import { CurrencyCode, formatDuration } from '../utils/format';
@@ -24,7 +24,7 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
       trackClipBotCtaClick({ clip, ctaType });
     }
     const payload = ctaType === 'stream' ? `stream_${clip?.id}` : `download_${clip?.id}`;
-    const isTelegramWebApp = Boolean(window.Telegram?.WebApp);
+    const isTelegramWebApp = isTelegramWebView();
     const productId = ctaType === 'stream' ? clip?.watchProductId : clip?.downloadProductId;
 
     if (productId) {
@@ -101,6 +101,8 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
     currency: 'GBP',
     pricings: clip ? [clip.downloadPricing, clip.pricing] : [],
   });
+  const showStreamButton = Boolean(clip?.watchProductId || isTelegramWebView());
+  const showDownloadButton = Boolean(clip?.downloadProductId || isTelegramWebView());
 
   return (
     <div className="detail-sheet__backdrop">
@@ -141,32 +143,36 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
               </div>
             </div>
             <div className="detail-sheet__actions">
-              <a
-                href={clip.botStreamUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="detail-sheet__action detail-sheet__action--stream"
-                onClick={handleBotAction(clip.botStreamUrl, 'stream')}
-              >
-                <div className="detail-sheet__action-stack">
-                  <span aria-hidden="true">🎬</span>
-                  <strong>Stream Now</strong>
-                  <span>{streamPriceLabel}</span>
-                </div>
-              </a>
-              <a
-                href={clip.botDownloadUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="detail-sheet__action detail-sheet__action--download"
-                onClick={handleBotAction(clip.botDownloadUrl, 'download')}
-              >
-                <div className="detail-sheet__action-stack">
-                  <span aria-hidden="true">📥</span>
-                  <strong>Download Now</strong>
-                  <span>{downloadPriceLabel}</span>
-                </div>
-              </a>
+              {showStreamButton ? (
+                <a
+                  href={clip.watchProductId ? '#' : clip.botStreamUrl}
+                  target={clip.watchProductId ? undefined : '_blank'}
+                  rel={clip.watchProductId ? undefined : 'noreferrer'}
+                  className="detail-sheet__action detail-sheet__action--stream"
+                  onClick={handleBotAction(clip.botStreamUrl, 'stream')}
+                >
+                  <div className="detail-sheet__action-stack">
+                    <span aria-hidden="true">🎬</span>
+                    <strong>Stream Now</strong>
+                    <span>{streamPriceLabel}</span>
+                  </div>
+                </a>
+              ) : null}
+              {showDownloadButton ? (
+                <a
+                  href={clip.downloadProductId ? '#' : clip.botDownloadUrl}
+                  target={clip.downloadProductId ? undefined : '_blank'}
+                  rel={clip.downloadProductId ? undefined : 'noreferrer'}
+                  className="detail-sheet__action detail-sheet__action--download"
+                  onClick={handleBotAction(clip.botDownloadUrl, 'download')}
+                >
+                  <div className="detail-sheet__action-stack">
+                    <span aria-hidden="true">📥</span>
+                    <strong>Download Now</strong>
+                    <span>{downloadPriceLabel}</span>
+                  </div>
+                </a>
+              ) : null}
             </div>
             {showPayment && clip ? (
               <PaymentSheet
