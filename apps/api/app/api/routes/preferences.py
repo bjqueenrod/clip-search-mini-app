@@ -91,6 +91,12 @@ def get_currency_preference(
     db: Session = Depends(get_db),
 ) -> CurrencyPreferenceResponse:
     user_id = _resolve_currency_user_id(session, telegram_user_id)
+    logger.info(
+        "Currency preference lookup source=%s query_telegram_user_id=%s resolved_user_id=%s",
+        session.get("source") if session else None,
+        telegram_user_id,
+        user_id,
+    )
     currency = _load_currency_preference(db, user_id)
     logger.info("Loaded currency preference user_id=%s currency=%s", user_id, currency)
     return CurrencyPreferenceResponse(currency=currency)
@@ -104,6 +110,13 @@ def set_currency_preference(
     db: Session = Depends(get_db),
 ) -> CurrencyPreferenceResponse:
     user_id = _resolve_currency_user_id(session, telegram_user_id)
+    logger.info(
+        "Currency preference save source=%s query_telegram_user_id=%s resolved_user_id=%s currency=%s",
+        session.get("source") if session else None,
+        telegram_user_id,
+        user_id,
+        payload.currency,
+    )
     currency = _save_currency_preference(db, user_id, payload.currency)
     logger.info("Saved currency preference user_id=%s currency=%s", user_id, currency)
     return CurrencyPreferenceResponse(currency=currency)
