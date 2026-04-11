@@ -119,7 +119,8 @@ export function useCurrencyPreference(
   }, [currency]);
 
   useEffect(() => {
-    if (!shouldSyncTelegramCurrency(telegramUserId) || typeof window === 'undefined') return;
+    if (!isTelegramSession && !shouldSyncTelegramCurrency(telegramUserId)) return;
+    if (typeof window === 'undefined') return;
     let cancelled = false;
 
     const syncPreference = async () => {
@@ -135,7 +136,7 @@ export function useCurrencyPreference(
     return () => {
       cancelled = true;
     };
-  }, [applyCurrency, telegramUserId]);
+  }, [applyCurrency, isTelegramSession, telegramUserId]);
 
   useEffect(() => {
     const handleChange = (event: Event) => {

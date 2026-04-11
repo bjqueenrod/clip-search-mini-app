@@ -19,6 +19,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const session = useTelegramSession();
+  const telegramUserId = session.user?.id ?? null;
 
   useEffect(() => {
     applyTelegramTheme();
@@ -54,6 +55,7 @@ export function HomePage() {
         alignRight
         syncWithServer={session.ready}
         isTelegramSession={session.isTelegram}
+        telegramUserId={telegramUserId}
       />
       <section className="hero">
         <img
