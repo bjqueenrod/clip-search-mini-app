@@ -146,7 +146,16 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
                         method["requires_code"] = False
                     selected_method = method
                     break
-        code_value = str(selected_method.get("code") or "").strip() if selected_method else ""
+        code_value = (
+            str(
+                selected_method.get("code")
+                or selected_method.get("tribute_code")
+                or selected_method.get("tributeCode")
+                or ""
+            ).strip()
+            if selected_method
+            else ""
+        )
         requires_code = (
             bool(selected_method.get("requires_code")) if isinstance(selected_method, dict) else False
         )
