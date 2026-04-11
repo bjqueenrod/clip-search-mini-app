@@ -110,6 +110,7 @@ export function PaymentSheet({
     () => methods.find((m) => m.paymentMethod === selectedMethod),
     [methods, selectedMethod],
   );
+  const itemContextKey = useMemo(() => JSON.stringify(itemContext || {}), [itemContext]);
   const selectedInstructions =
     selectedMethodInfo?.instruction_templates?.checkout_default?.trim() ||
     selectedMethodInfo?.instructionTemplates?.checkoutDefault?.trim() ||
@@ -124,13 +125,28 @@ export function PaymentSheet({
     let cancelled = false;
     (async () => {
       try {
+        let persistedOrderId: number | undefined;
+        let persistedSelectedMethod = '';
+        try {
+          const raw = sessionStorage.getItem(storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw) as {
+              orderId?: number;
+              selectedMethod?: string;
+            };
+            persistedOrderId = parsed?.orderId;
+            persistedSelectedMethod = (parsed?.selectedMethod || '').trim();
+          }
+        } catch {
+          // ignore storage parse errors
+        }
         const data = await fetchCheckoutOptions(productId, quantity, mode, {
           ...itemContext,
-          ...(orderId ? { orderId } : {}),
+          ...(persistedOrderId ? { orderId: persistedOrderId } : {}),
         });
         if (cancelled) return;
         setMethods(data.paymentMethods || []);
-        if (!selectedMethod) {
+        if (!selectedMethod && !persistedSelectedMethod) {
           setSelectedMethod((data.paymentMethods || [])[0]?.paymentMethod || '');
         }
         setState((prev) => (prev === 'loading' ? 'select' : prev));
@@ -144,7 +160,7 @@ export function PaymentSheet({
     return () => {
       cancelled = true;
     };
-  }, [productId, quantity, mode, itemContext, selectedMethod]);
+  }, [productId, quantity, mode, itemContextKey, storageKey]);
 
   const selectedLabel = useMemo(
     () => selectedMethodInfo?.label || 'Pay',

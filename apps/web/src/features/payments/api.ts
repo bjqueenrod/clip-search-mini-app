@@ -5,6 +5,21 @@ import {
 } from './types';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const checkoutOptionsRequests = new Map<string, Promise<CheckoutOptionsResponse>>();
+
+function buildCheckoutOptionsRequestKey(
+  productId: string,
+  quantity: number,
+  mode?: string,
+  extras?: Record<string, unknown>,
+) {
+  return JSON.stringify({
+    productId,
+    quantity,
+    mode: mode || '',
+    extras: extras || {},
+  });
+}
 
 export async function fetchCheckoutOptions(
   productId: string,
@@ -12,34 +27,49 @@ export async function fetchCheckoutOptions(
   mode?: string,
   extras?: Record<string, unknown>,
 ): Promise<CheckoutOptionsResponse> {
-  const response = await fetch(`${API_BASE}/payments/checkout-options`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ productId, quantity, mode, ...extras }),
-  });
-  if (!response.ok) {
-    let message = 'Unable to load payment options';
-    try {
-      const text = await response.text();
-      if (text) {
-        try {
-          const data = JSON.parse(text);
-          if (data?.detail) {
-            message = `${message}: ${data.detail}`;
-          } else {
+  const requestKey = buildCheckoutOptionsRequestKey(productId, quantity, mode, extras);
+  const existingRequest = checkoutOptionsRequests.get(requestKey);
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = (async () => {
+    const response = await fetch(`${API_BASE}/payments/checkout-options`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, quantity, mode, ...extras }),
+    });
+    if (!response.ok) {
+      let message = 'Unable to load payment options';
+      try {
+        const text = await response.text();
+        if (text) {
+          try {
+            const data = JSON.parse(text);
+            if (data?.detail) {
+              message = `${message}: ${data.detail}`;
+            } else {
+              message = `${message}: ${text}`;
+            }
+          } catch {
             message = `${message}: ${text}`;
           }
-        } catch {
-          message = `${message}: ${text}`;
         }
+      } catch {
+        // fall back to the generic message
       }
-    } catch {
-      // fall back to the generic message
+      throw new Error(message);
     }
-    throw new Error(message);
+    return response.json() as Promise<CheckoutOptionsResponse>;
+  })();
+
+  checkoutOptionsRequests.set(requestKey, request);
+  try {
+    return await request;
+  } finally {
+    checkoutOptionsRequests.delete(requestKey);
   }
-  return response.json();
 }
 
 export async function startCheckout(
