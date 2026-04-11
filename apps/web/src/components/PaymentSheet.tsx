@@ -36,8 +36,10 @@ export function PaymentSheet({
   mode,
   priceLabel,
   deliveryMode,
+  clipTitle,
   botFallbackUrl,
   onClose,
+  onClosePreview,
   onSuccess,
   itemContext,
 }: {
@@ -46,8 +48,10 @@ export function PaymentSheet({
   mode?: string;
   priceLabel?: string;
   deliveryMode?: 'stream' | 'download';
+  clipTitle?: string;
   botFallbackUrl?: string;
   onClose: () => void;
+  onClosePreview?: () => void;
   onSuccess?: (result?: InvoiceStatusResponse) => void;
   itemContext?: Record<string, unknown>;
 }) {
@@ -502,12 +506,27 @@ export function PaymentSheet({
   }, [state]);
 
   const showRetry = state === 'error' && showBotFallbackActions;
+  const handleSuccessClose = useCallback(() => {
+    if (isTelegramWebView()) {
+      try {
+        window.Telegram?.WebApp?.close?.();
+        return;
+      } catch {
+        // fall through to the local close handlers
+      }
+    }
+    if (onClosePreview) {
+      onClosePreview();
+      return;
+    }
+    onClose();
+  }, [onClose, onClosePreview]);
 
   return (
     <div className="payment-sheet__backdrop">
       <div className="payment-sheet">
         <div className="payment-sheet__header">
-          <h3>Complete Payment</h3>
+          <h3>{state === 'success' ? 'Payment Completed' : 'Complete Payment'}</h3>
           <button type="button" className="payment-sheet__close" onClick={onClose} aria-label="Close">
             ×
           </button>
@@ -643,8 +662,14 @@ export function PaymentSheet({
           <div className="payment-sheet__body">
             {resolvedDeliveryMode === 'stream' ? (
               <>
-                <div className="payment-sheet__success">Stream Ready</div>
-                <p>You can now watch the stream below. I’ve also sent the link to you in DM so you can watch later.</p>
+                <div className="payment-sheet__success">Thankyou</div>
+                <p className="payment-sheet__success-copy">
+                  I have recieved your payment to <strong>Stream: {clipTitle || 'your clip'}</strong>.
+                  <br />
+                  <br />
+                  Tap '🎬 Stream Now' to start watching right away or you can watch it later, i have DM&apos;d you
+                  the link aswell.
+                </p>
                 {successResult?.deliveryUrl ? (
                   <button
                     type="button"
@@ -654,11 +679,20 @@ export function PaymentSheet({
                     🎬 Stream Now
                   </button>
                 ) : null}
+                <button type="button" className="payment-sheet__ghost" onClick={handleSuccessClose}>
+                  Close
+                </button>
               </>
             ) : resolvedDeliveryMode === 'download' ? (
               <>
-                <div className="payment-sheet__success">Download Ready</div>
-                <p>You can now download the clip below. I’ve also sent the link to you in DM so you can download later.</p>
+                <div className="payment-sheet__success">Thankyou</div>
+                <p className="payment-sheet__success-copy">
+                  I have recieved your payment to <strong>Download: {clipTitle || 'your clip'}</strong>.
+                  <br />
+                  <br />
+                  Tap '📥 Download Now' to begin the download right away or you can download it later, i have
+                  DM&apos;d you the link aswell.
+                </p>
                 {successResult?.deliveryUrl ? (
                   <button
                     type="button"
@@ -668,6 +702,9 @@ export function PaymentSheet({
                     📥 Download Now
                   </button>
                 ) : null}
+                <button type="button" className="payment-sheet__ghost" onClick={handleSuccessClose}>
+                  Close
+                </button>
               </>
             ) : (
               <>

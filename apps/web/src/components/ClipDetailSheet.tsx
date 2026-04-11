@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isTelegramWebView, openBotDeepLink, sendBotWebAppData } from '../app/telegram';
 import { trackClipBotCtaClick, trackClipDetailView, trackClipTagSelect } from '../features/clips/analytics';
 import { ClipItem } from '../features/clips/types';
@@ -10,6 +10,7 @@ import { PaymentSheet } from './PaymentSheet';
 
 export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: ClipItem; loading?: boolean; currency?: CurrencyCode }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const lastTrackedClipIdRef = useRef('');
   const [showPayment, setShowPayment] = useState<null | 'stream' | 'download'>(null);
   const backTarget = `/clips${location.search}`;
@@ -181,12 +182,14 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
                 mode={showPayment === 'stream' ? 'watch' : 'download'}
                 priceLabel={showPayment === 'stream' ? streamPriceLabel : downloadPriceLabel}
                 deliveryMode={showPayment === 'stream' ? 'stream' : 'download'}
+                clipTitle={clip.title}
                 botFallbackUrl={showPayment === 'stream' ? clip.botStreamUrl : clip.botDownloadUrl}
                 itemContext={{
                   unitPriceCents: showPayment === 'stream' ? streamUnitPence : downloadUnitPence,
                   clipId: clip.id,
                 }}
                 onClose={() => setShowPayment(null)}
+                onClosePreview={() => navigate(backTarget, { replace: true })}
               />
             ) : null}
           </>
