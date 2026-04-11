@@ -30,60 +30,49 @@ const CLIPS_FAQ = [
     question: "What’s the difference between streaming and downloading here?",
     answer:
       'Streaming plays the video in the browser and requires an internet connection. Downloading redirects to a signed file download URL so you can watch the video whenever you want offline.',
-    icon: 'help',
   },
   {
     question: 'How long is a streaming (watch) link valid?',
     answer: 'A watch link is valid for 24 hours from when it’s created.',
-    icon: 'clock',
   },
   {
     question: 'How many times can I play a streaming link?',
     answer: 'Each watch link allows up to 3 total playbacks.',
-    icon: 'play',
   },
   {
     question: 'How many networks/IPs can use the same watch link?',
     answer: 'A watch link can be used from up to 2 IP addresses total. A 3rd new IP will be blocked.',
-    icon: 'signal',
   },
   {
     question: 'Can two people watch the same watch link at the same time?',
     answer: 'No, only one active viewer at a time is allowed on a watch link.',
-    icon: 'chat',
   },
   {
     question: 'If I see “another viewer is currently watching”, what should I do?',
     answer: 'Wait a moment and try again. Sessions auto-release shortly after inactivity, about 45 seconds.',
-    icon: 'sparkles',
   },
   {
     question: 'How long is a download link valid before anyone uses it?',
     answer: 'A download link must be opened (redeemed) within 24 hours of creation.',
-    icon: 'clock',
   },
   {
     question: 'What happens after I open (redeem) a download link the first time?',
     answer:
       'The first successful redeem starts a 60-minute active window. After that window ends, the download link expires.',
-    icon: 'package',
   },
   {
     question: 'How many times can a download link be redeemed?',
     answer: 'A download link can be redeemed up to 3 times.',
-    icon: 'help',
   },
   {
     question: 'Do retries count against my 3 download redeems?',
     answer:
       'Not if you retry from the same IP within 5 minutes of the last redeem. Those same-IP retries don’t consume another attempt.',
-    icon: 'shield',
   },
   {
     question: 'Does redeeming again extend the 60-minute download window?',
     answer:
       'No. The 60-minute window starts on the first successful redeem and doesn’t reset on later redeems.',
-    icon: 'scroll',
   },
 ] as const;
 
@@ -493,17 +482,7 @@ export function BrowsePage() {
               >
                 <span className="faq-card__summary">
                   <span className="faq-card__icon" aria-hidden="true">
-                    {item.icon === 'help'
-                      ? '❔'
-                      : item.icon === 'scroll'
-                        ? '🎬'
-                        : item.icon === 'play'
-                          ? '▶️'
-                          : item.icon === 'chat'
-                            ? '💬'
-                            : item.icon === 'sparkles'
-                              ? '✨'
-                              : '📦'}
+                    ❔
                   </span>
                   <span className="faq-card__text">{item.question}</span>
                   <span className="faq-card__chevron" aria-hidden="true" />
