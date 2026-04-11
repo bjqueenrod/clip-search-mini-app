@@ -111,10 +111,22 @@ export function PaymentSheet({
     [methods, selectedMethod],
   );
   const itemContextKey = useMemo(() => JSON.stringify(itemContext || {}), [itemContext]);
-  const selectedInstructions =
+  const selectedPriceLabel = useMemo(() => {
+    if (selectedMethodInfo) {
+      const methodPriceLabel = resolvePriceLabelOptional({
+        currency,
+        pricings: [selectedMethodInfo.pricing],
+      });
+      if (methodPriceLabel) return methodPriceLabel;
+    }
+    return priceLabel;
+  }, [selectedMethodInfo, priceLabel, currency]);
+  const selectedInstructionsTemplate =
     selectedMethodInfo?.instruction_templates?.checkout_default?.trim() ||
     selectedMethodInfo?.instructionTemplates?.checkoutDefault?.trim() ||
     selectedMethodInfo?.instructions?.trim();
+  const selectedInstructions =
+    selectedInstructionsTemplate?.replace(/\{price\}/g, selectedPriceLabel || '') || undefined;
   const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
   const showPaymentDetails = state !== 'select';
   const requiresCode = Boolean(selectedMethodInfo?.requiresCode);
@@ -166,17 +178,6 @@ export function PaymentSheet({
     () => selectedMethodInfo?.label || 'Pay',
     [selectedMethodInfo],
   );
-
-  const selectedPriceLabel = useMemo(() => {
-    if (selectedMethodInfo) {
-      const methodPriceLabel = resolvePriceLabelOptional({
-        currency,
-        pricings: [selectedMethodInfo.pricing],
-      });
-      if (methodPriceLabel) return methodPriceLabel;
-    }
-    return priceLabel;
-  }, [selectedMethodInfo, priceLabel, currency]);
 
   const payButtonLabel = useMemo(() => {
     if (state === 'confirm') {
