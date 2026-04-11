@@ -29,7 +29,7 @@ const CLIPS_FAQ = [
   {
     question: "What’s the difference between streaming and downloading here?",
     answer:
-      'Streaming (Watch Link) plays the video in the browser. Downloading (Download Link) redirects to a signed file download URL.',
+      'Streaming plays the video in the browser and requires an internet connection. Downloading redirects to a signed file download URL so you can watch the video whenever you want offline.',
     icon: 'help',
   },
   {
