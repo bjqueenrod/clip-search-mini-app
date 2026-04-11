@@ -247,9 +247,8 @@ export function PaymentSheet({
             title="Tap to copy tribute code"
             aria-label="Copy tribute code"
           >
-            {selectedTributeCode}
+            {copiedTributeCode ? 'Copied' : selectedTributeCode}
           </button>
-          {copiedTributeCode ? <div className="payment-sheet__note-copied">Copied</div> : null}
         </div>
       ) : null}
     </div>
