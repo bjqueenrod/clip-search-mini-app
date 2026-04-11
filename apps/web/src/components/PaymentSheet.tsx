@@ -136,16 +136,17 @@ export function PaymentSheet({
     [methods, selectedMethod],
   );
   const itemContextKey = useMemo(() => JSON.stringify(itemContext || {}), [itemContext]);
-  const selectedPriceLabel = useMemo(() => {
-    if (selectedMethodInfo) {
-      const methodPriceLabel = resolvePriceLabelOptional({
-        currency,
-        pricings: [selectedMethodInfo.pricing],
-      });
-      if (methodPriceLabel) return methodPriceLabel;
-    }
-    return priceLabel;
-  }, [selectedMethodInfo, priceLabel, currency]);
+  const selectedMethodPriceLabel = useMemo(
+    () =>
+      selectedMethodInfo
+        ? resolvePriceLabelOptional({
+            currency,
+            pricings: [selectedMethodInfo.pricing],
+          })
+        : undefined,
+    [selectedMethodInfo, currency],
+  );
+  const selectedPriceLabel = selectedMethodPriceLabel || priceLabel;
   const selectedInstructionsTemplate =
     selectedMethodInfo?.instruction_templates?.checkout_default?.trim() ||
     selectedMethodInfo?.instructionTemplates?.checkoutDefault?.trim() ||
@@ -211,21 +212,22 @@ export function PaymentSheet({
   const isBrandPayButton = isPaypalSelected || isThroneSelected;
 
   const payButtonLabel = useMemo(() => {
-    const paypalPayLabel = selectedPriceLabel ? `Pay - ${selectedPriceLabel}` : 'Pay';
-    const thronePayLabel = selectedPriceLabel ? `Pay - ${selectedPriceLabel}` : 'Pay';
+    const methodPriceLabel = selectedMethodPriceLabel || selectedMethodInfo?.label || '';
+    const paypalPayLabel = methodPriceLabel ? `Pay - ${methodPriceLabel}` : 'Pay';
+    const thronePayLabel = methodPriceLabel ? `Pay - ${methodPriceLabel}` : 'Pay';
     if (state === 'confirm') {
       if (isPaypalSelected) return paypalPayLabel;
       if (isThroneSelected) return thronePayLabel;
-      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+      return methodPriceLabel ? `Pay ${methodPriceLabel}` : `Pay with ${selectedLabel}`;
     }
     if (state === 'select') {
       if (hasInstructions) return 'Confirm';
       if (isPaypalSelected) return paypalPayLabel;
       if (isThroneSelected) return thronePayLabel;
-      return selectedPriceLabel ? `Pay ${selectedPriceLabel}` : `Pay with ${selectedLabel}`;
+      return methodPriceLabel ? `Pay ${methodPriceLabel}` : `Pay with ${selectedLabel}`;
     }
     return 'Confirm';
-  }, [state, hasInstructions, selectedPriceLabel, selectedLabel, isPaypalSelected, isThroneSelected]);
+  }, [state, hasInstructions, selectedMethodPriceLabel, selectedMethodInfo?.label, selectedLabel, isPaypalSelected, isThroneSelected]);
 
   const primaryButtonContent = useMemo(() => {
     if (!isBrandPayButton || !payButtonLabel.toLowerCase().startsWith('pay')) {
