@@ -189,6 +189,27 @@ export function PaymentSheet({
     return 'Confirm';
   }, [state, hasInstructions, selectedPriceLabel, selectedLabel]);
 
+  const handleCopyTributeCode = useCallback(async () => {
+    if (!selectedTributeCode) return;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(selectedTributeCode);
+        return;
+      }
+      const textarea = document.createElement('textarea');
+      textarea.value = selectedTributeCode;
+      textarea.setAttribute('readonly', 'true');
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    } catch {
+      // ignore copy failures
+    }
+  }, [selectedTributeCode]);
+
   const paymentNotes = showPaymentDetails && (selectedInstructions || selectedTributeCode) ? (
     <div className="payment-sheet__note" role="note">
       {selectedInstructions ? (
@@ -200,7 +221,15 @@ export function PaymentSheet({
       {selectedTributeCode ? (
         <div className="payment-sheet__note-block">
           <div className="payment-sheet__note-label">Tribute code</div>
-          <code className="payment-sheet__note-code">{selectedTributeCode}</code>
+          <button
+            type="button"
+            className="payment-sheet__note-code"
+            onClick={handleCopyTributeCode}
+            title="Tap to copy tribute code"
+            aria-label="Copy tribute code"
+          >
+            {selectedTributeCode}
+          </button>
         </div>
       ) : null}
     </div>
