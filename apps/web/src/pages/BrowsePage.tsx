@@ -135,6 +135,7 @@ export function BrowsePage() {
   const trackedSearchKeysRef = useRef(new Set<string>());
   const didTrackOpenRef = useRef(false);
   const didSeedClipHistoryRef = useRef(false);
+  const pendingClipOpenRef = useRef<string>('');
   const computedSecondaryTagOptions = useMemo(() => {
     const excluded = new Set(['and', 'in', 'made', 'bar']);
     const tagCounts = new Map<string, { tag: string; count: number }>();
@@ -179,22 +180,32 @@ export function BrowsePage() {
     if (!clipId || didSeedClipHistoryRef.current) {
       return;
     }
-    if (navigationType !== 'POP') {
-      return;
-    }
     const historyIndex = (window.history.state as { idx?: number } | null)?.idx ?? 0;
-    if (historyIndex > 0) {
+    if (historyIndex > 0 && window.history.length > 1) {
       return;
     }
 
     didSeedClipHistoryRef.current = true;
+    pendingClipOpenRef.current = clipId;
     const cleanedSearch = stripStartRoutingParams(location.search);
     const listPath = `/clips${cleanedSearch ? `?${cleanedSearch}` : ''}`;
-    const clipPath = `/clips/${encodeURIComponent(clipId)}${cleanedSearch ? `?${cleanedSearch}` : ''}`;
-
     navigate(listPath, { replace: true });
-    window.setTimeout(() => navigate(clipPath, { replace: false }), 0);
   }, [clipId, location.search, navigate, navigationType]);
+
+  useEffect(() => {
+    const pendingClipId = pendingClipOpenRef.current;
+    if (!pendingClipId || clipId) {
+      return;
+    }
+    if (!clipsQuery.isFetched || clipsQuery.isFetching) {
+      return;
+    }
+
+    pendingClipOpenRef.current = '';
+    const cleanedSearch = stripStartRoutingParams(location.search);
+    const suffix = cleanedSearch ? `?${cleanedSearch}` : '';
+    navigate(`/clips/${encodeURIComponent(pendingClipId)}${suffix}`, { replace: false });
+  }, [clipId, clipsQuery.isFetched, clipsQuery.isFetching, location.search, navigate]);
 
   useEffect(() => {
     if (clipId) {
