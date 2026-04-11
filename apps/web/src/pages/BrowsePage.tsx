@@ -338,8 +338,10 @@ export function BrowsePage() {
     const timer = window.setTimeout(() => {
       const sentinel = searchPanelSentinelRef.current;
       const targetTop = sentinel
-        ? Math.max(0, sentinel.getBoundingClientRect().top + window.scrollY + 1)
+        ? Math.max(0, sentinel.getBoundingClientRect().top + window.scrollY + 12)
         : 0;
+      setIsSearchPinned(true);
+      setFiltersExpanded(false);
       window.scrollTo({ top: targetTop, behavior: 'auto' });
       navigate(`${location.pathname}${location.search}`, { replace: true });
     }, 0);
