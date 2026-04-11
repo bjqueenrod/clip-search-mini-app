@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 
 from fastapi import APIRouter, HTTPException, Response, status
@@ -14,6 +15,7 @@ from app.services.tracking_service import notify_miniapp_open
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/telegram", response_model=TelegramAuthResponse)
@@ -35,6 +37,14 @@ def auth_telegram(payload: TelegramAuthRequest, response: Response) -> TelegramA
 
     serializer = get_session_serializer()
     session_payload = build_session_payload(user, source=source, start_param=payload.start_param)
+    logger.info(
+        "Created auth session source=%s telegram_user_id=%s username=%s first_name=%s start_param=%s",
+        source,
+        session_payload["telegram_user_id"],
+        session_payload.get("username"),
+        session_payload.get("first_name"),
+        session_payload.get("start_param"),
+    )
     token = serializer.dumps(session_payload)
     max_age = 60 * 60 * 24 * 7
     response.set_cookie(
