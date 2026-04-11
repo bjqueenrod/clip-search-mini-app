@@ -169,13 +169,12 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
             order = payment_gateway.create_order(
                 items=items,
                 chat_id=int(chat_id),
-            username=username,
-            first_name=first_name,
-            application_id=application_id,
-            flow_id=flow_id,
-            invoice_currency=invoice_currency,
-            clip_mode=payload.mode,
-        )
+                username=username,
+                first_name=first_name,
+                application_id=application_id,
+                flow_id=flow_id,
+                clip_mode=payload.mode,
+            )
         options = payment_gateway.invoice_options(order_id=int(order.get("id")), flow_id=flow_id)
         selected_method, code_value, requires_code = _select_payment_method(options)
         if requires_code and not code_value:

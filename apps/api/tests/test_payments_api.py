@@ -12,6 +12,7 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     def fake_create_order(**kwargs):
         captured["username"] = kwargs.get("username")
         captured["first_name"] = kwargs.get("first_name")
+        captured["order_currency"] = kwargs.get("invoice_currency")
         return {"id": 123}
 
     def fake_create_invoice(**kwargs):
@@ -66,6 +67,7 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     assert response.status_code == 200
     assert captured["username"] is None
     assert captured["first_name"] == "Alice"
+    assert captured["order_currency"] is None
     assert captured["invoice_username"] is None
     assert captured["invoice_first_name"] == "Alice"
     assert captured["invoice_currency"] == "USD"
@@ -79,6 +81,7 @@ def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeyp
     def fake_create_order(**kwargs):
         captured["username"] = kwargs.get("username")
         captured["first_name"] = kwargs.get("first_name")
+        captured["order_currency"] = kwargs.get("invoice_currency")
         return {"id": 123}
 
     def fake_create_invoice(**kwargs):
@@ -133,6 +136,7 @@ def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeyp
     assert response.status_code == 200
     assert captured["username"] is None
     assert captured["first_name"] is None
+    assert captured["order_currency"] is None
     assert captured["invoice_username"] is None
     assert captured["invoice_first_name"] is None
     assert captured["invoice_currency"] == "GBP"
