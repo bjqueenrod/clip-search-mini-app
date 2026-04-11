@@ -9,7 +9,9 @@ export function useTelegramSession() {
 
   useEffect(() => {
     let mounted = true;
-    const fallbackUser = context.user ?? { id: 1, username: 'local-preview', firstName: 'Local' };
+    const fallbackUser = context.isTelegram
+      ? undefined
+      : context.user ?? { id: 1, username: 'local-preview', firstName: 'Local' };
     console.info(
       'Telegram session bootstrap',
       JSON.stringify({
