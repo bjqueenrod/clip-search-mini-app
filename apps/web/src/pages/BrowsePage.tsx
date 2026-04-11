@@ -463,7 +463,7 @@ export function BrowsePage() {
         />
       ) : null}
 
-      <section className="tasks-panel tasks-panel--faq clips-faq">
+      <section className={`tasks-panel tasks-panel--faq clips-faq${showFaq ? ' clips-faq--open' : ''}`}>
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">FAQ</p>
           <h2>Questions before purchase?</h2>
@@ -484,7 +484,7 @@ export function BrowsePage() {
             {showFaq ? 'Hide FAQ' : 'Show FAQ'}
           </button>
         </div>
-        {showFaq ? (
+        <div className="clips-faq__body" aria-hidden={!showFaq}>
           <div className="faq-list">
             {CLIPS_FAQ.map((item) => (
               <details key={item.question} className="faq-card" open={openFaqQuestion === item.question}>
@@ -506,7 +506,7 @@ export function BrowsePage() {
               </details>
             ))}
           </div>
-        ) : null}
+        </div>
       </section>
 
       <div ref={searchPanelSentinelRef} className="search-panel__sentinel" aria-hidden="true" />
