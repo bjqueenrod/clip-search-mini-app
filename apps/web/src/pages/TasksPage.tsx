@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -346,6 +347,7 @@ function TaskIcon({ name }: { name: TaskIconName }) {
 
 export function TasksPage() {
   const session = useTelegramSession();
+  const navigate = useNavigate();
   const [currency] = useCurrencyPreference();
   const tiersQuery = useTiers(currency);
   const didTrackOpenRef = useRef(false);
@@ -376,7 +378,10 @@ export function TasksPage() {
 
   return (
     <AppShell>
-      <CurrencyToggleBanner />
+      <CurrencyToggleBanner
+        showBackButton
+        onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
+      />
       <section className="hero hero--tasks">
         <img
           className="hero__banner"

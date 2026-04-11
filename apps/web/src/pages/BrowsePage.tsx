@@ -376,7 +376,10 @@ export function BrowsePage() {
 
   return (
     <AppShell>
-      <CurrencyToggleBanner />
+      <CurrencyToggleBanner
+        showBackButton
+        onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
+      />
       <section className="hero">
         <img
           className="hero__banner"

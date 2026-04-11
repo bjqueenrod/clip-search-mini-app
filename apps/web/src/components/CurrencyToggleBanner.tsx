@@ -1,15 +1,26 @@
 import { useCurrencyPreference } from '../hooks/useCurrencyPreference';
 
-export function CurrencyToggleBanner() {
+type CurrencyToggleBannerProps = {
+  onBackClick?: () => void;
+  showBackButton?: boolean;
+};
+
+export function CurrencyToggleBanner({ onBackClick, showBackButton = false }: CurrencyToggleBannerProps) {
   const [currency, setCurrency] = useCurrencyPreference();
 
   return (
-    <div className="dev-banner currency-banner">
+    <div className={`dev-banner currency-banner${showBackButton ? ' currency-banner--with-back' : ''}`}>
       <div className="currency-banner__row">
-        <div>
-          <div className="currency-banner__label">Currency selector</div>
-          <div className="currency-banner__hint">Choose the price display you want to use in the mini app.</div>
-        </div>
+        {showBackButton ? (
+          <button type="button" className="currency-banner__back" onClick={onBackClick} aria-label="Back to Home">
+            ← Back
+          </button>
+        ) : (
+          <div>
+            <div className="currency-banner__label">Currency selector</div>
+            <div className="currency-banner__hint">Choose the price display you want to use in the mini app.</div>
+          </div>
+        )}
         <div className="currency-banner__toggle" role="group" aria-label="Choose currency">
           <button
             type="button"

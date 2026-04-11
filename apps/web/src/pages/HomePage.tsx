@@ -25,11 +25,15 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
+    const locationState = location.state as { bypassHomeRedirect?: boolean } | null;
+    if (locationState?.bypassHomeRedirect) {
+      return;
+    }
     const target = resolveHomeRedirectTarget(location.search, session.startParam);
     if (target) {
       navigate(target, { replace: true });
     }
-  }, [location.search, navigate, session.startParam]);
+  }, [location.search, location.state, navigate, session.startParam]);
 
   useEffect(() => {
     setAnalyticsContext({

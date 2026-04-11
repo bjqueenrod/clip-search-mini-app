@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
@@ -20,6 +21,7 @@ function SectionEyebrow({ children }: { children: string }) {
 
 export function KeyholdingPage() {
   const session = useTelegramSession();
+  const navigate = useNavigate();
   const [currency] = useCurrencyPreference();
   const tiersQuery = useKeyholdingTiers(currency);
   const optionsQuery = useKeyholdingOptions(currency);
@@ -44,7 +46,10 @@ export function KeyholdingPage() {
 
   return (
     <AppShell>
-      <CurrencyToggleBanner />
+      <CurrencyToggleBanner
+        showBackButton
+        onBackClick={() => navigate('/', { replace: true, state: { bypassHomeRedirect: true } })}
+      />
 
       <section className="hero hero--tasks">
         <img
