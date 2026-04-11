@@ -43,6 +43,7 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     monkeypatch.setattr(payment_gateway, "create_invoice", fake_create_invoice)
     app.dependency_overrides[deps.get_session] = lambda: {
         "telegram_user_id": 123456,
+        "source": "telegram",
         "username": None,
         "first_name": "Alice",
         "start_param": "flow-1",
@@ -65,6 +66,70 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     assert captured["first_name"] == "Alice"
     assert captured["invoice_username"] is None
     assert captured["invoice_first_name"] == "Alice"
+
+
+def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeypatch) -> None:
+    from app.services import payment_gateway
+
+    captured: dict[str, str | None] = {}
+
+    def fake_create_order(**kwargs):
+        captured["username"] = kwargs.get("username")
+        captured["first_name"] = kwargs.get("first_name")
+        return {"id": 123}
+
+    def fake_create_invoice(**kwargs):
+        captured["invoice_username"] = kwargs.get("username")
+        captured["invoice_first_name"] = kwargs.get("first_name")
+        return {
+            "invoice": {"invoice_id": "inv_123"},
+            "invoice_url": "https://example.com/invoice",
+            "provider_invoice_url": "https://example.com/provider",
+        }
+
+    monkeypatch.setattr(payment_gateway, "create_order", fake_create_order)
+    monkeypatch.setattr(
+        payment_gateway,
+        "invoice_options",
+        lambda **kwargs: {
+            "payment_methods": [
+                {
+                    "id": -1,
+                    "payment_method": "paypal",
+                    "requires_code": True,
+                    "tribute_code": "MBJQ-KEY-TEST",
+                    "instruction_templates": {"checkout_default": "Use {code}"},
+                    "method_details": {},
+                }
+            ]
+        },
+    )
+    monkeypatch.setattr(payment_gateway, "create_invoice", fake_create_invoice)
+    app.dependency_overrides[deps.get_session] = lambda: {
+        "telegram_user_id": 123456,
+        "source": "development",
+        "username": "local-preview",
+        "first_name": "Alice",
+        "start_param": "flow-1",
+        "flow_id": "flow-1",
+    }
+    try:
+        response = client.post(
+            "/api/payments/checkout",
+            json={
+                "productId": "BJQ0001",
+                "paymentMethod": "paypal",
+                "quantity": 1,
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert captured["username"] is None
+    assert captured["first_name"] is None
+    assert captured["invoice_username"] is None
+    assert captured["invoice_first_name"] is None
 
 
 def test_checkout_uses_tribute_code_when_selected_method_requires_code(client, monkeypatch) -> None:

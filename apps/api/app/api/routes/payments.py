@@ -22,6 +22,14 @@ logger = logging.getLogger(__name__)
 INVOICE_CACHE: dict[str, InvoiceStatusResponse] = {}
 
 
+def _session_user_fields(session: dict) -> tuple[str | None, str | None]:
+    if str(session.get("source") or "").strip().lower() != "telegram":
+        return None, None
+    username = str(session.get("username") or "").strip() or None
+    first_name = str(session.get("first_name") or "").strip() or None
+    return username, first_name
+
+
 def _normalize_methods(raw: list[dict[str, Any]] | None) -> list[PaymentMethod]:
     methods: list[PaymentMethod] = []
     for item in raw or []:
@@ -121,6 +129,7 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
     items = [item]
     order_id_value = int(payload.order_id) if payload.order_id else None
     selected_method: dict[str, Any] | None = None
+    username, first_name = _session_user_fields(session)
 
     def _select_payment_method(options: dict[str, Any] | None) -> tuple[dict[str, Any] | None, str, bool]:
         selected: dict[str, Any] | None = None
@@ -157,8 +166,8 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
             order = payment_gateway.create_order(
                 items=items,
                 chat_id=int(chat_id),
-                username=(session.get("username") or None),
-                first_name=(session.get("first_name") or None),
+                username=username,
+                first_name=first_name,
                 application_id=application_id,
                 flow_id=flow_id,
                 clip_mode=payload.mode,
@@ -176,8 +185,8 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
             order_id=int(order.get("id")),
             payment_method=payload.payment_method,
             chat_id=int(chat_id),
-            username=(session.get("username") or None),
-            first_name=(session.get("first_name") or None),
+            username=username,
+            first_name=first_name,
             application_id=application_id,
             flow_id=flow_id,
             code=code_value or None,
@@ -196,8 +205,8 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
                     order_id=int(order.get("id")),
                     payment_method=payload.payment_method,
                     chat_id=int(chat_id),
-                    username=(session.get("username") or None),
-                    first_name=(session.get("first_name") or None),
+                    username=username,
+                    first_name=first_name,
                     application_id=application_id,
                     flow_id=flow_id,
                     code=retry_code_value or None,
