@@ -2603,8 +2603,9 @@ button {
 }
 
 .payment-sheet__primary-logo {
-  width: 18px;
   height: 18px;
+  width: auto;
+  max-width: 52px;
   display: block;
   object-fit: contain;
   flex: none;
