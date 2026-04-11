@@ -376,7 +376,7 @@ export function BrowsePage() {
 
   return (
     <AppShell>
-      <CurrencyToggleBanner />
+      {!session.isTelegram && <CurrencyToggleBanner />}
       <section className="hero">
         <img
           className="hero__banner"
