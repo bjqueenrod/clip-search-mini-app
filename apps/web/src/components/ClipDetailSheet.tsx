@@ -12,6 +12,7 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
   const location = useLocation();
   const navigate = useNavigate();
   const lastTrackedClipIdRef = useRef('');
+  const restoreScrollOnCloseRef = useRef(true);
   const [showPayment, setShowPayment] = useState<null | 'stream' | 'download'>(null);
   const backTarget = `/clips${location.search}`;
   const tagHref = (tag: string) => {
@@ -66,7 +67,9 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
       body.style.position = previousBody.position;
       body.style.top = previousBody.top;
       body.style.width = previousBody.width;
-      window.scrollTo(0, scrollY);
+      if (restoreScrollOnCloseRef.current) {
+        window.scrollTo(0, scrollY);
+      }
     };
   }, []);
 
@@ -136,7 +139,10 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
                     key={tag}
                     to={tagHref(tag)}
                     state={{ pinSearchPanel: true, searchText: `#${tag}` }}
-                    onClick={() => trackClipTagSelect({ tag, source: 'detail_sheet', clip })}
+                    onClick={() => {
+                      restoreScrollOnCloseRef.current = false;
+                      trackClipTagSelect({ tag, source: 'detail_sheet', clip });
+                    }}
                   >
                     #{tag}
                   </Link>

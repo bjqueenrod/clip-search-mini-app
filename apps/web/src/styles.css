@@ -686,6 +686,7 @@ button {
 }
 
 .search-panel--pinned {
+  margin-top: 0;
   box-shadow: 0 14px 28px rgba(7, 4, 10, 0.24);
 }
 
