@@ -2347,6 +2347,22 @@ button {
   color: var(--text);
 }
 
+.clips-faq .tasks-panel__header {
+  margin-bottom: 18px;
+  padding: 18px 18px 20px;
+  border: 1px solid rgba(176, 106, 214, 0.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(193, 128, 229, 0.22), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(176, 106, 214, 0.12), transparent 30%),
+    linear-gradient(135deg, rgba(56, 42, 78, 0.66), rgba(27, 21, 35, 0.16) 54%, rgba(20, 16, 27, 0.02));
+  box-shadow: 0 16px 34px rgba(12, 10, 16, 0.22);
+}
+
+.clips-faq .tasks-panel__header h2 {
+  margin-bottom: 0;
+}
+
 .sticky-mobile-cta {
   position: fixed;
   left: 0;

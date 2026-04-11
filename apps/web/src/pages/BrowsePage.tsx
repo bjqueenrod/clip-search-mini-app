@@ -462,7 +462,7 @@ export function BrowsePage() {
         />
       ) : null}
 
-      <section className="tasks-panel tasks-panel--faq">
+      <section className="tasks-panel tasks-panel--faq clips-faq">
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">FAQ</p>
           <h2>Questions before you choose a clip?</h2>
