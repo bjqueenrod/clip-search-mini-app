@@ -304,6 +304,7 @@ export function PaymentSheet({
     try {
       const res = await startCheckout(productId, selectedMethod, quantity, mode, {
         ...itemContext,
+        currency,
         ...(orderId ? { orderId } : {}),
       });
       setOrderId(res.orderId);

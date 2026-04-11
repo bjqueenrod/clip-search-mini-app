@@ -17,6 +17,7 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     def fake_create_invoice(**kwargs):
         captured["invoice_username"] = kwargs.get("username")
         captured["invoice_first_name"] = kwargs.get("first_name")
+        captured["invoice_currency"] = kwargs.get("invoice_currency")
         return {
             "invoice": {"invoice_id": "inv_123"},
             "invoice_url": "https://example.com/invoice",
@@ -50,14 +51,15 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
         "flow_id": "flow-1",
     }
     try:
-        response = client.post(
-            "/api/payments/checkout",
-            json={
-                "productId": "BJQ0001",
-                "paymentMethod": "paypal",
-                "quantity": 1,
-            },
-        )
+            response = client.post(
+                "/api/payments/checkout",
+                json={
+                    "productId": "BJQ0001",
+                    "paymentMethod": "paypal",
+                    "quantity": 1,
+                    "currency": "usd",
+                },
+            )
     finally:
         app.dependency_overrides.clear()
 
@@ -66,6 +68,7 @@ def test_checkout_forwards_username_and_first_name_to_create_order(client, monke
     assert captured["first_name"] == "Alice"
     assert captured["invoice_username"] is None
     assert captured["invoice_first_name"] == "Alice"
+    assert captured["invoice_currency"] == "USD"
 
 
 def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeypatch) -> None:
@@ -81,6 +84,7 @@ def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeyp
     def fake_create_invoice(**kwargs):
         captured["invoice_username"] = kwargs.get("username")
         captured["invoice_first_name"] = kwargs.get("first_name")
+        captured["invoice_currency"] = kwargs.get("invoice_currency")
         return {
             "invoice": {"invoice_id": "inv_123"},
             "invoice_url": "https://example.com/invoice",
@@ -114,14 +118,15 @@ def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeyp
         "flow_id": "flow-1",
     }
     try:
-        response = client.post(
-            "/api/payments/checkout",
-            json={
-                "productId": "BJQ0001",
-                "paymentMethod": "paypal",
-                "quantity": 1,
-            },
-        )
+            response = client.post(
+                "/api/payments/checkout",
+                json={
+                    "productId": "BJQ0001",
+                    "paymentMethod": "paypal",
+                    "quantity": 1,
+                    "currency": "gbp",
+                },
+            )
     finally:
         app.dependency_overrides.clear()
 
@@ -130,6 +135,7 @@ def test_checkout_omits_username_and_first_name_outside_telegram(client, monkeyp
     assert captured["first_name"] is None
     assert captured["invoice_username"] is None
     assert captured["invoice_first_name"] is None
+    assert captured["invoice_currency"] == "GBP"
 
 
 def test_checkout_uses_tribute_code_when_selected_method_requires_code(client, monkeypatch) -> None:

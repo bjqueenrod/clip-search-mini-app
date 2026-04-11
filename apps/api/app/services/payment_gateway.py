@@ -178,6 +178,7 @@ def create_invoice(
     first_name: str | None = None,
     application_id: str | None = None,
     flow_id: str | None = None,
+    invoice_currency: str | None = None,
     code: str | None = None,
 ) -> dict[str, Any]:
     base = _api_base_url()
@@ -192,6 +193,8 @@ def create_invoice(
         "application_id": application_id,
         "flow_id": flow_id,
     }
+    if invoice_currency:
+        payload["invoice_currency"] = invoice_currency
     if code:
         payload["code"] = code
     try:

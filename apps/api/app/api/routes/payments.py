@@ -109,6 +109,9 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
     flow_id = session.get("start_param") or session.get("flow_id")
     chat_id = session.get("telegram_user_id")
     application_id = session.get("start_param")
+    invoice_currency = (payload.currency or "").strip().upper()
+    if invoice_currency not in {"GBP", "USD"}:
+        invoice_currency = None
 
     if not chat_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
@@ -166,12 +169,13 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
             order = payment_gateway.create_order(
                 items=items,
                 chat_id=int(chat_id),
-                username=username,
-                first_name=first_name,
-                application_id=application_id,
-                flow_id=flow_id,
-                clip_mode=payload.mode,
-            )
+            username=username,
+            first_name=first_name,
+            application_id=application_id,
+            flow_id=flow_id,
+            invoice_currency=invoice_currency,
+            clip_mode=payload.mode,
+        )
         options = payment_gateway.invoice_options(order_id=int(order.get("id")), flow_id=flow_id)
         selected_method, code_value, requires_code = _select_payment_method(options)
         if requires_code and not code_value:
@@ -189,6 +193,7 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
             first_name=first_name,
             application_id=application_id,
             flow_id=flow_id,
+            invoice_currency=invoice_currency,
             code=code_value or None,
         )
     except payment_gateway.PaymentSystemError as exc:
@@ -209,6 +214,7 @@ def checkout(payload: CheckoutRequest, session: dict = Depends(get_session)) -> 
                     first_name=first_name,
                     application_id=application_id,
                     flow_id=flow_id,
+                    invoice_currency=invoice_currency,
                     code=retry_code_value or None,
                 )
                 code_value = retry_code_value
