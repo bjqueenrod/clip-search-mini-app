@@ -405,6 +405,8 @@ def get_clip_detail(db: Session, clip_id: str) -> dict[str, Any] | None:
     table = mapping.table
     clip_col = mapping.get("clip_id")
     if clip_col is None:
+        clip_col = mapping.get("id")
+    if clip_col is None:
         return None
     normalized_clip_id = (clip_id or "").strip().upper()
     stmt = select(table).where(func.upper(func.trim(clip_col.cast(String))) == normalized_clip_id)
