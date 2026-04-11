@@ -5,16 +5,28 @@ import { trackClipBotCtaClick, trackClipDetailView, trackClipTagSelect } from '.
 import { ClipItem } from '../features/clips/types';
 import { CurrencyCode, formatDuration } from '../utils/format';
 import { resolvePriceAmountPenceOptional, resolvePriceLabel } from '../utils/pricing';
+import { stripStartRoutingParams } from '../utils/startRouting';
 import { PreviewPlayer } from './PreviewPlayer';
 import { PaymentSheet } from './PaymentSheet';
 
-export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: ClipItem; loading?: boolean; currency?: CurrencyCode }) {
+export function ClipDetailSheet({
+  clip,
+  loading,
+  currency = 'GBP',
+  errorMessage,
+}: {
+  clip?: ClipItem;
+  loading?: boolean;
+  currency?: CurrencyCode;
+  errorMessage?: string | null;
+}) {
   const location = useLocation();
   const navigate = useNavigate();
   const lastTrackedClipIdRef = useRef('');
   const restoreScrollOnCloseRef = useRef(true);
   const [showPayment, setShowPayment] = useState<null | 'stream' | 'download'>(null);
-  const backTarget = `/clips${location.search}`;
+  const cleanedSearch = stripStartRoutingParams(location.search);
+  const backTarget = `/clips${cleanedSearch ? `?${cleanedSearch}` : ''}`;
   const tagHref = (tag: string) => {
     const params = new URLSearchParams();
     params.set('q', `#${tag}`);
@@ -118,6 +130,7 @@ export function ClipDetailSheet({ clip, loading, currency = 'GBP' }: { clip?: Cl
           <span>Clip Preview</span>
         </div>
         {loading && <div className="detail-sheet__loading">Loading clip...</div>}
+        {!loading && !clip && errorMessage && <div className="detail-sheet__loading">{errorMessage}</div>}
         {!loading && clip && (
           <>
             <PreviewPlayer

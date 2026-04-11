@@ -599,6 +599,7 @@ export function BrowsePage() {
         <ClipDetailSheet
           clip={clipDetailQuery.data}
           loading={clipDetailQuery.isLoading}
+          errorMessage={clipDetailQuery.isError ? (clipDetailQuery.error as Error).message : null}
           currency={currency}
         />
       )}
