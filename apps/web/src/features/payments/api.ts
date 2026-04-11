@@ -7,6 +7,35 @@ import {
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
 const checkoutOptionsRequests = new Map<string, Promise<CheckoutOptionsResponse>>();
 
+function looksLikeHtmlError(text: string): boolean {
+  const trimmed = text.trim().toLowerCase();
+  return trimmed.startsWith('<!doctype html') || trimmed.startsWith('<html') || trimmed.includes('cloudflare');
+}
+
+async function readFriendlyErrorMessage(response: Response, fallback: string): Promise<string> {
+  if (response.status >= 500) {
+    return fallback;
+  }
+  try {
+    const text = await response.text();
+    if (!text) {
+      return fallback;
+    }
+    if (looksLikeHtmlError(text)) {
+      return fallback;
+    }
+    try {
+      const data = JSON.parse(text);
+      const detail = data?.detail || data?.error;
+      return detail ? `${fallback}: ${detail}` : `${fallback}: ${text}`;
+    } catch {
+      return `${fallback}: ${text}`;
+    }
+  } catch {
+    return fallback;
+  }
+}
+
 function buildCheckoutOptionsRequestKey(
   productId: string,
   quantity: number,
@@ -41,25 +70,7 @@ export async function fetchCheckoutOptions(
       body: JSON.stringify({ productId, quantity, mode, ...extras }),
     });
     if (!response.ok) {
-      let message = 'Unable to load payment options';
-      try {
-        const text = await response.text();
-        if (text) {
-          try {
-            const data = JSON.parse(text);
-            if (data?.detail) {
-              message = `${message}: ${data.detail}`;
-            } else {
-              message = `${message}: ${text}`;
-            }
-          } catch {
-            message = `${message}: ${text}`;
-          }
-        }
-      } catch {
-        // fall back to the generic message
-      }
-      throw new Error(message);
+      throw new Error(await readFriendlyErrorMessage(response, 'Unable to load payment options'));
     }
     return response.json() as Promise<CheckoutOptionsResponse>;
   })();
@@ -86,26 +97,7 @@ export async function startCheckout(
     body: JSON.stringify({ productId, paymentMethod, quantity, mode, ...extras }),
   });
   if (!response.ok) {
-    let message = 'Unable to start checkout';
-    try {
-      const text = await response.text();
-      if (text) {
-        try {
-          const data = JSON.parse(text);
-          const detail = data?.detail || data?.error;
-          if (detail) {
-            message = `${message}: ${detail}`;
-          } else {
-            message = `${message}: ${text}`;
-          }
-        } catch {
-          message = `${message}: ${text}`;
-        }
-      }
-    } catch {
-      // keep the generic message
-    }
-    throw new Error(message);
+    throw new Error(await readFriendlyErrorMessage(response, 'Unable to start checkout. Try again or pay in bot.'));
   }
   return response.json();
 }
@@ -125,25 +117,6 @@ export async function cancelInvoice(invoiceId: string): Promise<void> {
     credentials: 'include',
   });
   if (!response.ok) {
-    let message = 'Unable to cancel payment';
-    try {
-      const text = await response.text();
-      if (text) {
-        try {
-          const data = JSON.parse(text);
-          const detail = data?.detail || data?.error;
-          if (detail) {
-            message = `${message}: ${detail}`;
-          } else {
-            message = `${message}: ${text}`;
-          }
-        } catch {
-          message = `${message}: ${text}`;
-        }
-      }
-    } catch {
-      // keep generic message
-    }
-    throw new Error(message);
+    throw new Error(await readFriendlyErrorMessage(response, 'Unable to cancel payment'));
   }
 }
