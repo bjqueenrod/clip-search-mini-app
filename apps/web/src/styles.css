@@ -2642,6 +2642,19 @@ button {
   color: var(--muted, #c6bdd6);
 }
 
+.payment-sheet__spinner-countdown {
+  margin-left: 8px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text, #f3edf7);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
 .payment-sheet__spinner--center {
   justify-content: center;
 }

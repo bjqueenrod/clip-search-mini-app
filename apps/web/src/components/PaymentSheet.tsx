@@ -6,6 +6,7 @@ import { isTelegramWebView, openBotDeepLink } from '../app/telegram';
 import { useCurrencyPreference } from '../hooks/useCurrencyPreference';
 
 type SheetState = 'loading' | 'select' | 'confirm' | 'submitting' | 'waiting' | 'success' | 'error';
+const WAITING_TIMEOUT_MS = 5 * 60 * 1000;
 
 function openPaymentUrl(url?: string | null) {
   if (!url) return false;
@@ -56,6 +57,8 @@ export function PaymentSheet({
   const [orderId, setOrderId] = useState<number | null>(null);
   const [savedPaymentCode, setSavedPaymentCode] = useState<string>('');
   const [copiedTributeCode, setCopiedTributeCode] = useState(false);
+  const [waitingStartedAt, setWaitingStartedAt] = useState<number | null>(null);
+  const [waitingRemainingSeconds, setWaitingRemainingSeconds] = useState<number>(WAITING_TIMEOUT_MS / 1000);
   const [currency] = useCurrencyPreference();
   const storageKey = useMemo(
     () => `paymentSheet:${productId}:${mode || 'default'}`,
@@ -70,6 +73,7 @@ export function PaymentSheet({
         paymentCode?: string;
         selectedMethod?: string;
         orderId?: number | null;
+        waitingStartedAt?: number | null;
       },
     ) => {
       try {
@@ -81,6 +85,7 @@ export function PaymentSheet({
             paymentCode: payload.paymentCode || '',
             selectedMethod: payload.selectedMethod || '',
             orderId: payload.orderId ?? null,
+            waitingStartedAt: payload.waitingStartedAt ?? null,
           }),
         );
       } catch {
@@ -108,6 +113,7 @@ export function PaymentSheet({
         paymentCode?: string;
         selectedMethod?: string;
         orderId?: number;
+        waitingStartedAt?: number;
       };
       if (parsed?.orderId) {
         setOrderId(parsed.orderId);
@@ -116,6 +122,7 @@ export function PaymentSheet({
         setInvoiceId(parsed.invoiceId);
         setPaymentUrl(parsed.paymentUrl || '');
         setSavedPaymentCode(parsed.paymentCode || '');
+        setWaitingStartedAt(parsed.waitingStartedAt || Date.now());
         if (parsed.selectedMethod) setSelectedMethod(parsed.selectedMethod);
         setState('waiting');
       }
@@ -266,6 +273,29 @@ export function PaymentSheet({
     return () => window.clearTimeout(timer);
   }, [copiedTributeCode, selectedTributeCode]);
 
+  useEffect(() => {
+    if (state !== 'waiting' || !waitingStartedAt) {
+      setWaitingRemainingSeconds(WAITING_TIMEOUT_MS / 1000);
+      return undefined;
+    }
+
+    const updateRemaining = () => {
+      const elapsed = Date.now() - waitingStartedAt;
+      const remaining = Math.max(0, Math.ceil((WAITING_TIMEOUT_MS - elapsed) / 1000));
+      setWaitingRemainingSeconds(remaining);
+    };
+
+    updateRemaining();
+    const timer = window.setInterval(updateRemaining, 1000);
+    return () => window.clearInterval(timer);
+  }, [state, waitingStartedAt]);
+
+  const waitingCountdownLabel = useMemo(() => {
+    const minutes = Math.floor(waitingRemainingSeconds / 60);
+    const seconds = waitingRemainingSeconds % 60;
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  }, [waitingRemainingSeconds]);
+
   const renderInstructionText = useCallback((text: string) => {
     const lines = text.split(/\r?\n/);
     return lines.map((line, index) => (
@@ -346,6 +376,7 @@ export function PaymentSheet({
     setState('submitting');
     setError('');
     try {
+      const waitingStartedAt = Date.now();
       const res = await startCheckout(productId, selectedMethod, quantity, mode, {
         ...itemContext,
         currency,
@@ -354,6 +385,7 @@ export function PaymentSheet({
       setOrderId(res.orderId);
       setInvoiceId(res.invoiceId);
       setSavedPaymentCode(res.paymentCode || '');
+      setWaitingStartedAt(waitingStartedAt);
       const url = res.paymentUrl || res.providerInvoiceUrl || '';
       setPaymentUrl(url);
       saveProgress({
@@ -362,6 +394,7 @@ export function PaymentSheet({
         paymentCode: res.paymentCode || '',
         selectedMethod,
         orderId: res.orderId,
+        waitingStartedAt,
       });
       openPaymentUrl(url);
       setState('waiting');
@@ -395,9 +428,10 @@ export function PaymentSheet({
     setInvoiceId('');
     setPaymentUrl('');
     setSavedPaymentCode('');
+    setWaitingStartedAt(null);
     setState('select');
     setError('');
-    saveProgress({ orderId, selectedMethod, paymentCode: '' });
+    saveProgress({ orderId, selectedMethod, paymentCode: '', waitingStartedAt: null });
   }, [orderId, saveProgress]);
 
   useEffect(() => {
@@ -513,6 +547,9 @@ export function PaymentSheet({
             <div className="payment-sheet__spinner payment-sheet__spinner--center">
               <div className="payment-sheet__spinner-wheel" aria-hidden />
               <span>Waiting for payment…</span>
+              <span className="payment-sheet__spinner-countdown" aria-label={`Time remaining ${waitingCountdownLabel}`}>
+                {waitingCountdownLabel}
+              </span>
             </div>
             <p className="payment-sheet__muted-text">Checkout opened in your browser. Complete payment and we’ll update here.</p>
             <div className="payment-sheet__actions payment-sheet__actions--inline">
