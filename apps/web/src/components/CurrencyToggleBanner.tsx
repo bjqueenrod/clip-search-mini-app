@@ -6,12 +6,6 @@ type CurrencyToggleBannerProps = {
   alignRight?: boolean;
   syncWithServer?: boolean;
   telegramUserId?: number | null;
-  debugInfo?: {
-    isTelegram: boolean;
-    hasInitData: boolean;
-    source: string;
-    telegramUserId?: number | null;
-  };
 };
 
 export function CurrencyToggleBanner({
@@ -20,7 +14,6 @@ export function CurrencyToggleBanner({
   alignRight = false,
   syncWithServer = false,
   telegramUserId,
-  debugInfo,
 }: CurrencyToggleBannerProps) {
   const [currency, setCurrency] = useCurrencyPreference(syncWithServer, telegramUserId);
 
@@ -55,14 +48,6 @@ export function CurrencyToggleBanner({
           </button>
         </div>
       </div>
-      {debugInfo ? (
-        <div className="currency-banner__debug">
-          <span>isTelegram: {debugInfo.isTelegram ? 'true' : 'false'}</span>
-          <span>hasInitData: {debugInfo.hasInitData ? 'true' : 'false'}</span>
-          <span>source: {debugInfo.source}</span>
-          <span>telegram_user_id: {debugInfo.telegramUserId ?? 'n/a'}</span>
-        </div>
-      ) : null}
     </div>
   );
 }
