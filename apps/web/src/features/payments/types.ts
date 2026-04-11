@@ -11,6 +11,9 @@ export type PaymentMethod = {
   instructionTemplates?: {
     checkoutDefault?: string | null;
   } | null;
+  instruction_templates?: {
+    checkout_default?: string | null;
+  } | null;
   details?: Record<string, unknown> | null;
   pricing?: PricingEnvelope | null;
 };

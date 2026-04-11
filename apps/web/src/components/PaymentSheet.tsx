@@ -111,6 +111,7 @@ export function PaymentSheet({
     [methods, selectedMethod],
   );
   const selectedInstructions =
+    selectedMethodInfo?.instruction_templates?.checkout_default?.trim() ||
     selectedMethodInfo?.instructionTemplates?.checkoutDefault?.trim() ||
     selectedMethodInfo?.instructions?.trim();
   const selectedTributeCode = selectedMethodInfo?.tributeCode?.trim();
