@@ -2363,6 +2363,30 @@ button {
   margin-bottom: 0;
 }
 
+.clips-faq__toggle {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border: 1px solid rgba(176, 106, 214, 0.22);
+  border-radius: 999px;
+  background: rgba(26, 20, 33, 0.72);
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.clips-faq__toggle:hover,
+.clips-faq__toggle:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(193, 128, 229, 0.45);
+  background: rgba(34, 25, 45, 0.86);
+}
+
 .sticky-mobile-cta {
   position: fixed;
   left: 0;

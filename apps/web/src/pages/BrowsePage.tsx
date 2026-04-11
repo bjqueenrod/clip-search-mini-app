@@ -95,6 +95,7 @@ export function BrowsePage() {
   const [isSearchPinned, setIsSearchPinned] = useState(false);
   const [filtersExpanded, setFiltersExpanded] = useState(true);
   const [visibleClips, setVisibleClips] = useState<ClipItem[]>([]);
+  const [showFaq, setShowFaq] = useState(false);
   const [openFaqQuestion, setOpenFaqQuestion] = useState<string | null>(null);
   const pinnedSearchText = (location.state as { searchText?: string } | null)?.searchText ?? '';
   const searchText = useMemo(() => stripHashtagTokens(searchValue), [searchValue]);
@@ -466,32 +467,46 @@ export function BrowsePage() {
         <div className="tasks-panel__header">
           <p className="hero__eyebrow">FAQ</p>
           <h2>Questions before purchase?</h2>
+          <button
+            type="button"
+            className="clips-faq__toggle"
+            aria-expanded={showFaq}
+            onClick={() => {
+              setShowFaq((current) => {
+                const next = !current;
+                if (!next) {
+                  setOpenFaqQuestion(null);
+                }
+                return next;
+              });
+            }}
+          >
+            {showFaq ? 'Hide FAQ' : 'Show FAQ'}
+          </button>
         </div>
-        <div className="faq-list">
-          {CLIPS_FAQ.map((item) => (
-            <details
-              key={item.question}
-              className="faq-card"
-              open={openFaqQuestion === item.question}
-            >
-              <summary
-                onClick={(event) => {
-                  event.preventDefault();
-                  setOpenFaqQuestion((current) => (current === item.question ? null : item.question));
-                }}
-              >
-                <span className="faq-card__summary">
-                  <span className="faq-card__icon" aria-hidden="true">
-                    ❔
+        {showFaq ? (
+          <div className="faq-list">
+            {CLIPS_FAQ.map((item) => (
+              <details key={item.question} className="faq-card" open={openFaqQuestion === item.question}>
+                <summary
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpenFaqQuestion((current) => (current === item.question ? null : item.question));
+                  }}
+                >
+                  <span className="faq-card__summary">
+                    <span className="faq-card__icon" aria-hidden="true">
+                      ❔
+                    </span>
+                    <span className="faq-card__text">{item.question}</span>
+                    <span className="faq-card__chevron" aria-hidden="true" />
                   </span>
-                  <span className="faq-card__text">{item.question}</span>
-                  <span className="faq-card__chevron" aria-hidden="true" />
-                </span>
-              </summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
+                </summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <div ref={searchPanelSentinelRef} className="search-panel__sentinel" aria-hidden="true" />
